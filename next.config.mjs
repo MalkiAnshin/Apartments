@@ -1,4 +1,7 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
-
-export default nextConfig;
+const nextConfig = {
+    distDir: 'build', // שנה את 'build' לשם התיקייה שתרצה
+  };
+  
+  export default nextConfig;
+  
