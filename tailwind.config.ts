@@ -8,6 +8,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      colors: {
+        gold: '#D4AF37', // גוון זהב יוקרתי
+      },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
@@ -17,4 +20,5 @@ const config: Config = {
   },
   plugins: [],
 };
+
 export default config;
