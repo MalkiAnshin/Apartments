@@ -1,4 +1,4 @@
-"use client"; // חובה להוסיף את השורה הזו
+"use client"; 
 
 import React, { useState, useEffect } from 'react';
 
