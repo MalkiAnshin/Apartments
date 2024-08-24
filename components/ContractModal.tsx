@@ -6,7 +6,7 @@ const ContractModal: React.FC<{ selectedProperty: any, onClose: () => void }> = 
   const [name, setName] = useState<string>('');
   const [date, setDate] = useState<string>('');
   const [comments, setComments] = useState<string>('');
-  const [id, setId] = useState<Number>();
+  const [id, setId] = useState<number | undefined>(undefined);
   const [idCardImage, setIdCardImage] = useState<File | null>(null);
 
   // Ref to access SignaturePad instance
@@ -91,7 +91,7 @@ const ContractModal: React.FC<{ selectedProperty: any, onClose: () => void }> = 
         <p className="mb-4">בתאריך: <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="bg-gray-200 border border-gray-300 rounded-md px-4 py-2 w-full" /></p>
 
         <p className="mb-4">שם: <input type="text" value={name} onChange={(e) => setName(e.target.value)} className="bg-gray-200 border border-gray-300 rounded-md px-4 py-2 w-full" /></p>
-        <p className="mb-4">תעודת זהות: <input type="id" value={id} onChange={(e) => setId(e.target.value)} className="bg-gray-200 border border-gray-300 rounded-md px-4 py-2 w-full" /></p>
+        <p className="mb-4">תעודת זהות: <input type="text" value={id !== undefined ? id.toString() : ''} onChange={(e) => setId(parseInt(e.target.value, 10))} className="bg-gray-200 border border-gray-300 rounded-md px-4 py-2 w-full" /></p>
         <p className="mb-4">הערות: <textarea value={comments} onChange={(e) => setComments(e.target.value)} className="bg-gray-200 border border-gray-300 rounded-md px-4 py-2 w-full" /></p>
         {/* פאנל החתימה */}
         <div className="mb-4">
