@@ -1,7 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    distDir: 'dist', // שנה את 'build' לשם התיקייה שתרצה
-  };
-  
-  export default nextConfig;
-  
+  distDir: 'dist', // שנה את 'build' לשם התיקייה שתרצה
+  env: {
+    DB_HOST: process.env.DB_HOST,
+    DB_USER: process.env.DB_USER,
+    DB_PASSWORD: process.env.DB_PASSWORD,
+    DB_NAME: process.env.DB_NAME,
+  },
+};
+
+export default nextConfig;

@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "target": "es2015", // הוסף את ההגדרה הזו
     "lib": [
       "dom",
       "dom.iterable",
@@ -16,6 +17,7 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    "downlevelIteration": true, // הוסף את ההגדרה הזו
     "plugins": [
       {
         "name": "next"

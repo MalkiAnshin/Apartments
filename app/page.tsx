@@ -1,26 +1,40 @@
-// app/page.tsx
+'use client'
+import React, { useState } from 'react';
+import ApartmentsList from '../components/ApartmentsList';
+import PropertyTypeSelector from '@/components/PropertyTypeSelector';
+import LandList from '@/components/LandList';
+import BusinessList from '@/components/BusinessList';
+import ProjectsList from '@/components/ProjectsList';
+
 const HomePage: React.FC = () => {
+  const [selectedType, setSelectedType] = useState<string>('');
+
+  const renderComponent = () => {
+    switch (selectedType) {
+      case 'דירות':
+        return <ApartmentsList />;
+      case 'בתי עסק':
+        return <BusinessList />;
+      case 'קרקעות':
+        return <LandList />;
+      case 'פרויקט קבלן':
+        return <ProjectsList />;
+      default:
+        return <ApartmentsList />;
+    }
+  };
+
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-4">Welcome to SCHLOSS</h1>
-      <p className="text-lg mb-4">Find the perfect property or land that suits your needs.</p>
+      <h1 className="text-3xl font-bold mb-4">
+        מצא את הנכס או הקרקע המושלם המתאים לצרכים שלך
+      </h1>
+      <PropertyTypeSelector onSelect={setSelectedType} />
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {/* Card examples */}
-        <div className="bg-white p-4 rounded shadow">
-          <h2 className="text-xl font-semibold">Property 1</h2>
-          <p className="text-gray-600">Details about property 1.</p>
-        </div>
-        <div className="bg-white p-4 rounded shadow">
-          <h2 className="text-xl font-semibold">Property 2</h2>
-          <p className="text-gray-600">Details about property 2.</p>
-        </div>
-        <div className="bg-white p-4 rounded shadow">
-          <h2 className="text-xl font-semibold">Property 3</h2>
-          <p className="text-gray-600">Details about property 3.</p>
-        </div>
+        {renderComponent()}
       </div>
     </div>
   );
-}
+};
 
 export default HomePage;

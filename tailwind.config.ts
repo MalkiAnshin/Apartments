@@ -10,6 +10,10 @@ const config: Config = {
     extend: {
       colors: {
         gold: '#D4AF37', // גוון זהב יוקרתי
+        black: '#000000', // צבע שחור
+        'luxury-gold': '#a69359',
+        darkGray: '#333333', // אפור כהה לשימוש בריחופים
+
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
