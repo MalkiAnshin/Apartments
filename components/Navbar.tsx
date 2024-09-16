@@ -1,39 +1,75 @@
-// components/Navbar.tsx
 'use client';
 
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 const Navbar: React.FC = () => {
   const pathname = usePathname();
+  const [role, setRole] = useState<string | null>(null);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    // Retrieve user role from localStorage
+    const storedRole = localStorage.getItem('userRole');
+    setRole(storedRole);
+  }, []);
 
   return (
     <nav className="bg-luxury-gold text-white p-4">
       <div className="container mx-auto flex justify-between items-center">
         <Link href="/" className={`text-xl font-bold ${pathname === '/' ? 'font-bold' : ''}`}>
           <Image 
-            src="/logo.png" // replace with your logo file name
+            src="/logo.png" 
             alt="Logo"
-            width={120} // increased width
-            height={50} // increased height
+            width={120} 
+            height={50} 
+            priority
           />
         </Link>
-        <div className="space-x-4">
+        <button 
+          className="block lg:hidden text-2xl" 
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          {isOpen ? '✖' : '☰'}
+        </button>
+        <div className={`flex flex-col lg:flex-row lg:items-center ${isOpen ? 'block' : 'hidden'} lg:flex lg:space-x-6`}>
           <Link href="/" className={`hover:text-zinc-950 ${pathname === '/' ? 'font-bold' : ''}`}>
-            Home
+            דף הבית
           </Link>
           <Link href="/login" className={`hover:text-zinc-950 ${pathname === '/login' ? 'font-bold' : ''}`}>
-            Login
+            התחברות
           </Link>
           <Link href="/about" className={`hover:text-zinc-950 ${pathname === '/about' ? 'font-bold' : ''}`}>
-            About
+            אודות
           </Link>
-          {/* Add more links as needed */}
+          <Link 
+            href="/postProperty" 
+            className={`
+              bg-black text-luxury-gold 
+              border-2 border-white rounded-lg px-6 py-3 
+              font-bold shadow-lg transition duration-300
+              ${pathname === '/postProperty' ? 'bg-white text-black' : 'hover:bg-gray-800 hover:text-yellow-400'}
+            `}
+          >
+            פרסום דירה
+          </Link>
+
+          {role === 'admin' && (
+            <>
+              <Link href="/admin/dashboard" className={`hover:text-zinc-950 ${pathname === '/admin/dashboard' ? 'font-bold' : ''}`}>
+                לוח בקרה למנהל
+              </Link>
+              <Link href="/admin/users" className={`hover:text-zinc-950 ${pathname === '/admin/users' ? 'font-bold' : ''}`}>
+                ניהול משתמשים
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </nav>
   );
-}
+};
 
 export default Navbar;

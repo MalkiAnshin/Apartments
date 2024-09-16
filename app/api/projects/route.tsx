@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { promisePool } from '../../../lib/db';
+import { promisePool } from '../../../lib/db'; // עדכן את הנתיב לקובץ db.ts שלך
 
 export async function GET(request: Request) {
   try {
@@ -10,17 +10,17 @@ export async function GET(request: Request) {
     const params: any[] = [];
 
     if (city) {
-      query += ' WHERE city = ?';
+      query += ' WHERE city = $1';
       params.push(city);
     }
 
-    const [rows] = await promisePool.query(query, params);
+    const { rows } = await promisePool.query(query, params);
     return NextResponse.json(rows);
   } catch (error) {
     console.error('Error fetching projects:', error);
     return NextResponse.json({
       error: 'Error fetching projects',
-      message: error instanceof Error ? error.message : 'Unknown error',
+      message: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 });
   }
 }

@@ -1,12 +1,16 @@
-import mysql from 'mysql2';
+import { Pool, QueryResult } from 'pg';
 
-// צור את Pool החיבור
-const pool = mysql.createPool({
+const pool = new Pool({
   host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '315170977',
-  database: process.env.DB_NAME || 'RealEstateDB'
+  user: process.env.DB_USER || 'postgres',
+  password: process.env.DB_PASSWORD || 'malki148B',
+  database: process.env.DB_NAME || 'realestatedb',
+  port: parseInt(process.env.DB_PORT || '5432', 10),
 });
 
-// ייצא את ה-Pool בפורמט של Promise
-export const promisePool = pool.promise();
+export const promisePool = {
+  query: async (text: string, params?: any[]): Promise<QueryResult<any>> => {
+    return pool.query(text, params);
+  },
+  end: () => pool.end(),
+};

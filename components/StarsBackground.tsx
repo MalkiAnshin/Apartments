@@ -37,7 +37,7 @@ const StarBackground: React.FC<any> = (props) => {
 
 function StarsCanvas() {
   return (
-    <div className="w-full h-auto fixed inset-0 z-[0]  ">
+    <div className="w-full h-auto fixed inset-0 z-[0] bg-gradient-to-b from-black via-gray-900 to-luxury-gold">
       <Canvas camera={{ position: [0, 0, 1] }}>
         <Suspense fallback={null}>
           <StarBackground />
@@ -47,4 +47,5 @@ function StarsCanvas() {
   )
 };
 
-export default StarsCanvas
+export default StarsCanvas;
+

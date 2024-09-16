@@ -6,11 +6,11 @@ interface Props {
 
 const PropertyTypeSelector: React.FC<Props> = ({ onSelect }) => {
   return (
-    <div className="mb-6">
-      <label className="block text-lg font-semibold mb-2 text-gold text-center md:text-left">
+    <div className="flex flex-col items-center mb-6 w-full max-w-4xl mx-auto">
+      <label className="block text-lg font-semibold mb-2 text-gold text-center">
         בחר סוג נכס:
       </label>
-      <div className="flex flex-wrap gap-4">
+      <div className="flex flex-wrap gap-4 justify-center w-full">
         {['דירות', 'בתי עסק', 'קרקעות', 'פרויקט קבלן'].map((type) => (
           <button
             key={type}

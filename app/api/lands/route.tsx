@@ -10,11 +10,11 @@ export async function GET(request: Request) {
     const params: any[] = [];
 
     if (city) {
-      query += ' WHERE city = ?';
+      query += ' WHERE city = $1';
       params.push(city);
     }
 
-    const [rows] = await promisePool.query(query, params);
+    const { rows } = await promisePool.query(query, params);
     return NextResponse.json(rows);
   } catch (error) {
     console.error('Error fetching lands:', error);

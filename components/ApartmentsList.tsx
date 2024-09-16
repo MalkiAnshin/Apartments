@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import ContractModal from './ContractModal'; // Import the ContractModal component
 
-const ApartmentsList: React.FC = () => {
+const ApartmentList: React.FC = () => {
   const [cities, setCities] = useState<string[]>([]);
   const [filteredCities, setFilteredCities] = useState<string[]>([]);
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
@@ -48,12 +48,12 @@ const ApartmentsList: React.FC = () => {
         try {
           const response = await fetch(`/api/apartments?city=${selectedCity}`);
           if (!response.ok) {
-            const errorData = await response.json(); // קרא את הנתונים מהתגובה כ-JSON
+            const errorData = await response.json();
             throw new Error(`Network response was not ok. Status: ${response.status}, Details: ${JSON.stringify(errorData)}`);
           }
           const data = await response.json();
           if (Array.isArray(data)) {
-            setApartments(data); // Remove filter by type
+            setApartments(data);
           } else {
             throw new Error('Unexpected data format');
           }
@@ -91,60 +91,66 @@ const ApartmentsList: React.FC = () => {
   };
 
   return (
-    <div className="bg-black text-white p-6 min-h-screen">
-      <h1 className="text-2xl font-bold mb-6 text-gold">מצא את הדירה המתאימה</h1>
-      {error && <div className="text-red-600">Error: {error}</div>}
-      <div className="mb-4">
-        <label htmlFor="city-search" className="block text-lg font-semibold mb-2">בחר עיר:</label>
-        <input
-          id="city-search"
-          type="text"
-          placeholder="Type city name..."
-          value={searchTerm}
-          onChange={handleSearchChange}
-          className="bg-gray-800 text-white border border-gold rounded-md px-4 py-2 w-full"
-        />
-        {searchTerm && (
-          <ul className="mt-2 bg-gray-800 border border-gold rounded-md">
-            {filteredCities.map((city: string, index: number) => (
+    <div className="bg-black text-white min-h-screen flex flex-col items-center p-6">
+      <div className="w-full max-w-4xl mx-auto">
+        <h1 className="text-2xl font-bold mb-6 text-gold text-center">מצא את הדירה המתאימה</h1>
+        {error && <div className="text-red-600 mb-4 text-center">Error: {error}</div>}
+        <div className="mb-4">
+          <label htmlFor="city-search" className="block text-lg font-semibold mb-2 text-center">בחר עיר:</label>
+          <input
+            id="city-search"
+            type="text"
+            placeholder="Type city name..."
+            value={searchTerm}
+            onChange={handleSearchChange}
+            className="bg-gray-800 text-white border border-gold rounded-md px-4 py-2 w-full"
+          />
+          {searchTerm && (
+            <ul className="mt-2 bg-gray-800 border border-gold rounded-md">
+              {filteredCities.map((city: string, index: number) => (
+                <li
+                  key={index}
+                  onClick={() => handleCitySelect(city)}
+                  className="px-4 py-2 cursor-pointer hover:bg-gray-700"
+                >
+                  {city}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+        {selectedCity && (
+          <h2 className="text-2xl font-semibold mb-4 text-gold text-center">
+            דירות ב{selectedCity}
+          </h2>
+        )}
+        {apartments.length > 0 ? (
+          <ul className="space-y-4">
+            {apartments.map((apartment, index) => (
               <li
                 key={index}
-                onClick={() => handleCitySelect(city)}
-                className="px-4 py-2 cursor-pointer hover:bg-gray-700"
+                className="bg-gray-800 p-4 rounded-lg border border-gold cursor-pointer"
+                onClick={() => handleApartmentClick(apartment)}
               >
-                {city}
+                <p className="text-lg font-medium">שכונה/איזור: {apartment.neighborhood}</p>
+                <p className="text-md text-gold">מחיר: ${apartment.price}</p>
+                <p className="text-sm">חדרים: {apartment.rooms}</p>
               </li>
             ))}
           </ul>
+        ) : (
+          selectedCity && <p className="text-gray-400 text-center">No apartments found for this city.</p>
+        )}
+
+        {showModal && selectedApartment && (
+          <ContractModal
+            selectedProperty={selectedApartment}
+            onClose={handleCloseModal}
+          />
         )}
       </div>
-      <h2 className="text-2xl font-semibold mb-4 text-gold">דירות ב{selectedCity}</h2>
-      {apartments.length > 0 ? (
-        <ul className="space-y-4">
-          {apartments.map((apartment, index) => (
-            <li
-              key={index}
-              className="bg-gray-800 p-4 rounded-lg border border-gold cursor-pointer"
-              onClick={() => handleApartmentClick(apartment)}
-            >
-              <p className="text-lg font-medium">שכונה/איזור: {apartment.neighborhood}</p>
-              <p className="text-md text-gold">מחיר: ${apartment.price}</p>
-              <p className="text-sm">חדרים: {apartment.rooms}</p>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        selectedCity && <p className="text-gray-400">No apartments found for this city.</p>
-      )}
-
-      {showModal && selectedApartment && (
-        <ContractModal
-          selectedProperty={selectedApartment}
-          onClose={handleCloseModal}
-        />
-      )}
     </div>
   );
 };
 
-export default ApartmentsList;
+export default ApartmentList;

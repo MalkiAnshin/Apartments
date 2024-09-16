@@ -7,6 +7,10 @@ const nextConfig = {
     DB_PASSWORD: process.env.DB_PASSWORD,
     DB_NAME: process.env.DB_NAME,
   },
+  i18n: {
+    locales: ['en', 'iw'], // רשום את השפות שאתה תומך בהן
+    defaultLocale: 'en', // שפה ברירת המחדל
+  },
 };
 
 export default nextConfig;
