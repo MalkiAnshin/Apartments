@@ -4,6 +4,12 @@ import { PDFDocument, rgb } from 'pdf-lib';
 // @ts-ignore
 import * as fontkit from 'fontkit';
 
+
+// הגדר את סוג הטיפוס של fontkit עבור pdf-lib
+const fontkitModule: any = fontkit;
+
+
+
 // לא לשכוח להוסיף את הקובץ של הגופן לתיקיית public/fonts בפרויקט
 const ContractModal: React.FC<{ selectedProperty: any, onClose: () => void }> = ({ onClose }) => {
   const [signature, setSignature] = useState<string | null>(null);
@@ -37,7 +43,9 @@ const ContractModal: React.FC<{ selectedProperty: any, onClose: () => void }> = 
 
     try {
       const pdfDoc = await PDFDocument.create();
-      pdfDoc.registerFontkit(fontkit);
+      // pdfDoc.registerFontkit(fontkit);
+      pdfDoc.registerFontkit(fontkitModule);
+
       const page = pdfDoc.addPage([600, 800]);
 
       // טוען את הגופן התומך בעברית

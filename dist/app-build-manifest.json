@@ -1,3 +1,53 @@
 {
-  "pages": {}
+  "pages": {
+    "/_not-found/page": [
+      "static/chunks/webpack-9d5737d94fc1bdff.js",
+      "static/chunks/fd9d1056-791b59823f5f866e.js",
+      "static/chunks/23-95e4dcea81a13644.js",
+      "static/chunks/main-app-4be4c83503491705.js",
+      "static/chunks/app/_not-found/page-d0655158856ef103.js"
+    ],
+    "/layout": [
+      "static/chunks/webpack-9d5737d94fc1bdff.js",
+      "static/chunks/fd9d1056-791b59823f5f866e.js",
+      "static/chunks/23-95e4dcea81a13644.js",
+      "static/chunks/main-app-4be4c83503491705.js",
+      "static/css/1696410cc93b707e.css",
+      "static/chunks/b536a0f1-3bd58e938eb902a8.js",
+      "static/chunks/648-c5d85d7d0bef4ee5.js",
+      "static/chunks/302-77c2eb30a7cfbe33.js",
+      "static/chunks/app/layout-77f67776db56c3af.js"
+    ],
+    "/about/page": [
+      "static/chunks/webpack-9d5737d94fc1bdff.js",
+      "static/chunks/fd9d1056-791b59823f5f866e.js",
+      "static/chunks/23-95e4dcea81a13644.js",
+      "static/chunks/main-app-4be4c83503491705.js",
+      "static/chunks/app/about/page-2e52beca69f9ed22.js"
+    ],
+    "/contact/page": [
+      "static/chunks/webpack-9d5737d94fc1bdff.js",
+      "static/chunks/fd9d1056-791b59823f5f866e.js",
+      "static/chunks/23-95e4dcea81a13644.js",
+      "static/chunks/main-app-4be4c83503491705.js",
+      "static/chunks/app/contact/page-aa9e34a988f7f5d4.js"
+    ],
+    "/page": [
+      "static/chunks/webpack-9d5737d94fc1bdff.js",
+      "static/chunks/fd9d1056-791b59823f5f866e.js",
+      "static/chunks/23-95e4dcea81a13644.js",
+      "static/chunks/main-app-4be4c83503491705.js",
+      "static/chunks/ff804112-b20e1edfdf1ac0ee.js",
+      "static/chunks/648-c5d85d7d0bef4ee5.js",
+      "static/chunks/693-36a209e2e22d1593.js",
+      "static/chunks/app/page-f8516be80cedc9b8.js"
+    ],
+    "/postProperty/page": [
+      "static/chunks/webpack-9d5737d94fc1bdff.js",
+      "static/chunks/fd9d1056-791b59823f5f866e.js",
+      "static/chunks/23-95e4dcea81a13644.js",
+      "static/chunks/main-app-4be4c83503491705.js",
+      "static/chunks/app/postProperty/page-92751f671f0b5976.js"
+    ]
+  }
 }

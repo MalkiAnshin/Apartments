@@ -6,6 +6,7 @@ const pool = new Pool({
   password: process.env.DB_PASSWORD || 'malki148B',
   database: process.env.DB_NAME || 'realestatedb',
   port: parseInt(process.env.DB_PORT || '5432', 10),
+  
 });
 
 export const promisePool = {

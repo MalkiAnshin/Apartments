@@ -2,14 +2,11 @@
 const nextConfig = {
   distDir: 'dist', // שנה את 'build' לשם התיקייה שתרצה
   env: {
-    DB_HOST: process.env.DB_HOST,
-    DB_USER: process.env.DB_USER,
-    DB_PASSWORD: process.env.DB_PASSWORD,
-    DB_NAME: process.env.DB_NAME,
+    DATABASE_URL: process.env.DATABASE_URL, // הוסף את DATABASE_URL כאן
   },
   i18n: {
-    locales: ['en', 'iw'], // רשום את השפות שאתה תומך בהן
-    defaultLocale: 'en', // שפה ברירת המחדל
+    locales: ['en', 'iw'],
+    defaultLocale: 'en'
   },
 };
 
