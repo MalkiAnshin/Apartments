@@ -1,46 +1,34 @@
 {
   "compilerOptions": {
-    "target": "es2015", // הוסף את ההגדרה הזו
     "lib": [
       "dom",
       "dom.iterable",
-      "esnext",
-      "es5",
-      "es6",
-      "dom",
-      "dom.iterable"
+      "esnext"
     ],
     "allowJs": true,
     "skipLibCheck": true,
-    "strict": true,
+    "strict": false,
     "noEmit": true,
-    "esModuleInterop": true,
+    "incremental": true,
     "module": "esnext",
-    "moduleResolution": "bundler",
+    "esModuleInterop": true,
+    "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "incremental": true,
-    "downlevelIteration": true, // הוסף את ההגדרה הזו
+    "target": "es2015", // או גרסה גבוהה יותר כמו "esnext"
+    "downlevelIteration": true, // הוסף את השורה הזו
     "plugins": [
       {
         "name": "next"
       }
-    ],
-    "paths": {
-      "@/*": [
-        "./*"
-      ]
-    }
+    ]
   },
   "include": [
     "next-env.d.ts",
+    "dist/types/**/*.ts",
     "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts",
-    "build/types/**/*.ts",
-    "di/types/**/*.ts",
-    "dist/types/**/*.ts"
+    "**/*.tsx"
   ],
   "exclude": [
     "node_modules"

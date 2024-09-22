@@ -1,7 +1,7 @@
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import './globals.css';
-import StarsCanvas from '@/components/StarsBackground';
+import StarsCanvas from '../components/StarsBackground';
 
 const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (

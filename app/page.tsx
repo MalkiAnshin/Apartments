@@ -2,10 +2,10 @@
 import React, { useState } from 'react';
 import Image from 'next/image'; // Import Image component from Next.js
 import ApartmentsList from '../components/ApartmentsList';
-import PropertyTypeSelector from '@/components/PropertyTypeSelector';
-import LandList from '@/components/LandList';
-import BusinessList from '@/components/BusinessList';
-import ProjectsList from '@/components/ProjectsList';
+import PropertyTypeSelector from '../components/PropertyTypeSelector';
+import LandList from '../components/LandList';
+import BusinessList from '../components/BusinessList';
+import ProjectsList from '../components/ProjectsList';
 
 
 const HomePage: React.FC = () => {

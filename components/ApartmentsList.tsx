@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ContractModal from './ContractModal'; // Import the ContractModal component
+import ApartmentImages from './ApartmentImages';
 
 const ApartmentList: React.FC = () => {
   const [cities, setCities] = useState<string[]>([]);
@@ -14,7 +15,7 @@ const ApartmentList: React.FC = () => {
   useEffect(() => {
     const fetchCities = async () => {
       try {
-        const response = await fetch('https://data.gov.il/api/3/action/datastore_search?resource_id=d4901968-dad3-4845-a9b0-a57d027f11ab');
+        const response = await fetch('https://data.gov.il/api/3/action/datastore_search?resource_id=d4901968-dad3-4845-a9b0-a57d027f11ab');        
         if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
         if (data.success && data.result && data.result.records) {
@@ -47,6 +48,7 @@ const ApartmentList: React.FC = () => {
       const fetchApartments = async () => {
         try {
           const response = await fetch(`/api/apartments?city=${selectedCity}`);
+          
           if (!response.ok) {
             const errorData = await response.json();
             throw new Error(`Network response was not ok. Status: ${response.status}, Details: ${JSON.stringify(errorData)}`);
@@ -135,6 +137,9 @@ const ApartmentList: React.FC = () => {
                 <p className="text-lg font-medium">שכונה/איזור: {apartment.neighborhood}</p>
                 <p className="text-md text-gold">מחיר: ${apartment.price}</p>
                 <p className="text-sm">חדרים: {apartment.rooms}</p>
+                <div className="flex gap-2">
+                <ApartmentImages property_id={apartment.property_id} />
+                </div>
               </li>
             ))}
           </ul>
