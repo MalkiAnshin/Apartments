@@ -1,15 +1,15 @@
 {
   "/_not-found/page": "app/_not-found/page.js",
-  "/about/page": "app/about/page.js",
   "/api/business/route": "app/api/business/route.js",
-  "/api/check-auth/route": "app/api/check-auth/route.js",
-  "/api/lands/route": "app/api/lands/route.js",
-  "/api/saveContract/route": "app/api/saveContract/route.js",
-  "/api/postProperty/route": "app/api/postProperty/route.js",
-  "/contact/page": "app/contact/page.js",
-  "/api/projects/route": "app/api/projects/route.js",
-  "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/page": "app/page.js",
   "/api/apartments/route": "app/api/apartments/route.js",
-  "/postProperty/page": "app/postProperty/page.js"
+  "/about/page": "app/about/page.js",
+  "/api/saveContract/route": "app/api/saveContract/route.js",
+  "/api/projects/route": "app/api/projects/route.js",
+  "/contact/page": "app/contact/page.js",
+  "/api/lands/route": "app/api/lands/route.js",
+  "/api/check-auth/route": "app/api/check-auth/route.js",
+  "/page": "app/page.js",
+  "/postProperty/page": "app/postProperty/page.js",
+  "/api/postProperty/route": "app/api/postProperty/route.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js"
 }
