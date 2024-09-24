@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ContractModal from './ContractModal'; // Import the ContractModal component
-import ApartmentImages from './ApartmentImages';
+// import ApartmentImages from './ApartmentImages';
 
 const ApartmentList: React.FC = () => {
   const [cities, setCities] = useState<string[]>([]);
@@ -15,7 +15,7 @@ const ApartmentList: React.FC = () => {
   useEffect(() => {
     const fetchCities = async () => {
       try {
-        const response = await fetch('https://data.gov.il/api/3/action/datastore_search?resource_id=d4901968-dad3-4845-a9b0-a57d027f11ab');        
+        const response = await fetch('https://data.gov.il/api/3/action/datastore_search?resource_id=d4901968-dad3-4845-a9b0-a57d027f11ab');
         if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
         if (data.success && data.result && data.result.records) {
@@ -47,15 +47,22 @@ const ApartmentList: React.FC = () => {
     if (selectedCity) {
       const fetchApartments = async () => {
         try {
+          console.log(`Fetching apartments for city: ${selectedCity}`); // לוג לפני קריאת ה-API
           const response = await fetch(`/api/apartments?city=${selectedCity}`);
-          
+          console.log(`Response status: ${response.status}`); // לוג סטטוס התגובה      
+
           if (!response.ok) {
             const errorData = await response.json();
+
             throw new Error(`Network response was not ok. Status: ${response.status}, Details: ${JSON.stringify(errorData)}`);
           }
           const data = await response.json();
+          console.log('Fetched apartments:', data); // לוג אחרי קבלת הדירות
+
           if (Array.isArray(data)) {
             setApartments(data);
+            console.log('Updated apartments state:', data); // לוג כאן
+
           } else {
             throw new Error('Unexpected data format');
           }
@@ -78,19 +85,25 @@ const ApartmentList: React.FC = () => {
   };
 
   const handleCitySelect = (city: string) => {
+    console.log('Selected city before update:', selectedCity); // לוג לפני העדכון
     setSelectedCity(city);
+    console.log('Selected city after update:', city); // לוג אחרי העדכון
     setSearchTerm('');
-  };
+    console.log('Search term after update:', ''); // לוג אחרי עדכון השדה
 
+  };
+  
   const handleApartmentClick = (apartment: any) => {
     setSelectedApartment(apartment);
     setShowModal(true);
   };
 
   const handleCloseModal = () => {
+    console.log('Closing modal. Selected apartment:', selectedApartment); // לוג של הדירה שנבחרה לפני סגירה
     setShowModal(false);
+    console.log('Modal state after closing:', showModal); // לוג אחרי סגירת המודאל
     setSelectedApartment(null);
-  };
+    };
 
   return (
     <div className="bg-black text-white min-h-screen flex flex-col items-center p-6">
@@ -107,21 +120,21 @@ const ApartmentList: React.FC = () => {
             onChange={handleSearchChange}
             className="bg-gray-800 text-white border border-gold rounded-md px-4 py-2 w-full"
           />
+
           {searchTerm && (
             <ul className="mt-2 bg-gray-800 border border-gold rounded-md">
               {filteredCities.map((city: string, index: number) => (
                 <li
                   key={index}
                   onClick={() => handleCitySelect(city)}
-                  className="px-4 py-2 cursor-pointer hover:bg-gray-700"
-                >
+                  className="px-4 py-2 removeChildcursor-pointer hover:bg-gray-700"                  >
                   {city}
                 </li>
               ))}
             </ul>
           )}
         </div>
-        {selectedCity && (
+        {selectedCity && (          
           <h2 className="text-2xl font-semibold mb-4 text-gold text-center">
             דירות ב{selectedCity}
           </h2>
@@ -137,9 +150,9 @@ const ApartmentList: React.FC = () => {
                 <p className="text-lg font-medium">שכונה/איזור: {apartment.neighborhood}</p>
                 <p className="text-md text-gold">מחיר: ${apartment.price}</p>
                 <p className="text-sm">חדרים: {apartment.rooms}</p>
-                <div className="flex gap-2">
-                <ApartmentImages property_id={apartment.property_id} />
-                </div>
+                {/* <div className="flex gap-2">
+                  <ApartmentImages property_id={apartment.property_id} />
+                </div> */}
               </li>
             ))}
           </ul>

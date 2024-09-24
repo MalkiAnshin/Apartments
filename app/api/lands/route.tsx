@@ -1,26 +1,26 @@
 import { NextResponse } from 'next/server';
-import { promisePool } from '../../../lib/db';
+import pool from '../../../lib/db'; // עדכן את הנתיב לקובץ db.ts שלך
 
 export async function GET(request: Request) {
+  const url = new URL(request.url);
+  const city = url.searchParams.get('city');
+
   try {
-    const url = new URL(request.url);
-    const city = url.searchParams.get('city');
+    const client = await pool.connect();
 
-    let query = 'SELECT * FROM lands';
-    const params: any[] = [];
+    // אם יש פרמטר עיר, מחפשים אדמות בעיר הזו
+    const query = city ? 'SELECT * FROM lands WHERE city = $1' : 'SELECT * FROM lands';
+    const params = city ? [city] : [];
 
-    if (city) {
-      query += ' WHERE city = $1';
-      params.push(city);
-    }
+    const { rows } = await client.query(query, params);
+    client.release();
 
-    const { rows } = await promisePool.query(query, params);
-    return NextResponse.json(rows);
+    return NextResponse.json(rows); // החזרת התוצאה
   } catch (error) {
-    console.error('Error fetching lands:', error);
+    console.error('Error fetching lands:', error); // לוג של שגיאות
     return NextResponse.json({
       error: 'Error fetching lands',
-      message: error instanceof Error ? error.message : 'Unknown error',
+      message: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 });
   }
 }

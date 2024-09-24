@@ -1,23 +1,23 @@
 import { NextResponse } from 'next/server';
-import { promisePool } from '../../../lib/db'; // עדכן את הנתיב לקובץ db.ts שלך
+import pool from '../../../lib/db';
 
 export async function GET(request: Request) {
+  const url = new URL(request.url);
+  const city = url.searchParams.get('city');
+
   try {
-    const url = new URL(request.url);
-    const city = url.searchParams.get('city');
+    const client = await pool.connect();
 
-    let query = 'SELECT * FROM projects';
-    const params: any[] = [];
+    // אם יש פרמטר עיר, מחפשים פרויקטים בעיר הזו
+    const query = city ? 'SELECT * FROM projects WHERE city = $1' : 'SELECT * FROM projects';
+    const params = city ? [city] : [];
 
-    if (city) {
-      query += ' WHERE city = $1';
-      params.push(city);
-    }
+    const { rows } = await client.query(query, params);
+    client.release();
 
-    const { rows } = await promisePool.query(query, params);
-    return NextResponse.json(rows);
+    return NextResponse.json(rows); // החזרת התוצאה
   } catch (error) {
-    console.error('Error fetching projects:', error);
+    console.error('Error fetching projects:', error); // לוג של שגיאות
     return NextResponse.json({
       error: 'Error fetching projects',
       message: error instanceof Error ? error.message : 'Unknown error'
