@@ -40,7 +40,7 @@ const BusinessList: React.FC = () => {
 
   useEffect(() => {
     setFilteredCities(cities.filter((city: string) => city.toLowerCase().includes(searchTerm.toLowerCase())));
-  }, [searchTerm, cities]);
+  }, [ cities]);
 
   useEffect(() => {
     if (selectedCity) {
@@ -73,6 +73,8 @@ const BusinessList: React.FC = () => {
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
+    setFilteredCities(cities.filter((city: string) => city.toLowerCase().includes(event.target.value.toLowerCase())));
+
   };
 
   const handleCitySelect = (city: string) => {

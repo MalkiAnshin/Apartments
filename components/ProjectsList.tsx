@@ -21,7 +21,7 @@ const ProjectsList: React.FC = () => {
           const cityList: string[] = data.result.records
             .map((record: any) => record['שם_ישוב'])
             .filter((city: string) => city !== '');
-          setCities([...new Set(cityList)]);
+          setCities(cityList);
         } else {
           throw new Error('Unexpected data format');
         }
@@ -43,17 +43,24 @@ const ProjectsList: React.FC = () => {
   }, [searchTerm, cities]);
 
   useEffect(() => {
+    console.log("use effect selectedCity", selectedCity);
     if (selectedCity) {
       const fetchProjects = async () => {
         try {
+          console.log(`Fetching projects for city: ${selectedCity}`); // Log before API call
           const response = await fetch(`/api/projects?city=${selectedCity}`);
+          console.log(`Response status: ${response.status}`); // Log response status
+
           if (!response.ok) {
-            const errorData = await response.json(); // Read the error data as JSON
+            const errorData = await response.json();
             throw new Error(`Network response was not ok. Status: ${response.status}, Details: ${JSON.stringify(errorData)}`);
           }
           const data = await response.json();
+          console.log('Fetched projects:', data); // Log fetched data
+
           if (Array.isArray(data)) {
-            setProjects(data); // Remove filter by type
+            setProjects(data);
+            console.log('Updated projects state:', data); // Log updated state
           } else {
             throw new Error('Unexpected data format');
           }
@@ -73,22 +80,31 @@ const ProjectsList: React.FC = () => {
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
+    const str = event.target.value.toLowerCase();
+    setFilteredCities(cities.filter((city: string) => city.toLowerCase().includes(str)));
   };
 
   const handleCitySelect = (city: string) => {
+    console.log('Selected city before update:', selectedCity); // Log before state update
     setSelectedCity(city);
+    console.log('Selected city after update:', city); // Log after state update
     setSearchTerm('');
+    console.log('Search term after update:', ''); // Log search term update
   };
 
-  const handleProjectClick = (projects: any) => {
-    setSelectedProject(projects);
+  const handleProjectClick = (project: any) => {
+    setSelectedProject(project);
     setShowModal(true);
   };
 
   const handleCloseModal = () => {
+    console.log('Closing modal. Selected project:', selectedProject); // Log selected project before closing modal
     setShowModal(false);
+    console.log('Modal state after closing:', showModal); // Log modal state after closing
     setSelectedProject(null);
   };
+
+  console.log(projects); // Log projects state
 
   return (
     <div className="bg-black text-white min-h-screen flex flex-col items-center p-6">
@@ -128,12 +144,12 @@ const ProjectsList: React.FC = () => {
           <ul className="space-y-4">
             {projects.map((project, index) => (
               <li
-                key={index}
+                key={project.property_id}
                 className="bg-gray-800 p-4 rounded-lg border border-gold cursor-pointer"
                 onClick={() => handleProjectClick(project)}
               >
                 <p className="text-lg font-medium">שכונה/איזור: {project.neighborhood}</p>
-                <p className="text-md text-gold">מחיר: ${project.price}</p>
+                <p className="text-md text-gold">מחיר: {project.price} ש"ח</p>
                 <p className="text-sm">חדרים: {project.rooms}</p>
               </li>
             ))}

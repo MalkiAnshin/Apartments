@@ -1,78 +1,213 @@
-'use client';
-import { useState, useEffect } from 'react';
+'use client'
+
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-const PostProperty: React.FC = () => {
-  const [loading, setLoading] = useState(true);
-  const [canPost, setCanPost] = useState<boolean | null>(null);
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
+const AddPropertyForm: React.FC = () => {
+  const [neighborhood, setNeighborhood] = useState<string>('');
+  const [price, setPrice] = useState<string>('');
+  const [rooms, setRooms] = useState<string>('');
+  const [images, setImages] = useState<File[]>([]);
+  const [message, setMessage] = useState<string>('');
+  const [selectedCity, setSelectedCity] = useState<string>(''); // State for the selected city
+  const [cities, setCities] = useState<string[]>([]); // Cities retrieved from the API
+  const [filteredCities, setFilteredCities] = useState<string[]>([]); // Cities based on search
+  const [propertyType, setPropertyType] = useState<string>('Apartment'); // Default property type
   const router = useRouter();
 
-  useEffect(() => {
-    const checkUserStatus = async () => {
-      try {
-        // בדוק אם המשתמש מחובר
-        const authResponse = await fetch('/api/check-auth'); // החלף עם נקודת הקצה שלך לבדוק אם המשתמש מחובר
-        const authData = await authResponse.json();
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+      setImages(Array.from(event.target.files));
+    }
+  };
 
-        if (!authData.isAuthenticated) {
-          // הפנה לדף ההתחברות אם לא מחובר
-          router.push('/login');
-          return;
-        }
-
-        setIsLoggedIn(true);
-
-        // בדוק אם המשתמש המחובר כבר פרסם מודעה
-        const listingsResponse = await fetch('/api/check-listings'); // API לבדוק את פרסום המשתמש
-        const listingsData = await listingsResponse.json();
-        setCanPost(listingsData.canPost);
-      } catch (error) {
-        console.error('שגיאה בבדיקת סטטוס המשתמש:', error);
-      } finally {
-        setLoading(false);
+  // API call to fetch cities based on the search
+  const fetchCities = async (searchTerm: string) => {
+    try {
+      const response = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=d4901968-dad3-4845-a9b0-a57d027f11ab`);
+      if (!response.ok) throw new Error('Network response was not ok');
+      const data = await response.json();
+      if (data.success && data.result && data.result.records) {
+        const cityList: string[] = data.result.records
+          .map((record: any) => record['שם_ישוב'])
+          .filter((city: string) => city !== '' && city.toLowerCase().includes(searchTerm.toLowerCase()));
+        setCities(cityList);
+      } else {
+        throw new Error('Unexpected data format');
       }
-    };
+    } catch (err) {
+      console.error('Error fetching cities:', err);
+    }
+  };
 
-    checkUserStatus();
-  }, [router]);
+  // Any change in the city field will trigger an API call
+  const handleCityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const searchTerm = event.target.value.trim().replace(/\s+/g, ' '); // Trim unnecessary spaces
+    setSelectedCity(searchTerm); // Update selected city
+    fetchCities(searchTerm); // Call API
+  };
+  
+  const handleCitySelect = (city: string) => {
+    setSelectedCity(city); // When the user selects a city, update the input
+    setCities([]); // Close the list after selection
+  };
 
-  if (loading) {
-    return <p>טוען...</p>;
-  }
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
 
-  if (!isLoggedIn) {
-    return null; // ההפניה תטפל בזה
-  }
+    const formData = new FormData();
+    formData.append('neighborhood', neighborhood);
+    formData.append('price', price);
+    formData.append('rooms', rooms);
+    formData.append('city', selectedCity); // Add the city to the form data
+    formData.append('propertyType', propertyType); // Add property type to the form data
 
-  if (!canPost) {
-    return (
-      <div className="bg-black text-gold p-6 max-w-xl mx-auto">
-        <h2 className="text-2xl font-bold mb-4">לא ניתן לפרסם דירה נוספת</h2>
-        <p>
-          כבר פרסמת דירה אחת בחינם. ליצירת קשר עם המנהל לאישור פרסום נוסף, אנא פנה אלינו באמצעות פרטי יצירת הקשר באתר.
-        </p>
-      </div>
-    );
-  }
+    // Append image files to FormData
+    images.forEach((image) => {
+      formData.append('images', image);
+    });
+
+    try {
+      const response = await fetch('/api/postProperty', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setMessage(`Property added successfully! Property ID: ${data.propertyId}`);
+        resetForm();
+        router.push('/');
+      } else {
+        setMessage(`Error: ${data.error}`);
+      }
+    } catch (error) {
+      setMessage('Error submitting property');
+    }
+  };
+
+  const resetForm = () => {
+    setNeighborhood('');
+    setPrice('');
+    setRooms('');
+    setImages([]);
+    setMessage('');
+    setSelectedCity(''); // Reset the city
+    setPropertyType('Apartment'); // Reset the property type to default
+  };
 
   return (
-    <div className="bg-black text-gold p-6 max-w-xl mx-auto">
-      <h2 className="text-2xl font-bold mb-4">פרסם דירה</h2>
-      <form method="POST" action="/api/postProperty">
-        <div className="mb-4">
-          <label className="block text-lg">שם הדירה</label>
-          <input type="text" name="name" className="w-full p-2 rounded-lg bg-gray-800 text-gold" required />
+    <div className="bg-gray-800 text-white p-6 rounded-md relative">
+      <h2 className="text-xl font-semibold mb-4">Add New Property</h2>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        
+        {/* Property Type Selection */}
+        <div>
+          <label htmlFor="propertyType" className="block mb-2">Property Type</label>
+          <select
+            id="propertyType"
+            value={propertyType}
+            onChange={(e) => setPropertyType(e.target.value)}
+            className="bg-gray-700 p-2 rounded-md w-full"
+          >
+            <option value="Apartment">Apartment</option>
+            <option value="Project">Project</option>
+            <option value="Land">Land</option>
+            <option value="Business">Business</option>
+          </select>
         </div>
-        <div className="mb-4">
-          <label className="block text-lg">עיר</label>
-          <input type="text" name="city" className="w-full p-2 rounded-lg bg-gray-800 text-gold" required />
+
+        {/* City Input */}
+        <div>
+          <label htmlFor="city" className="block mb-2">City</label>
+          <input
+            type="text"
+            id="city"
+            value={selectedCity}
+            onChange={handleCityChange}
+            className="bg-gray-700 p-2 rounded-md w-full"
+            placeholder="Choose a city"
+          />
+          {/* Display list of cities */}
+          {cities.length > 0 && (
+            <ul className="absolute bg-gray-600 text-white border border-gray-500 w-full max-h-60 overflow-y-auto z-10">
+              {cities.map((city) => (
+                <li
+                  key={city}
+                  onClick={() => handleCitySelect(city)}
+                  className="cursor-pointer hover:bg-gray-500 p-2"
+                >
+                  {city}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
-        {/* שדות נוספים */}
-        <button type="submit" className="bg-gold text-black px-4 py-2 rounded-lg">שלח</button>
+
+        {/* Neighborhood Input */}
+        <div>
+          <label htmlFor="neighborhood" className="block mb-2">Neighborhood</label>
+          <input
+            type="text"
+            id="neighborhood"
+            value={neighborhood}
+            onChange={(e) => setNeighborhood(e.target.value)}
+            className="bg-gray-700 p-2 rounded-md w-full"
+            required
+          />
+        </div>
+
+        {/* Price Input */}
+        <div>
+          <label htmlFor="price" className="block mb-2">Price</label>
+          <input
+            type="text"
+            id="price"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+            className="bg-gray-700 p-2 rounded-md w-full"
+            required
+          />
+        </div>
+
+        {/* Rooms Input */}
+        <div>
+          <label htmlFor="rooms" className="block mb-2">Rooms</label>
+          <input
+            type="text"
+            id="rooms"
+            value={rooms}
+            onChange={(e) => setRooms(e.target.value)}
+            className="bg-gray-700 p-2 rounded-md w-full"
+            required
+          />
+        </div>
+
+        {/* Image Upload */}
+        <div>
+          <label htmlFor="images" className="block mb-2">Images</label>
+          <input
+            type="file"
+            id="images"
+            multiple
+            onChange={handleFileChange}
+            className="bg-gray-700 p-2 rounded-md w-full"
+            required
+          />
+        </div>
+
+        {/* Message Display */}
+        {message && <p className="text-red-400">{message}</p>}
+
+        <button
+          type="submit"
+          className="bg-gold-500 hover:bg-gold-700 text-white font-semibold py-2 px-4 rounded-md"
+        >
+          Submit Property
+        </button>
       </form>
     </div>
   );
 };
 
-export default PostProperty;
+export default AddPropertyForm;

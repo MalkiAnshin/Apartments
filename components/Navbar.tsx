@@ -4,17 +4,22 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import UserGreeting from '../components/UserGreeting'; // הוסף את הקומפוננטה החדשה
+
 
 const Navbar: React.FC = () => {
   const pathname = usePathname();
   const [role, setRole] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
+
+  
   useEffect(() => {
     // Retrieve user role from localStorage
     const storedRole = localStorage.getItem('userRole');
     setRole(storedRole);
   }, []);
+  
 
   return (
     <nav className="bg-luxury-gold text-white p-4">
@@ -44,6 +49,8 @@ const Navbar: React.FC = () => {
           <Link href="/about" className={`hover:text-zinc-950 ${pathname === '/about' ? 'font-bold' : ''}`}>
             אודות
           </Link>
+          <UserGreeting /> 
+
           <Link 
             href="/postProperty" 
             className={`
@@ -53,7 +60,7 @@ const Navbar: React.FC = () => {
               ${pathname === '/postProperty' ? 'bg-white text-black' : 'hover:bg-gray-800 hover:text-yellow-400'}
             `}
           >
-            פרסום דירה
+            פרסום נכס
           </Link>
 
           {role === 'admin' && (
