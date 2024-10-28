@@ -11,7 +11,7 @@ const PropertyTypeSelector: React.FC<Props> = ({ onSelect }) => {
         בחר סוג נכס:
       </label>
       <div className="flex flex-wrap gap-4 justify-center w-full">
-        {['דירות', 'בתי עסק', 'קרקעות', 'פרויקט קבלן'].map((type) => (
+        {['פרויקט קבלן', 'בתי עסק', 'קרקעות', 'דירות'].map((type) => (
           <button
             key={type}
             onClick={() => {

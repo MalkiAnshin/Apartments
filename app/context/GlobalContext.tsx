@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { createContext, useContext, useState } from 'react';
@@ -21,6 +20,10 @@ const GlobalContext = createContext<GlobalContextType | undefined>(undefined);
 export const GlobalProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<string | null>(null);
   const [userType, setUserType] = useState<UserType>(null);
+
+  // לוגים לבדוק מהו הערך של user ו-userType
+  console.log('GlobalProvider - Current user:', user);
+  console.log('GlobalProvider - Current userType:', userType);
 
   return (
     <GlobalContext.Provider value={{ user, setUser, userType, setUserType }}>

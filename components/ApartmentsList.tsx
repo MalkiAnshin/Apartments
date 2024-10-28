@@ -109,8 +109,8 @@ const ApartmentList: React.FC = () => {
   console.log(apartments);
 
   return (
-    <div className="bg-black text-white min-h-screen flex flex-col items-center p-6">
-      <div className="w-full max-w-4xl mx-auto">
+<div className="text-white min-h-screen flex flex-col items-center p-6">
+<div className="w-full max-w-4xl mx-auto">
         <h1 className="text-2xl font-bold mb-6 text-gold text-center">מצא את הדירה המתאימה</h1>
         {error && <div className="text-red-600 mb-4 text-center">Error: {error}</div>}
         <div className="mb-4">

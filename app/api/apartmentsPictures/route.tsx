@@ -37,7 +37,7 @@ export async function GET(request: Request) {
 
     // בניית הנתיבים של התמונות בהתאם למספר הדירה
     const images = imagePaths.map((imageName: string) => {
-      return path.join(`/PICTURES/apartments/${id}`, imageName); // בנה את הנתיב
+      return path.join(`/pictures/Apartment/${id}`, imageName); // בנה את הנתיב
     });
 
     return NextResponse.json({ images });

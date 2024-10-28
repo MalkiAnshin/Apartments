@@ -29,7 +29,7 @@ const HomePage: React.FC = () => {
   return (
     <GlobalProvider>
       <div className="container mx-auto p-4">
-        <div className="flex justify-center mb-4">
+        {/* <div className="flex justify-center mb-4">
           <Image
             src="/logo.png"
             alt="Logo"
@@ -38,7 +38,7 @@ const HomePage: React.FC = () => {
             className="object-contain"
             priority
           />
-        </div>
+        </div> */}
         <h1 className="text-3xl font-bold mb-6 text-center">
           מצא את הנכס או הקרקע המושלם המתאים לצרכים שלך
         </h1>

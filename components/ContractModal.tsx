@@ -1,17 +1,13 @@
+'use client'
 import React, { useState, useRef } from 'react';
 import SignaturePad from 'react-signature-canvas';
 import { PDFDocument, rgb } from 'pdf-lib';
 // @ts-ignore
 import * as fontkit from 'fontkit';
 
-
-// הגדר את סוג הטיפוס של fontkit עבור pdf-lib
 const fontkitModule: any = fontkit;
 
-
-
-// לא לשכוח להוסיף את הקובץ של הגופן לתיקיית public/fonts בפרויקט
-const ContractModal: React.FC<{ selectedProperty: any, onClose: () => void }> = ({ onClose }) => {
+const ContractModal: React.FC<{ selectedProperty: any; onClose: () => void }> = ({ selectedProperty, onClose }) => {
   const [signature, setSignature] = useState<string | null>(null);
   const [name, setName] = useState<string>('');
   const [date, setDate] = useState<string>('');
@@ -36,26 +32,22 @@ const ContractModal: React.FC<{ selectedProperty: any, onClose: () => void }> = 
   };
 
   const handleSignatureSave = async () => {
-    if (!signature || !name || !date) {
+    if (!signature || !name || !date || !selectedProperty.property_id) {
       alert('אנא מלא את כל השדות.');
       return;
     }
 
     try {
       const pdfDoc = await PDFDocument.create();
-      // pdfDoc.registerFontkit(fontkit);
       pdfDoc.registerFontkit(fontkitModule);
 
       const page = pdfDoc.addPage([600, 800]);
-
-      // טוען את הגופן התומך בעברית
       const fontBytes = await fetch('/fonts/NotoSansHebrew.ttf').then(res => res.arrayBuffer());
       const font = await pdfDoc.embedFont(fontBytes);
 
       const { width, height } = page.getSize();
       const fontSize = 12;
 
-      // הוספת טקסטים לעמוד
       page.drawText('פרטי החוזה:', {
         x: 50,
         y: height - 100,
@@ -102,7 +94,6 @@ const ContractModal: React.FC<{ selectedProperty: any, onClose: () => void }> = 
         lineHeight: fontSize * 1.2,
       });
 
-      // הוספת חתימה
       if (signature) {
         const imageBytes = await fetch(signature).then(res => res.arrayBuffer());
         const pngImage = await pdfDoc.embedPng(imageBytes);
@@ -114,7 +105,6 @@ const ContractModal: React.FC<{ selectedProperty: any, onClose: () => void }> = 
         });
       }
 
-      // הוספת צילום תעודת זהות
       if (idCardImage) {
         const reader = new FileReader();
         reader.onload = async function (event) {
@@ -128,10 +118,9 @@ const ContractModal: React.FC<{ selectedProperty: any, onClose: () => void }> = 
           });
 
           const pdfBytes = await pdfDoc.save();
-          // המרת הבייטים של ה-PDF לבסיס 64 כדי לשלוח לשרת
           const base64Pdf = Buffer.from(pdfBytes).toString('base64');
 
-          // בעת שליחת הבקשה ל-API
+          // שליחת הבקשה ל-API עם מזהה הדירה
           const response = await fetch('/api/saveContract', {
             method: 'POST',
             headers: {
@@ -139,27 +128,25 @@ const ContractModal: React.FC<{ selectedProperty: any, onClose: () => void }> = 
             },
             body: JSON.stringify({
               pdfBytes: base64Pdf,
-              fileName: `contract_${name}_${date}.pdf`, // הוספת הסיומת .pdf
+              fileName: `contract_${name}_${date}.pdf`,
+              propertyId: selectedProperty.property_id // העברת מזהה הדירה
             }),
           });
-
 
           if (response.ok) {
             alert('החוזה נשמר בתיקיית "חוזה" בהצלחה!');
             onClose();
           } else {
             alert('שגיאה בשמירת החוזה.');
-            const errorText = await response.text(); // קריאה לפלט שגיאות מהשרת
+            const errorText = await response.text();
             console.error('Server error:', errorText);
           }
         };
         reader.readAsArrayBuffer(idCardImage);
       } else {
         const pdfBytes = await pdfDoc.save();
-        // המרת הבייטים של ה-PDF לבסיס 64 כדי לשלוח לשרת
         const base64Pdf = Buffer.from(pdfBytes).toString('base64');
 
-        // שליחת הבקשה ל-API לשמירת החוזה
         const response = await fetch('/api/saveContract', {
           method: 'POST',
           headers: {
@@ -167,7 +154,8 @@ const ContractModal: React.FC<{ selectedProperty: any, onClose: () => void }> = 
           },
           body: JSON.stringify({
             pdfBytes: base64Pdf,
-            fileName: `contract_${name}_${date}.pdf`, // הוספת הסיומת .pdf
+            fileName: `contract_${name}_${date}.pdf`,
+            propertyId: selectedProperty.property_id // העברת מזהה הדירה
           }),
         });
 
@@ -176,7 +164,7 @@ const ContractModal: React.FC<{ selectedProperty: any, onClose: () => void }> = 
           onClose();
         } else {
           alert('שגיאה בשמירת החוזה.');
-          const errorText = await response.text(); // קריאה לפלט שגיאות מהשרת
+          const errorText = await response.text();
           console.error('Server error:', errorText);
         }
       }
@@ -184,7 +172,6 @@ const ContractModal: React.FC<{ selectedProperty: any, onClose: () => void }> = 
       console.error('שגיאה ביצירת ה-PDF:', error);
     }
   };
-
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
       <div className="bg-white text-black p-6 rounded-lg w-full max-w-3xl max-h-[90%] overflow-auto">

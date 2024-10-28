@@ -5,13 +5,15 @@ import { useRouter } from 'next/navigation';
 import { useGlobalContext, UserType } from '../context/GlobalContext';
 
 const LoginPage = () => {
+  const [identityNumber, setIdentityNumber] = useState(''); // State for identity number
+  const [name, setName] = useState(''); // Username state
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isRegistering, setIsRegistering] = useState(false);
   const router = useRouter();
 
-  // שימוש בקונטקסט הגלובלי
+  // Use global context
   const { setUser, setUserType } = useGlobalContext();
 
   const handleLogin = async () => {
@@ -26,28 +28,34 @@ const LoginPage = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ identityNumber, password }),
       });
   
       const result = await response.json();
-  
+      
+      // הוסף לוג לראות מה מחזיר ה-API
+      console.log('API Response:', result);
+    
       if (response.ok) {
-        // עדכון ה-state הגלובלי כאן
-        setUser(email);
-        setUserType(result.userType); // Assuming userType is returned correctly
+        console.log('Login successful:', result.userType);
+        setUser(result.username); // ודא ששם השדה הוא נכון
+        setUserType(result.userType);
         router.push(result.userType === 'admin' ? '/admin/dashboard' : '/');
-      } else if (response.status === 404) {
-        setError('המשתמש לא קיים, אנא הרשמו');
-        setIsRegistering(true);
       } else {
+        console.error('Error during login:', result.message);
         setError(result.message || 'התרחשה שגיאה');
       }
     } catch (error) {
-      console.error('An error occurred:', error);
+      console.error('An error occurred during login:', error);
       setError('שגיאה בשרת, נסה שנית מאוחר יותר');
     }
   };
   
+
+
+
+
+
   const handleRegister = async () => {
     if (password.length < 6) {
       setError('הסיסמא חייבת להיות לפחות 6 תווים');
@@ -60,21 +68,23 @@ const LoginPage = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ identityNumber, name, email, password }), // Include identityNumber
       });
+      
 
       if (response.ok) {
-        // Automatically log in after registration
-        setUser(email);  // עדכון ה-state הגלובלי כאן
         const result = await response.json();
-        setUserType(result.userType as UserType);
+        console.log('Registration successful:', name); // Log on successful registration
+        setUser(name); // Update global state with username
+        setUserType(result.userType as UserType); // Ensure userType is set correctly
         router.push(result.userType === 'admin' ? '/admin/dashboard' : '/');
       } else {
         const result = await response.json();
+        console.error('Error during registration:', result.message); // Log error if any
         setError(result.message || 'התרחשה שגיאה');
       }
     } catch (error) {
-      console.error('An error occurred:', error);
+      console.error('An error occurred during registration:', error); // Log server error
       setError('שגיאה בשרת, נסה שנית מאוחר יותר');
     }
   };
@@ -89,15 +99,41 @@ const LoginPage = () => {
             isRegistering ? handleRegister() : handleLogin();
           }}
         >
+          {/* Always show identity number input */}
           <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="אימייל"
+            type="text"
+            value={identityNumber}
+            onChange={(e) => setIdentityNumber(e.target.value)}
+            placeholder="מספר זהות"
             className="w-full p-2 mb-4 border border-luxury-gold rounded bg-gray-800 text-white"
             required
-            autoComplete="email"
+            autoComplete="identityNumber"
           />
+
+          {isRegistering && ( // Show name input only during registration
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="שם"
+              className="w-full p-2 mb-4 border border-luxury-gold rounded bg-gray-800 text-white"
+              required
+              autoComplete="name"
+            />
+          )}
+
+          {isRegistering && ( // Show email input only during registration
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="אימייל"
+              className="w-full p-2 mb-4 border border-luxury-gold rounded bg-gray-800 text-white"
+              required
+              autoComplete="email"
+            />
+          )}
+
           <input
             type="password"
             value={password}

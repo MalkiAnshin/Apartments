@@ -4,35 +4,34 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import UserGreeting from '../components/UserGreeting'; // הוסף את הקומפוננטה החדשה
-
+import UserGreeting from '../components/UserGreeting';
 
 const Navbar: React.FC = () => {
   const pathname = usePathname();
   const [role, setRole] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-
-  
   useEffect(() => {
     // Retrieve user role from localStorage
     const storedRole = localStorage.getItem('userRole');
     setRole(storedRole);
   }, []);
-  
 
   return (
     <nav className="bg-luxury-gold text-white p-4">
       <div className="container mx-auto flex justify-between items-center">
-        <Link href="/" className={`text-xl font-bold ${pathname === '/' ? 'font-bold' : ''}`}>
-          <Image 
-            src="/logo.png" 
-            alt="Logo"
-            width={120} 
-            height={50} 
-            priority
-          />
-        </Link>
+        <div className="flex items-center space-x-4">
+          <Link href="/" className="text-xl font-bold">
+            <Image 
+              src="/logo.png" 
+              alt="Logo"
+              width={120} 
+              height={50} 
+              priority
+            />
+          </Link>
+          <UserGreeting /> {/* מיקום של UserGreeting בצד שמאל של הלוגו */}
+        </div>
         <button 
           className="block lg:hidden text-2xl" 
           onClick={() => setIsOpen(!isOpen)}
@@ -49,8 +48,9 @@ const Navbar: React.FC = () => {
           <Link href="/about" className={`hover:text-zinc-950 ${pathname === '/about' ? 'font-bold' : ''}`}>
             אודות
           </Link>
-          <UserGreeting /> 
-
+          <Link href="/adminInterface/ShowUsers" className={`hover:text-zinc-950 ${pathname === '/adminInterface/ShowUsers' ? 'font-bold' : ''}`}>
+            הצגת משתמשים
+          </Link>
           <Link 
             href="/postProperty" 
             className={`

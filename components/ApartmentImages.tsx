@@ -1,29 +1,22 @@
-'use client'
 import { useState, useEffect } from 'react';
 
-const ApartmentImages = ({ property_id }: { property_id: number }) => {
+interface ApartmentImagesProps {
+  property_id: number;
+}
+
+const ApartmentImages: React.FC<ApartmentImagesProps> = ({ property_id }) => {
   const [images, setImages] = useState<string[]>([]);
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchImages = async () => {
-      console.log(1111);
-      
       try {
         const response = await fetch(`/api/apartmentsPictures?id=${property_id}`);
-        
-        console.log('API response status:', response.status);
-        console.log('API response headers:', response.headers);
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          console.error('API error response:', errorData);
-          throw new Error(`Network response was not ok: ${response.statusText}`);
-        }
+        if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
 
         const data = await response.json();
-        console.log('Data received from API:', data);
-        setImages(data.images || []); // ודא ש-setImages מקבל מערך, גם אם images הוא null
+        setImages(data.images || []); // ודא ש-setImages מקבל מערך גם אם images הוא null
       } catch (err: any) {
         setError(`Error fetching images: ${err.message}`);
         console.error('Error fetching images:', err);
@@ -32,16 +25,52 @@ const ApartmentImages = ({ property_id }: { property_id: number }) => {
 
     fetchImages();
   }, [property_id]);
-  
+
+  // מעבר לתמונה הבאה
+  const handleNext = () => {
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
+  };
+
+  // מעבר לתמונה הקודמת
+  const handlePrev = () => {
+    setCurrentIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
+  };
+
   if (error) {
     return <div>Error loading images: {error}</div>;
   }
 
   return (
-    <div className="flex gap-2">
-      {images.map((imageUrl, index) => (
-        <img key={index} src={imageUrl} alt={`Apartment ${property_id} - Image ${index}`} className="w-32 h-32 object-cover" />
-      ))}
+    <div className="relative w-full h-64 md:h-96">
+      {images.length > 0 ? (
+        <img
+          src={images[currentIndex]}
+          alt={`Apartment ${property_id} - Image ${currentIndex + 1}`}
+          className="w-full h-full object-cover rounded-md"
+        />
+      ) : (
+        <p>אין תמונות זמינות</p>
+      )}
+
+      {/* חץ לתמונה הקודמת */}
+      {images.length > 1 && (
+        <>
+          <button
+            onClick={handlePrev}
+            className="absolute left-0 top-1/2 transform -translate-y-1/2 text-gray-600 text-3xl md:text-4xl"
+          >
+            ◀
+          </button>
+
+          {/* חץ לתמונה הבאה */}
+          <button
+            onClick={handleNext}
+            className="absolute right-0 top-1/2 transform -translate-y-1/2 text-gray-600 text-3xl md:text-4xl"
+          >
+            ▶
+          </button>
+        </>
+      )}
     </div>
   );
 };
