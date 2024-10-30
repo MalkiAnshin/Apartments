@@ -1,30 +1,51 @@
-'use client'
+'use client';
+
+import { useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import './globals.css';
 import StarsCanvas from '../components/StarsBackground';
-import { GlobalProvider } from '../app/context/GlobalContext'; // ודא שהנתיב נכון
-import { UserProvider } from '../context/UserContext'; // עדכן אם הנתיב לא נכון
+import { GlobalProvider } from '../app/context/GlobalContext'; // Ensure the path is correct
+import { UserProvider } from '../context/UserContext'; // Update if the path is incorrect
+import { useGlobalContext } from '../app/context/GlobalContext'; // Ensure this path is correct
 
 const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <GlobalProvider>
       <UserProvider>
-        <html lang="he">
-          <body className="flex flex-col min-h-screen relative">
-            <div className="absolute inset-0 z-[-1] pointer-events-none">
-              <StarsCanvas />
-            </div>
-            <Navbar />
-
-            <main className="flex-grow relative z-10">
-              {children}
-            </main>
-            <Footer className="relative z-10" />
-          </body>
-        </html>
+        <InnerLayout>{children}</InnerLayout>
       </UserProvider>
     </GlobalProvider>
+  );
+};
+
+// This component will be inside the GlobalProvider
+const InnerLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { setUser, setUserType } = useGlobalContext();
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      const { username, userType } = JSON.parse(storedUser);
+      setUser(username);
+      setUserType(userType);
+    }
+  }, [setUser, setUserType]);
+
+  return (
+    <html lang="he">
+      <body className="flex flex-col min-h-screen relative">
+        <div className="absolute inset-0 z-[-1] pointer-events-none">
+          <StarsCanvas />
+        </div>
+        <Navbar />
+
+        <main className="flex-grow relative z-10">
+          {children}
+        </main>
+        <Footer className="relative z-10" />
+      </body>
+    </html>
   );
 };
 

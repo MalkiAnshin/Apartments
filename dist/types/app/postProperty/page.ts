@@ -1,4 +1,4 @@
-// File: C:\Users\Malki\OneDrive\שולחן העבודה\פרויקטים\פרויקט מאגר דירות\Apartments\app\postProperty\page.tsx
+// File: C:\Users\Malki\OneDrive\שולחן העבודה\פרויקט מאגר דירות\Apartments\app\postProperty\page.tsx
 import * as entry from '../../../../app/postProperty/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

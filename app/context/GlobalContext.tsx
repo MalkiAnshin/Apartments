@@ -5,13 +5,21 @@ import React, { createContext, useContext, useState } from 'react';
 // הגדרת טיפוס המשתמש
 export type UserType = 'user' | 'admin' | null;
 
+
 // הגדרת טיפוס הקונטקסט הגלובלי
 interface GlobalContextType {
   user: string | null;
   setUser: (user: string | null) => void;
   userType: UserType;
   setUserType: (type: UserType) => void;
+
+  userId: number | null; // Change to number
+  setUserId: (user: number | null) => void;
+
+  firstListingFree: boolean | null; // Allow null
+  setFirstListingFree: (user: boolean | null) => void;
 }
+
 
 // יצירת הקונטקסט הגלובלי
 const GlobalContext = createContext<GlobalContextType | undefined>(undefined);
@@ -20,13 +28,23 @@ const GlobalContext = createContext<GlobalContextType | undefined>(undefined);
 export const GlobalProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<string | null>(null);
   const [userType, setUserType] = useState<UserType>(null);
+  const [userId, setUserId] = useState<number | null>(null);
+  const [firstListingFree, setFirstListingFree] = useState<boolean>(null);
+
+
+
+
+
+
+
+  
 
   // לוגים לבדוק מהו הערך של user ו-userType
   console.log('GlobalProvider - Current user:', user);
   console.log('GlobalProvider - Current userType:', userType);
 
   return (
-    <GlobalContext.Provider value={{ user, setUser, userType, setUserType }}>
+    <GlobalContext.Provider value={{ user, setUser, userType, setUserType, userId, setUserId, firstListingFree, setFirstListingFree }}>
       {children}
     </GlobalContext.Provider>
   );

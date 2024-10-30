@@ -21,9 +21,21 @@ export async function POST(req) {
       [userId, name, email, password, identityNumber] // Insert identityNumber
     );
 
-    return NextResponse.json({ message: 'הרשמה הצליחה' }, { status: 201 });
+    return NextResponse.json(
+      {
+        message: 'הרשמה הצליחה',
+        username: name, // Include username
+        userType: 'user', // Set the default userType; modify if necessary
+        userId: userId, // Return the generated userId
+        firstListingFree: true // You can set this to the default value here
+      },
+      { status: 201 }
+    );
   } catch (error) {
-    console.error('שגיאה במהלך ההרשמה:', error);
-    return NextResponse.json({ message: 'שגיאה פנימית בשרת' }, { status: 500 });
+    console.error('Error creating user:', error);
+    return NextResponse.json(
+      { message: 'שגיאה בהרשמה' }, // Adjust the error message as needed
+      { status: 500 }
+    );
   }
 }

@@ -1,27 +1,38 @@
 'use client'
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useGlobalContext } from '../context/GlobalContext';
 import { useRouter } from 'next/navigation';
 
 const AddPropertyForm: React.FC = () => {
   const [neighborhood, setNeighborhood] = useState<string>('');
   const [price, setPrice] = useState<string>('');
-  const [rooms, setRooms] = useState<string>('');
+  const [rooms, setRooms] = useState<number | string>(''); // Use number or string
   const [images, setImages] = useState<File[]>([]);
   const [message, setMessage] = useState<string>('');
-  const [selectedCity, setSelectedCity] = useState<string>(''); // State for the selected city
-  const [cities, setCities] = useState<string[]>([]); // Cities retrieved from the API
-  const [filteredCities, setFilteredCities] = useState<string[]>([]); // Cities based on search
-  const [propertyType, setPropertyType] = useState<string>('Apartment'); // Default property type
+  const [selectedCity, setSelectedCity] = useState<string>('');
+  const [cities, setCities] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false); // Loading state
+  const [propertyType, setPropertyType] = useState<string>('Apartment');
   const router = useRouter();
+
+  const { user, userType } = useGlobalContext();
+
+  useEffect(() => {
+    if (!user) {
+      alert("משתמש לא מחובר נא לבצע התחברות");
+      router.push('/login');
+    }
+  }, [user, router]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
-      setImages(Array.from(event.target.files));
+      const selectedFiles = Array.from(event.target.files);
+      // Validate file types and sizes if necessary
+      setImages(selectedFiles);
     }
   };
 
-  // API call to fetch cities based on the search
   const fetchCities = async (searchTerm: string) => {
     try {
       const response = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=d4901968-dad3-4845-a9b0-a57d027f11ab`);
@@ -32,41 +43,45 @@ const AddPropertyForm: React.FC = () => {
           .map((record: any) => record['שם_ישוב'])
           .filter((city: string) => city !== '' && city.toLowerCase().includes(searchTerm.toLowerCase()));
         setCities(cityList);
-      } else {
-        throw new Error('Unexpected data format');
       }
     } catch (err) {
       console.error('Error fetching cities:', err);
     }
   };
 
-  // Any change in the city field will trigger an API call
   const handleCityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const searchTerm = event.target.value.trim().replace(/\s+/g, ' '); // Trim unnecessary spaces
-    setSelectedCity(searchTerm); // Update selected city
-    fetchCities(searchTerm); // Call API
+    const searchTerm = event.target.value; // Remove trim to allow spaces
+    setSelectedCity(searchTerm);
+    if (searchTerm) {
+      fetchCities(searchTerm);
+    } else {
+      setCities([]);
+    }
   };
-  
+
   const handleCitySelect = (city: string) => {
-    setSelectedCity(city); // When the user selects a city, update the input
-    setCities([]); // Close the list after selection
+    setSelectedCity(city);
+    setCities([]);
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    if (Number(price) <= 0 || Number(rooms) <= 0) {
+      setMessage('Price and Rooms must be positive numbers');
+      return;
+    }
 
     const formData = new FormData();
     formData.append('neighborhood', neighborhood);
     formData.append('price', price);
-    formData.append('rooms', rooms);
-    formData.append('city', selectedCity); // Add the city to the form data
-    formData.append('propertyType', propertyType); // Add property type to the form data
-
-    // Append image files to FormData
+    formData.append('rooms', rooms.toString());
+    formData.append('city', selectedCity);
+    formData.append('propertyType', propertyType);
     images.forEach((image) => {
       formData.append('images', image);
     });
 
+    setIsLoading(true);
     try {
       const response = await fetch('/api/postProperty', {
         method: 'POST',
@@ -83,6 +98,8 @@ const AddPropertyForm: React.FC = () => {
       }
     } catch (error) {
       setMessage('Error submitting property');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -92,15 +109,14 @@ const AddPropertyForm: React.FC = () => {
     setRooms('');
     setImages([]);
     setMessage('');
-    setSelectedCity(''); // Reset the city
-    setPropertyType('Apartment'); // Reset the property type to default
+    setSelectedCity('');
+    setPropertyType('Apartment');
   };
 
   return (
     <div className="bg-gray-800 text-white p-6 rounded-md relative">
       <h2 className="text-xl font-semibold mb-4">Add New Property</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
-        
         {/* Property Type Selection */}
         <div>
           <label htmlFor="propertyType" className="block mb-2">Property Type</label>
@@ -128,7 +144,6 @@ const AddPropertyForm: React.FC = () => {
             className="bg-gray-700 p-2 rounded-md w-full"
             placeholder="Choose a city"
           />
-          {/* Display list of cities */}
           {cities.length > 0 && (
             <ul className="absolute bg-gray-600 text-white border border-gray-500 w-full max-h-60 overflow-y-auto z-10">
               {cities.map((city) => (
@@ -161,7 +176,7 @@ const AddPropertyForm: React.FC = () => {
         <div>
           <label htmlFor="price" className="block mb-2">Price</label>
           <input
-            type="text"
+            type="number"
             id="price"
             value={price}
             onChange={(e) => setPrice(e.target.value)}
@@ -174,7 +189,7 @@ const AddPropertyForm: React.FC = () => {
         <div>
           <label htmlFor="rooms" className="block mb-2">Rooms</label>
           <input
-            type="text"
+            type="number"
             id="rooms"
             value={rooms}
             onChange={(e) => setRooms(e.target.value)}
@@ -202,8 +217,9 @@ const AddPropertyForm: React.FC = () => {
         <button
           type="submit"
           className="bg-gold-500 hover:bg-gold-700 text-white font-semibold py-2 px-4 rounded-md"
+          disabled={isLoading} // Disable while loading
         >
-          Submit Property
+          {isLoading ? 'Submitting...' : 'Submit Property'}
         </button>
       </form>
     </div>
