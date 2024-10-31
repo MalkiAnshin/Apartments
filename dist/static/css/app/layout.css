@@ -649,6 +649,9 @@ video {
 .max-w-4xl {
   max-width: 56rem;
 }
+.max-w-md {
+  max-width: 28rem;
+}
 .max-w-sm {
   max-width: 24rem;
 }
@@ -778,6 +781,10 @@ video {
 .bg-gray-800 {
   --tw-bg-opacity: 1;
   background-color: rgb(31 41 55 / var(--tw-bg-opacity));
+}
+.bg-gray-900 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(17 24 39 / var(--tw-bg-opacity));
 }
 .bg-luxury-gold {
   --tw-bg-opacity: 1;

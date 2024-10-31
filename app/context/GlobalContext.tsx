@@ -32,17 +32,6 @@ export const GlobalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [firstListingFree, setFirstListingFree] = useState<boolean>(null);
 
 
-
-
-
-
-
-  
-
-  // לוגים לבדוק מהו הערך של user ו-userType
-  console.log('GlobalProvider - Current user:', user);
-  console.log('GlobalProvider - Current userType:', userType);
-
   return (
     <GlobalContext.Provider value={{ user, setUser, userType, setUserType, userId, setUserId, firstListingFree, setFirstListingFree }}>
       {children}

@@ -4,9 +4,6 @@ import { useGlobalContext } from '../app/context/GlobalContext'; // Make sure th
 const UserGreeting: React.FC = () => {
   const { user } = useGlobalContext(); // Ensure the function exists
 
-  // לוגים לבדוק מהו הערך של user
-  console.log('UserGreeting - Current user:', user);
-
   return (
     <div className="text-center">
       {user ? (

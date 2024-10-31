@@ -26,8 +26,8 @@ export async function POST(req) {
         message: 'הרשמה הצליחה',
         username: name, // Include username
         userType: 'user', // Set the default userType; modify if necessary
-        userId: userId, // Return the generated userId
-        firstListingFree: true // You can set this to the default value here
+        userId: identityNumber, // Return the generated userId
+        firstListingFree: false // You can set this to the default value here
       },
       { status: 201 }
     );

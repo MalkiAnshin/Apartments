@@ -1,16 +1,35 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import ApartmentsList from '../components/ApartmentsList';
 import PropertyTypeSelector from '../components/PropertyTypeSelector';
 import LandList from '../components/LandList';
 import BusinessList from '../components/BusinessList';
 import ProjectsList from '../components/ProjectsList';
-import { GlobalProvider } from '../app/context/GlobalContext';
+import { GlobalProvider, useGlobalContext } from '../app/context/GlobalContext';
 
 const HomePage: React.FC = () => {
   const [selectedType, setSelectedType] = useState<string>('דירות');
+  
+  // הוק של קונטקסט גלובלי
+  const { setUser, setUserType, setUserId, setFirstListingFree } = useGlobalContext();
 
+  useEffect(() => {
+    // טען נתוני משתמש מהאחסון המקומי
+    const userDetails = localStorage.getItem('user');
+    if (userDetails) {
+      const parsedUser = JSON.parse(userDetails);
+      setUser(parsedUser.username);
+      setUserType(parsedUser.userType);
+      setUserId(parsedUser.userId);
+      setFirstListingFree(parsedUser.firstListingFree);
+      
+      console.log('User data loaded from localStorage:', parsedUser);
+    } else {
+      console.log('No user data found in localStorage.');
+    }
+  }, []); 
+  
   const renderComponent = () => {
     switch (selectedType) {
       case 'דירות':
@@ -48,7 +67,6 @@ const HomePage: React.FC = () => {
         </div>
       </div>
     </GlobalProvider>
-    
   );
 };
 

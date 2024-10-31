@@ -44,7 +44,6 @@ const ApartmentList: React.FC = () => {
   }, [cities]);
 
   useEffect(() => {
-    console.log("use effect selectedCity", selectedCity);
     if (selectedCity) {
       const fetchApartments = async () => {
         try {
@@ -106,7 +105,6 @@ const ApartmentList: React.FC = () => {
     setSelectedApartment(null);
   };
 
-  console.log(apartments);
 
   return (
 <div className="text-white min-h-screen flex flex-col items-center p-6">

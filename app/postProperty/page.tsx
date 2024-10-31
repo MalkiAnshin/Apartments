@@ -16,19 +16,23 @@ const AddPropertyForm: React.FC = () => {
   const [propertyType, setPropertyType] = useState<string>('Apartment');
   const router = useRouter();
 
-  const { user, userType } = useGlobalContext();
+  const { user, userId, firstListingFree, setFirstListingFree } = useGlobalContext(); // Add firstListingFree
 
   useEffect(() => {
     if (!user) {
       alert("משתמש לא מחובר נא לבצע התחברות");
       router.push('/login');
+    } else if (firstListingFree === true) {
+      // Redirect to payment page if firstListingFree is false
+      router.push('/payment');
     }
-  }, [user, router]);
+  }, []);
+
+
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       const selectedFiles = Array.from(event.target.files);
-      // Validate file types and sizes if necessary
       setImages(selectedFiles);
     }
   };
@@ -50,7 +54,7 @@ const AddPropertyForm: React.FC = () => {
   };
 
   const handleCityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const searchTerm = event.target.value; // Remove trim to allow spaces
+    const searchTerm = event.target.value;
     setSelectedCity(searchTerm);
     if (searchTerm) {
       fetchCities(searchTerm);
@@ -66,8 +70,17 @@ const AddPropertyForm: React.FC = () => {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+
+    console.log(`user id :::::::::::::::::::${userId}`)
+
     if (Number(price) <= 0 || Number(rooms) <= 0) {
       setMessage('Price and Rooms must be positive numbers');
+      return;
+    }
+
+    if (firstListingFree) {
+      // Redirect to payment page if firstListingFree is true
+      router.push('/payment');
       return;
     }
 
@@ -77,6 +90,7 @@ const AddPropertyForm: React.FC = () => {
     formData.append('rooms', rooms.toString());
     formData.append('city', selectedCity);
     formData.append('propertyType', propertyType);
+    formData.append('userId', userId?.toString() || '');
     images.forEach((image) => {
       formData.append('images', image);
     });
@@ -93,6 +107,14 @@ const AddPropertyForm: React.FC = () => {
         setMessage(`Property added successfully! Property ID: ${data.propertyId}`);
         resetForm();
         router.push('/');
+        const userDetails = localStorage.getItem('user');
+        if (userDetails) {
+          const parsedUser = JSON.parse(userDetails);
+          parsedUser.firstListingFree = true;
+          localStorage.setItem('user', JSON.stringify(parsedUser));
+        }
+        setFirstListingFree(true); // עדכון ה-state הגלובלי
+
       } else {
         setMessage(`Error: ${data.error}`);
       }
@@ -112,6 +134,7 @@ const AddPropertyForm: React.FC = () => {
     setSelectedCity('');
     setPropertyType('Apartment');
   };
+
 
   return (
     <div className="bg-gray-800 text-white p-6 rounded-md relative">
