@@ -1,39 +1,59 @@
-'use client'
-import React, { useState, useRef } from 'react';
+'use client';
+import React, { useState, useRef, useEffect } from 'react';
 import SignaturePad from 'react-signature-canvas';
 import { PDFDocument, rgb } from 'pdf-lib';
-// @ts-ignore
 import * as fontkit from 'fontkit';
 
 const fontkitModule: any = fontkit;
 
-const ContractModal: React.FC<{ selectedProperty: any; onClose: () => void }> = ({ selectedProperty, onClose }) => {
+const ContractModal: React.FC<{ selectedProperty: any; property_type: string; onClose: () => void }> = ({ selectedProperty, property_type, onClose }) => {
   const [signature, setSignature] = useState<string | null>(null);
   const [name, setName] = useState<string>('');
-  const [date, setDate] = useState<string>('');
+  const [signed_date, setSigned_date] = useState<string>('');
   const [comments, setComments] = useState<string>('');
-  const [id, setId] = useState<number | undefined>(undefined);
-  const [idCardImage, setIdCardImage] = useState<File | null>(null);
+  const [image, setImage] = useState<File | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const property_id = selectedProperty.property_id;
 
   const signaturePadRef = useRef<SignaturePad>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const storedUser = localStorage.getItem('user');
+  const userId = storedUser ? JSON.parse(storedUser).userId : null;
+
+  useEffect(() => {
+    const today = new Date();
+    const formattedDate = today.toISOString().split('T')[0]; // Format YYYY-MM-DD
+    setSigned_date(formattedDate);
+    console.log("Today's date set:", formattedDate);
+  }, []);
 
   const handleSaveSignature = () => {
     if (signaturePadRef.current) {
       setSignature(signaturePadRef.current.toDataURL());
     }
+
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files ? event.target.files[0] : null;
     if (file) {
-      setIdCardImage(file);
+      setImage(file);
+
+      // המרת התמונה ל-Data URL
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImageUrl(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
+
   const handleSignatureSave = async () => {
-    if (!signature || !name || !date || !selectedProperty.property_id) {
+    if (!signature || !name || !signed_date || !property_type || !image || !property_id) {
       alert('אנא מלא את כל השדות.');
+      console.log("Missing fields:", { signature, name, signed_date, property_type, image, property_id });
       return;
     }
 
@@ -57,7 +77,26 @@ const ContractModal: React.FC<{ selectedProperty: any; onClose: () => void }> = 
         maxWidth: width - 100,
         lineHeight: fontSize * 1.2,
       });
-      page.drawText(`תאריך: ${date}`, {
+      page.drawText(`סוג נכס: ${property_type}`, {
+        x: 50,
+        y: height - 120,
+        size: fontSize,
+        font,
+        color: rgb(0, 0, 0),
+        maxWidth: width - 100,
+        lineHeight: fontSize * 1.2,
+      });
+      page.drawText(`מזהה נכס : ${property_id}`, {
+        x: 50,
+        y: height - 120,
+        size: fontSize,
+        font,
+        color: rgb(0, 0, 0),
+        maxWidth: width - 100,
+        lineHeight: fontSize * 1.2,
+      });
+
+      page.drawText(`תאריך: ${signed_date}`, {
         x: 50,
         y: height - 120,
         size: fontSize,
@@ -75,7 +114,7 @@ const ContractModal: React.FC<{ selectedProperty: any; onClose: () => void }> = 
         maxWidth: width - 100,
         lineHeight: fontSize * 1.2,
       });
-      page.drawText(`תעודת זהות: ${id}`, {
+      page.drawText(`תעודת זהות: ${userId}`, {
         x: 50,
         y: height - 160,
         size: fontSize,
@@ -93,19 +132,27 @@ const ContractModal: React.FC<{ selectedProperty: any; onClose: () => void }> = 
         maxWidth: width - 100,
         lineHeight: fontSize * 1.2,
       });
+      page.drawText(`שם: ${name}`, {
+        x: 50,
+        y: height - 140,
+        size: fontSize,
+        font,
+        color: rgb(0, 0, 0),
+        maxWidth: width - 100,
+        lineHeight: fontSize * 1.2,
+      });
+      page.drawText(`תעודת זהות: ${imageUrl}`, {
+        x: 50,
+        y: height - 140,
+        size: fontSize,
+        font,
+        color: rgb(0, 0, 0),
+        maxWidth: width - 100,
+        lineHeight: fontSize * 1.2,
+      });
 
-      if (signature) {
-        const imageBytes = await fetch(signature).then(res => res.arrayBuffer());
-        const pngImage = await pdfDoc.embedPng(imageBytes);
-        page.drawImage(pngImage, {
-          x: 50,
-          y: height - 250,
-          width: 200,
-          height: 100
-        });
-      }
 
-      if (idCardImage) {
+      if (image) {
         const reader = new FileReader();
         reader.onload = async function (event) {
           const imgData = event.target?.result as ArrayBuffer;
@@ -114,13 +161,17 @@ const ContractModal: React.FC<{ selectedProperty: any; onClose: () => void }> = 
             x: 50,
             y: height - 400,
             width: 100,
-            height: 60
+            height: 60,
           });
+          console.log("ID card image added to PDF");
 
           const pdfBytes = await pdfDoc.save();
-          const base64Pdf = Buffer.from(pdfBytes).toString('base64');
+          console.log("PDF document saved");
 
-          // שליחת הבקשה ל-API עם מזהה הדירה
+          const base64Pdf = Buffer.from(pdfBytes).toString('base64');
+          console.log("PDF document saved without ID card image");
+
+          // Send the request to the API with property ID
           const response = await fetch('/api/saveContract', {
             method: 'POST',
             headers: {
@@ -128,8 +179,11 @@ const ContractModal: React.FC<{ selectedProperty: any; onClose: () => void }> = 
             },
             body: JSON.stringify({
               pdfBytes: base64Pdf,
-              fileName: `contract_${name}_${date}.pdf`,
-              propertyId: selectedProperty.property_id // העברת מזהה הדירה
+              fileName: `contract_${name}_${signed_date}.pdf`,
+              userId: userId, // Replace with actual user ID
+              property_type: property_type, // Adjust as needed
+              signed_date: signed_date,
+              property_id: property_id,
             }),
           });
 
@@ -142,11 +196,11 @@ const ContractModal: React.FC<{ selectedProperty: any; onClose: () => void }> = 
             console.error('Server error:', errorText);
           }
         };
-        reader.readAsArrayBuffer(idCardImage);
+        reader.readAsArrayBuffer(image);
       } else {
         const pdfBytes = await pdfDoc.save();
         const base64Pdf = Buffer.from(pdfBytes).toString('base64');
-
+        console.log('מנסה לשמור את החוזה');
         const response = await fetch('/api/saveContract', {
           method: 'POST',
           headers: {
@@ -154,9 +208,20 @@ const ContractModal: React.FC<{ selectedProperty: any; onClose: () => void }> = 
           },
           body: JSON.stringify({
             pdfBytes: base64Pdf,
-            fileName: `contract_${name}_${date}.pdf`,
-            propertyId: selectedProperty.property_id // העברת מזהה הדירה
+            fileName: `contract_${name}_${signed_date}.pdf`,
+            userId: userId, // החלף עם מזהה המשתמש האמיתי
+            property_type: property_type,
+            signed_date: signed_date,
+            property_id:property_id,
           }),
+        });
+        console.log('נשלחה הבקשה', response);
+        console.log({
+          pdfBytes: base64Pdf,
+          fileName: `contract_${name}_${signed_date}.pdf`,
+          userId: 'userId',
+          property_type: property_type,
+          signed_date: signed_date,
         });
 
         if (response.ok) {
@@ -172,6 +237,7 @@ const ContractModal: React.FC<{ selectedProperty: any; onClose: () => void }> = 
       console.error('שגיאה ביצירת ה-PDF:', error);
     }
   };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
       <div className="bg-white text-black p-6 rounded-lg w-full max-w-3xl max-h-[90%] overflow-auto">
@@ -198,10 +264,16 @@ const ContractModal: React.FC<{ selectedProperty: any; onClose: () => void }> = 
           </ul>
         </div>
 
-        <p className="mb-4">בתאריך: <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="bg-gray-200 border border-gray-300 rounded-md px-4 py-2 w-full" /></p>
+        <label className="block mb-1">תאריך:</label>
+        <input
+          type="signed_date"
+          value={signed_date}
+          onChange={(e) => setSigned_date(e.target.value)}
+          className="border rounded w-full p-2"
+        />
 
         <p className="mb-4">שם: <input type="text" value={name} onChange={(e) => setName(e.target.value)} className="bg-gray-200 border border-gray-300 rounded-md px-4 py-2 w-full" /></p>
-        <p className="mb-4">תעודת זהות: <input type="text" value={id !== undefined ? id.toString() : ''} onChange={(e) => setId(parseInt(e.target.value, 10))} className="bg-gray-200 border border-gray-300 rounded-md px-4 py-2 w-full" /></p>
+        {/* <p className="mb-4">תעודת זהות: <input type="text" value={id !== undefined ? id.toString() : ''} onChange={(e) => setId(parseInt(e.target.value, 10))} className="bg-gray-200 border border-gray-300 rounded-md px-4 py-2 w-full" /></p> */}
         <p className="mb-4">הערות: <textarea value={comments} onChange={(e) => setComments(e.target.value)} className="bg-gray-200 border border-gray-300 rounded-md px-4 py-2 w-full" /></p>
 
         <div className="mb-4">
@@ -224,12 +296,20 @@ const ContractModal: React.FC<{ selectedProperty: any; onClose: () => void }> = 
           </button>
           <input
             type="file"
+            id="fileInput"
             accept="image/*"
-            onChange={handleFileChange}
+            onChange={handleImageChange}
             ref={fileInputRef}
             className="hidden"
           />
         </div>
+        {imageUrl && (
+          <div className="mt-4">
+            <h3>התמונה שנבחרה:</h3>
+            <img src={imageUrl} alt="תמונה" className="border border-gray-300 w-full h-auto" />
+          </div>
+        )}
+
 
         <div className="flex justify-end">
           <button

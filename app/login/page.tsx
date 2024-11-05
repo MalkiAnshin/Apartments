@@ -64,11 +64,6 @@ const LoginPage = () => {
     }
   };
 
-
-
-
-
-
   const handleRegister = async () => {
     if (password.length < 6) {
       setError('הסיסמא חייבת להיות לפחות 6 תווים');

@@ -17,13 +17,6 @@ export async function GET(request: Request) {
     client.release();
 
 
-    // // הוספת לוגים של מספרים בסדר עולה
-    // const apartmentIds = rows.map((apartment, index) => {
-    //   console.log(`Apartment ${index + 1}:`, apartment.property_id); // לוג של מזהי הדירות
-    //   return apartment.id;
-    // });
-
-
     return NextResponse.json(rows); // החזרת התוצאה
   } catch (error) {
     console.error('Error fetching apartments:', error); // לוג של שגיאות

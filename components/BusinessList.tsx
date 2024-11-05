@@ -146,6 +146,7 @@ const BusinessList: React.FC = () => {
 
         {showModal && selectedBusiness && (
           <ContractModal
+          property_type='business'
             selectedProperty={selectedBusiness}
             onClose={handleCloseModal}
           />

@@ -14,6 +14,14 @@ const AddPropertyForm: React.FC = () => {
   const [cities, setCities] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false); // Loading state
   const [propertyType, setPropertyType] = useState<string>('Apartment');
+  const [parking, setParking] = useState<boolean>(false); // New state for parking
+  const [warehouse, setWarehouse] = useState<boolean>(false); // New state for warehouse
+  const [elevator, setElevator] = useState<boolean>(false); // New state for elevator
+  const [address, setAddress] = useState<string>(''); // New state for address
+  const [contactSeller, setContactSeller] = useState<string>(''); // New state for seller contact
+  const [hasBalcony, setHasBalcony] = useState<boolean>(false); // New state for seller contact
+  const [floor, setFloor] = useState<number | string>(''); // New state for seller contact
+
   const router = useRouter();
 
   const { user, userId, firstListingFree, setFirstListingFree } = useGlobalContext(); // Add firstListingFree
@@ -91,6 +99,14 @@ const AddPropertyForm: React.FC = () => {
     formData.append('city', selectedCity);
     formData.append('propertyType', propertyType);
     formData.append('userId', userId?.toString() || '');
+    formData.append('parking', parking.toString()); // Add parking
+    formData.append('warehouse', warehouse.toString()); // Add warehouse
+    formData.append('elevator', elevator.toString()); // Add elevator
+    formData.append('address', address); // Add address
+    formData.append('contactSeller', contactSeller); // Add seller contact
+    formData.append('floor', floor.toString()); // Add floor
+    formData.append('hasBalcony', hasBalcony.toString()); // Add has balcony
+
     images.forEach((image) => {
       formData.append('images', image);
     });
@@ -133,6 +149,14 @@ const AddPropertyForm: React.FC = () => {
     setMessage('');
     setSelectedCity('');
     setPropertyType('Apartment');
+    setParking(false); // Reset parking
+    setWarehouse(false); // Reset warehouse
+    setElevator(false); // Reset elevator
+    setAddress(''); // Reset address
+    setContactSeller(''); // Reset contact seller
+    setFloor(''); // Reset floor
+    setHasBalcony(false); // Reset hasBalcony
+
   };
 
 
@@ -221,29 +245,122 @@ const AddPropertyForm: React.FC = () => {
           />
         </div>
 
+        {/* Floor Input */}
+        <div>
+          <label htmlFor="floor" className="block mb-2">Floor</label>
+          <input
+            type="number"
+            id="floor"
+            value={floor}
+            onChange={(e) => setFloor(e.target.value)}
+            className="bg-gray-700 p-2 rounded-md w-full"
+          />
+        </div>
+
+        {/* Has Balcony Checkbox */}
+        <div>
+          <label htmlFor="hasBalcony" className="flex items-center mb-2">
+            <input
+              type="checkbox"
+              id="hasBalcony"
+              checked={hasBalcony}
+              onChange={() => setHasBalcony(!hasBalcony)}
+              className="mr-2"
+            />
+            Has Balcony
+          </label>
+        </div>
+
+
+        {/* Address Input */}
+        <div>
+          <label htmlFor="address" className="block mb-2">Address</label>
+          <input
+            type="text"
+            id="address"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+            className="bg-gray-700 p-2 rounded-md w-full"
+          />
+        </div>
+
+        {/* Contact Seller Input */}
+        <div>
+          <label htmlFor="contactSeller" className="block mb-2">Contact Seller</label>
+          <input
+            type="text"
+            id="contactSeller"
+            value={contactSeller}
+            onChange={(e) => setContactSeller(e.target.value)}
+            className="bg-gray-700 p-2 rounded-md w-full"
+          />
+        </div>
+
+        {/* Parking Checkbox */}
+        <div>
+          <label htmlFor="parking" className="flex items-center mb-2">
+            <input
+              type="checkbox"
+              id="parking"
+              checked={parking}
+              onChange={() => setParking(!parking)}
+              className="mr-2"
+            />
+            Parking
+          </label>
+        </div>
+
+        {/* Warehouse Checkbox */}
+        <div>
+          <label htmlFor="warehouse" className="flex items-center mb-2">
+            <input
+              type="checkbox"
+              id="warehouse"
+              checked={warehouse}
+              onChange={() => setWarehouse(!warehouse)}
+              className="mr-2"
+            />
+            Warehouse
+          </label>
+        </div>
+
+        {/* Elevator Checkbox */}
+        <div>
+          <label htmlFor="elevator" className="flex items-center mb-2">
+            <input
+              type="checkbox"
+              id="elevator"
+              checked={elevator}
+              onChange={() => setElevator(!elevator)}
+              className="mr-2"
+            />
+            Elevator
+          </label>
+        </div>
+
         {/* Image Upload */}
         <div>
-          <label htmlFor="images" className="block mb-2">Images</label>
+          <label htmlFor="images" className="block mb-2">Upload Images</label>
           <input
             type="file"
             id="images"
             multiple
             onChange={handleFileChange}
             className="bg-gray-700 p-2 rounded-md w-full"
-            required
           />
         </div>
 
-        {/* Message Display */}
-        {message && <p className="text-red-400">{message}</p>}
-
+        {/* Submit Button */}
         <button
           type="submit"
-          className="bg-gold-500 hover:bg-gold-700 text-white font-semibold py-2 px-4 rounded-md"
-          disabled={isLoading} // Disable while loading
+          className={`bg-blue-500 text-white py-2 rounded-md w-full ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+          disabled={isLoading}
         >
-          {isLoading ? 'Submitting...' : 'Submit Property'}
+          {isLoading ? 'Loading...' : 'Add Property'}
         </button>
+
+        {/* Error Message */}
+        {message && <p className="text-red-500">{message}</p>}
       </form>
     </div>
   );

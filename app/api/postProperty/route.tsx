@@ -4,48 +4,69 @@ import path from 'path';
 import pool from '../../../lib/db'; // Update the path to your database file
 
 export async function POST(request: Request) {
+  let client;
   try {
     const formData = await request.formData();
 
-
     // Read apartment details from the request and trim unnecessary spaces
-    const city = (formData.get('city') as string).trim().replace(/\s+/g, ' ');
-    const neighborhood = (formData.get('neighborhood') as string).trim().replace(/\s+/g, ' ');
-    const price = (formData.get('price') as string).trim();
-    const rooms = (formData.get('rooms') as string).trim();
-    const propertyType = (formData.get('propertyType') as string).trim();
-    const userId = Number(formData.get('userId')); // Get userId as a number
+    const propertyType = (formData.get('propertyType') as string | null)?.trim() || '';
+    const city = (formData.get('city') as string | null)?.trim() || '';
+    const neighborhood = (formData.get('neighborhood') as string | null)?.trim() || '';
+    const price = parseFloat((formData.get('price') as string | null)?.trim() || '0');
+    const rooms = parseInt((formData.get('rooms') as string | null)?.trim() || '0', 10);
+    const hasBalcony = formData.get('hasBalcony') === 'true';
+    const userId = (formData.get('userId') as string | null)?.trim() || '';
+    const floor = parseInt((formData.get('floor') as string | null)?.trim() || '0', 10);
+    const parking = formData.get('parking') === 'true';
+    const warehouse = formData.get('warehouse') === 'true';
+    const elevator = formData.get('elevator') === 'true';
+    const address = (formData.get('address') as string | null)?.trim() || '';
+    const contactSeller = (formData.get('contactSeller') as string | null)?.trim() || '';
     const images = formData.getAll('images');
-    const imageNames = images.map((_, index: number) => `${index + 1}.jpg`);
 
-    console.log('Received data:', {
-      city,
-      neighborhood,
-      price,
-      rooms,
-      propertyType,
-      userId,
-      imageNames,
-    });
+    // Validate images
+    if (images.length === 0) {
+      console.log('No images provided');
+      return NextResponse.json({ error: 'At least one image must be provided' }, { status: 400 });
+    }
 
-    // Save the property in the database based on its type
-    const client = await pool.connect();
+    // Create an array of image file names
+    const imageNames = images.map((_, index) => `${index + 1}.jpg`);
+
+    // Validate required fields
+    if (!propertyType || !city || !neighborhood || isNaN(price) || isNaN(rooms) || isNaN(floor) || !hasBalcony || !userId || !address || !contactSeller ) {
+      console.log('Missing required fields:', {
+        propertyType,
+        city,
+        neighborhood,
+        price,
+        rooms,
+        floor,
+        hasBalcony,
+        userId,
+        address,
+        contactSeller,
+      });
+      return NextResponse.json({ error: 'All required fields must be provided' }, { status: 400 });
+    }
+
+    // Log parsed values for debugging
+    console.log('Parsed values:', { propertyType, city, neighborhood, price, rooms, userId, floor, hasBalcony, imageNames, parking, warehouse, elevator, address, contactSeller });
+
+    client = await pool.connect();
     let query, values;
 
     // Property insertion logic
     if (propertyType === 'Apartment') {
-      query = `INSERT INTO apartments (city, neighborhood, price, rooms, image_paths) VALUES ($1, $2, $3, $4, $5) RETURNING property_id`;
-    } else if (propertyType === 'Project') {
-      query = `INSERT INTO projects (city, neighborhood, price, rooms, image_paths) VALUES ($1, $2, $3, $4, $5) RETURNING property_id`;
-    } else if (propertyType === 'Land') {
-      query = `INSERT INTO lands (city, neighborhood, price, rooms, image_paths) VALUES ($1, $2, $3, $4, $5) RETURNING property_id`;
-    } else if (propertyType === 'Business') {
-      query = `INSERT INTO business (city, neighborhood, price, rooms, image_paths) VALUES ($1, $2, $3, $4, $5) RETURNING property_id`;
+      query = `
+        INSERT INTO apartments (city, neighborhood, price, rooms, floor, has_balcony, user_id, parking, warehouse, elevator, address, contact_seller, image_paths)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING property_id
+      `;
+      values = [city, neighborhood, price, rooms, floor, hasBalcony, userId, parking, warehouse, elevator, address, contactSeller, imageNames];
     } else {
       throw new Error('Invalid property type');
     }
 
-    values = [city, neighborhood, price, rooms, imageNames];
     const result = await client.query(query, values);
     const propertyId = result.rows[0].property_id;
 
@@ -63,27 +84,22 @@ export async function POST(request: Request) {
       await fs.writeFile(filePath, imageBuffer);
     }
 
-    
-    // Log before updating FIRST_LISTING_FREE
-    console.log('Updating FIRST_LISTING_FREE for user ID:', userId);
-
-
-    
     // Update FIRST_LISTING_FREE for the user
-    const updateResult = await client.query(`UPDATE users SET first_listing_free = TRUE WHERE identity_number = $1`, [userId]);
+    const updateResult = await client.query(`UPDATE users SET first_listing_free = TRUE WHERE user_id = $1`, [userId]);
 
-    // Log the result of the update
     if (updateResult.rowCount > 0) {
       console.log(`User ID ${userId} first_listing_free updated to TRUE.`);
     } else {
       console.log(`No user found with ID ${userId}. No update was made.`);
     }
 
-    client.release();
-
     return NextResponse.json({ message: 'Property added successfully!', propertyId });
   } catch (error) {
     console.error('Error saving property:', error);
     return NextResponse.json({ error: 'Error saving property' }, { status: 500 });
+  } finally {
+    if (client) {
+      client.release();
+    }
   }
 }
