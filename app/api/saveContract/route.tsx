@@ -6,8 +6,8 @@ export async function POST(request: Request) {
     console.log('--- Starting POST request to save contract ---');
     
     // Parse the request body from JSON
-    const { userId, property_type, fileName, pdfBytes, signed_date, property_id } = await request.json();
-    console.log('Parsed request body:', { userId, property_type, fileName, property_id, pdfBytes: pdfBytes ? '[PDF Content Present]' : '[Missing PDF Content]' });
+    const { userId, property_type, fileName, pdfBytes, signed_date, property_id, notes } = await request.json();
+    console.log('Parsed request body:', { userId, property_type, fileName, property_id, notes, pdfBytes: pdfBytes ? '[PDF Content Present]' : '[Missing PDF Content]' });
 
     // Check required fields
     const missingFields = [];
@@ -15,6 +15,8 @@ export async function POST(request: Request) {
     if (!property_type) missingFields.push('property_type');
     if (!fileName) missingFields.push('fileName');
     if (!property_id) missingFields.push('property_id');
+    if (!notes) missingFields.push('notes');
+
     if (!pdfBytes) missingFields.push('pdfBytes');
 
 
@@ -29,8 +31,8 @@ export async function POST(request: Request) {
 
     // Insert contract data into the database
     const result = await pool.query(
-      'INSERT INTO contracts (user_id, property_type, file_name, signed_date, property_id) VALUES ($1, $2, $3, $4, $5) RETURNING contract_id',
-      [userId, property_type, fileName, currentSignedDate, property_id]
+      'INSERT INTO contracts (user_id, property_type, file_name, signed_date, property_id, notes) VALUES ($1, $2, $3, $4, $5, $6) RETURNING contract_id',
+      [userId, property_type, fileName, currentSignedDate, property_id, notes]
     );
 
     if (!result || result.rows.length === 0) {

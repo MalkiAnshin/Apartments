@@ -51,6 +51,10 @@ const Navbar: React.FC = () => {
           <Link href="/adminInterface/ShowUsers" className={`hover:text-zinc-950 ${pathname === '/adminInterface/ShowUsers' ? 'font-bold' : ''}`}>
             הצגת משתמשים
           </Link>
+          <Link href="/adminInterface/ShowApartments" className={`hover:text-zinc-950 ${pathname === '/adminInterface/ShowApartments' ? 'font-bold' : ''}`}>
+             הצגת דירות
+          </Link>
+
           <Link 
             href="/postProperty" 
             className={`

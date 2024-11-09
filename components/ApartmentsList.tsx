@@ -2,43 +2,22 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ContractModal from './ContractModal';
 import ApartmentImages from './ApartmentImages';
+import CitySelector from './CitySelector'; // ייבוא הקומפוננטה החדשה
+
+import Filters from './Filters';
 
 const ApartmentList: React.FC = () => {
-  const [cities, setCities] = useState<string[]>([]);
-  const [selectedCity, setSelectedCity] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState<string>('');
   const [apartments, setApartments] = useState<any[]>([]);
   const [selectedApartment, setSelectedApartment] = useState<any>(null);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [showDetails, setShowDetails] = useState<boolean>(false);
+  const [selectedCity, setSelectedCity] = useState<string | null>(null);
+  const [priceFilter, setPriceFilter] = useState<{ min: number, max: number } | null>(null);
+  const [roomsFilter, setRoomsFilter] = useState<number | null>(null);
+
   const [error, setError] = useState<string | null>(null);
-  
+
   const router = useRouter();
-
-
-
-  const fetchCities = async () => {
-    try {
-      const response = await fetch('https://data.gov.il/api/3/action/datastore_search?resource_id=d4901968-dad3-4845-a9b0-a57d027f11ab');
-      if (!response.ok) throw new Error('Network response was not ok');
-      const data = await response.json();
-      if (data.success && data.result?.records) {
-        const cityList = data.result.records
-          .map((record: any) => record['שם_ישוב'])
-          .filter((city: string) => city);
-        setCities(cityList);
-      } else {
-        throw new Error('Unexpected data format');
-      }
-    } catch (err) {
-      setError(`Error fetching cities: ${err instanceof Error ? err.message : 'An unknown error occurred'}`);
-      console.error('Error fetching cities:', err);
-    }
-  };
-
-  useEffect(() => {
-    fetchCities();
-  }, []);
 
   useEffect(() => {
     if (selectedCity) {
@@ -67,17 +46,11 @@ const ApartmentList: React.FC = () => {
 
 
   const checkContract = async (apartmentId: string) => {
-
     const userId = JSON.parse(localStorage.getItem('user') || '{}').userId || null;
-    console.log(userId);
     if (!userId) {
-      console.warn('No userId found, redirecting to login');
-      router.push('/login'); // הפניה לדף ההתחברות
+      router.push('/login');
       return;
     }
-
-
-
 
     try {
       const response = await fetch(`/api/moreDetails`, {
@@ -85,7 +58,7 @@ const ApartmentList: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ apartmentId, userId }), // Ensure both parameters are included
+        body: JSON.stringify({ apartmentId, userId }),
       });
 
       if (!response.ok) {
@@ -94,27 +67,10 @@ const ApartmentList: React.FC = () => {
       }
 
       const data = await response.json();
-      if (data.exists) {
-        setShowDetails(true)
-        console.log("Contract exists:", data.exists);
-      } else {
-        setShowDetails(false)
-        console.log("No contract found");
-      }
+      setShowDetails(data.exists);
     } catch (err) {
-      console.error('Error checking contract:', err);
       setError(`Error checking contract: ${err instanceof Error ? err.message : 'An unknown error occurred'}`);
     }
-  };
-
-
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
-  };
-
-  const handleCitySelect = (city: string) => {
-    setSelectedCity(city);
-    setSearchTerm('');
   };
 
   const handleApartmentClick = (apartment: any) => {
@@ -128,37 +84,47 @@ const ApartmentList: React.FC = () => {
     setSelectedApartment(null);
   };
 
-  const filteredCities = cities.filter(city => city.toLowerCase().includes(searchTerm.toLowerCase()));
+
+
+
+
+
+
+  useEffect(() => {
+    const fetchFilteredApartments = async () => {
+      let url = `/api/apartments?`;
+      if (selectedCity) url += `city=${selectedCity}&`;
+      if (priceFilter) url += `minPrice=${priceFilter.min}&maxPrice=${priceFilter.max}&`;
+      if (roomsFilter !== null) url += `rooms=${roomsFilter}`;
+  
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch data, status: ${response.status}`);
+        }
+  
+        const data = await response.json();
+        setApartments(data);
+      } catch (err) {
+        console.error("Error fetching filtered apartments:", err);
+        setError('Error fetching apartments');
+      }
+    };
+  
+    fetchFilteredApartments();
+  }, [selectedCity, priceFilter, roomsFilter]);
+    
+
+
+
+
 
   return (
     <div className="text-white min-h-screen flex flex-col items-center p-6">
       <div className="w-full max-w-4xl mx-auto">
         <h1 className="text-2xl font-bold mb-6 text-gold text-center">מצא את הדירה המתאימה</h1>
-        {error && <div className="text-red-600 mb-4 text-center">{error}</div>}
-        <div className="mb-4">
-          <label htmlFor="city-search" className="block text-lg font-semibold mb-2 text-center">בחר עיר:</label>
-          <input
-            id="city-search"
-            type="text"
-            placeholder="Type city name..."
-            value={searchTerm}
-            onChange={handleSearchChange}
-            className="bg-gray-800 text-white border border-gold rounded-md px-4 py-2 w-full"
-          />
-          {searchTerm && (
-            <ul className="mt-2 bg-gray-800 border border-gold rounded-md">
-              {filteredCities.map((city, index) => (
-                <li
-                  key={index}
-                  onClick={() => handleCitySelect(city)}
-                  className="px-4 py-2 cursor-pointer hover:bg-gray-700"
-                >
-                  {city}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+        <CitySelector onCitySelect={setSelectedCity} /> {/* הוספת קומפוננטת CitySelector */}
+        <Filters onPriceChange={setPriceFilter} onRoomsChange={setRoomsFilter} />
         {selectedCity && <h2 className="text-2xl font-semibold mb-4 text-gold text-center">דירות ב{selectedCity}</h2>}
         {apartments.length > 0 ? (
           <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -174,25 +140,24 @@ const ApartmentList: React.FC = () => {
                 >
                   לפרטים נוספים
                 </button>
-
                 {/* הצגת תוכן נוסף בכרטיסיה אם החוזה קיים */}
                 {showModal && selectedApartment?.property_id === apartment.property_id && (
-                  <>
+                  <div className="relative z-50">
                     {showDetails ? (
                       <div className="text-gold-500 text-center mt-4">
                         <p className="text-lg font-medium">צור קשר עם המוכר:  {apartment.contact_seller}</p>
-                        <p className="text-md text-gold">כתובת: {apartment.address} ש"ח</p>
+                        <p className="text-md text-gold">כתובת: {apartment.address}</p>
                       </div>
                     ) : (
                       <ContractModal property_type='apartment' selectedProperty={selectedApartment} onClose={handleCloseModal} />
                     )}
-                  </>
+                  </div>
                 )}
               </li>
             ))}
           </ul>
         ) : (
-          selectedCity && <p className="text-gray-400 text-center">No apartments found for this city.</p>
+          selectedCity && <p className="text-gray-400 text-center">.לא נמצאו דירות התואמות לנתוני החיפוש</p>
         )}
       </div>
     </div>

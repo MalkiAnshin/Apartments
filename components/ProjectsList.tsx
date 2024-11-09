@@ -116,7 +116,7 @@ const ProjectsList: React.FC = () => {
           <input
             id="city-search"
             type="text"
-            placeholder="Type city name..."
+            placeholder="...הקלד שם העיר"
             value={searchTerm}
             onChange={handleSearchChange}
             className="bg-gray-800 text-white border border-gold rounded-md px-4 py-2 w-full"
@@ -161,6 +161,7 @@ const ProjectsList: React.FC = () => {
         {showModal && selectedProject && (
           <ContractModal
             selectedProperty={selectedProject}
+            property_type={selectedProject.property_type}  // הוספת הפרופס החסר
             onClose={handleCloseModal}
           />
         )}

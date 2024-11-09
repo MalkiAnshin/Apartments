@@ -10,7 +10,7 @@ const ContractModal: React.FC<{ selectedProperty: any; property_type: string; on
   const [signature, setSignature] = useState<string | null>(null);
   const [name, setName] = useState<string>('');
   const [signed_date, setSigned_date] = useState<string>('');
-  const [comments, setComments] = useState<string>('');
+  const [notes, setNotes] = useState<string>('');
   const [image, setImage] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const property_id = selectedProperty.property_id;
@@ -51,9 +51,9 @@ const ContractModal: React.FC<{ selectedProperty: any; property_type: string; on
 
 
   const handleSignatureSave = async () => {
-    if (!signature || !name || !signed_date || !property_type || !image || !property_id) {
+    if (!signature || !name || !signed_date || !property_type || !image || !property_id || !notes) {
       alert('אנא מלא את כל השדות.');
-      console.log("Missing fields:", { signature, name, signed_date, property_type, image, property_id });
+      console.log("Missing fields:", { signature, name, signed_date, property_type, image, property_id, notes });
       return;
     }
 
@@ -123,7 +123,7 @@ const ContractModal: React.FC<{ selectedProperty: any; property_type: string; on
         maxWidth: width - 100,
         lineHeight: fontSize * 1.2,
       });
-      page.drawText(`הערות: ${comments}`, {
+      page.drawText(`הערות: ${notes}`, {
         x: 50,
         y: height - 180,
         size: fontSize,
@@ -184,6 +184,7 @@ const ContractModal: React.FC<{ selectedProperty: any; property_type: string; on
               property_type: property_type, // Adjust as needed
               signed_date: signed_date,
               property_id: property_id,
+              notes: notes,
             }),
           });
 
@@ -212,7 +213,9 @@ const ContractModal: React.FC<{ selectedProperty: any; property_type: string; on
             userId: userId, // החלף עם מזהה המשתמש האמיתי
             property_type: property_type,
             signed_date: signed_date,
-            property_id:property_id,
+            property_id: property_id,
+            notes: notes,
+
           }),
         });
         console.log('נשלחה הבקשה', response);
@@ -222,6 +225,7 @@ const ContractModal: React.FC<{ selectedProperty: any; property_type: string; on
           userId: 'userId',
           property_type: property_type,
           signed_date: signed_date,
+          notes: notes,
         });
 
         if (response.ok) {
@@ -274,7 +278,7 @@ const ContractModal: React.FC<{ selectedProperty: any; property_type: string; on
 
         <p className="mb-4">שם: <input type="text" value={name} onChange={(e) => setName(e.target.value)} className="bg-gray-200 border border-gray-300 rounded-md px-4 py-2 w-full" /></p>
         {/* <p className="mb-4">תעודת זהות: <input type="text" value={id !== undefined ? id.toString() : ''} onChange={(e) => setId(parseInt(e.target.value, 10))} className="bg-gray-200 border border-gray-300 rounded-md px-4 py-2 w-full" /></p> */}
-        <p className="mb-4">הערות: <textarea value={comments} onChange={(e) => setComments(e.target.value)} className="bg-gray-200 border border-gray-300 rounded-md px-4 py-2 w-full" /></p>
+        <p className="mb-4">הערות: <textarea value={notes} onChange={(e) => setNotes(e.target.value)} className="bg-gray-200 border border-gray-300 rounded-md px-4 py-2 w-full" /></p>
 
         <div className="mb-4">
           <SignaturePad

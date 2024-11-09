@@ -11,7 +11,12 @@ const Footer: React.FC<FooterProps> = ({ className }) => {
       <div className="container mx-auto text-center">
         <p>&copy; {new Date().getFullYear()} Malki Anshin Digital</p>
         <div className="space-x-4">
-          <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-zinc-950">❤️ בניית אתרים במגע אישי ומקצועי</a>
+          <a 
+            href="mailto:MALKI148148@gmail.com" 
+            className="hover:text-zinc-950"
+          >
+            ❤️ בניית אתרים במגע אישי ומקצועי
+          </a>
         </div>
       </div>
     </footer>

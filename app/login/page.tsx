@@ -9,6 +9,8 @@ const LoginPage = () => {
   const [name, setName] = useState(''); // Username state
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
+
   const [error, setError] = useState<string | null>(null);
   const [isRegistering, setIsRegistering] = useState(false);
   const router = useRouter();
@@ -158,15 +160,35 @@ const LoginPage = () => {
             />
           )}
 
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="סיסמא"
-            className="w-full p-2 mb-6 border border-luxury-gold rounded bg-gray-800 text-white"
-            required
-            autoComplete="current-password"
-          />
+<div className="relative mb-6">
+            <input
+              type={showPassword ? 'text' : 'password'}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="סיסמא"
+              className="w-full p-2 border border-luxury-gold rounded bg-gray-800 text-white"
+              required
+              autoComplete="current-password"
+            />
+            <span
+              className="absolute right-3 top-2 cursor-pointer"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-luxury-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12s2.5-6 9-6 9 6 9 6-2.5 6-9 6-9-6-9-6z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15.5A3.5 3.5 0 0015.5 12 3.5 3.5 0 0012 8.5 3.5 3.5 0 008.5 12 3.5 3.5 0 0012 15.5z" />
+                </svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-luxury-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12s-1.5-3-6-3-6 3-6 3 2.5 6 9 6 9-6 9-6z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 16.5a4.5 4.5 0 110-9 4.5 4.5 0 010 9z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10.5l-1.5-1.5M12 10.5l1.5-1.5" />
+                </svg>
+              )}
+            </span>
+          </div>
+
           {error && <p className="text-red-500 mb-4">{error}</p>}
           <button
             type="submit"

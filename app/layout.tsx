@@ -37,6 +37,19 @@ const InnerLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       <body className="flex flex-col min-h-screen relative">
         <div className="absolute inset-0 z-[-1] pointer-events-none">
           <StarsCanvas />
+          {/* Adjusted background image for larger logo */}
+          <div
+            className="absolute inset-x-0 top-[150px] flex items-center justify-center"
+            style={{
+              backgroundImage: "url('/logo.png')",
+              backgroundSize: 'contain', // Keep the aspect ratio intact
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'center',
+              opacity: 0.3,        // Increase opacity for better visibility
+              minHeight: '330px',  // Much larger minimum height
+              maxHeight: '70vh',   // Max height set to a large value (can adjust based on screen size)
+            }}
+          />
         </div>
         <Navbar />
 

@@ -9,13 +9,13 @@ import ProjectsList from '../components/ProjectsList';
 import { GlobalProvider, useGlobalContext } from '../app/context/GlobalContext';
 
 const HomePage: React.FC = () => {
-  const [selectedType, setSelectedType] = useState<string>('דירות');
+  const [selectedType, setSelectedType] = useState<string | null>(null);
   
-  // הוק של קונטקסט גלובלי
+  // Global context hook
   const { setUser, setUserType, setUserId, setFirstListingFree } = useGlobalContext();
 
   useEffect(() => {
-    // טען נתוני משתמש מהאחסון המקומי
+    // Load user data from local storage
     const userDetails = localStorage.getItem('user');
     if (userDetails) {
       const parsedUser = JSON.parse(userDetails);
@@ -31,6 +31,8 @@ const HomePage: React.FC = () => {
   }, []); 
   
   const renderComponent = () => {
+    if (!selectedType) return null; // Do not render anything if no type is selected
+
     switch (selectedType) {
       case 'דירות':
         return <ApartmentsList key="apartments" />;
@@ -41,13 +43,14 @@ const HomePage: React.FC = () => {
       case 'פרויקט קבלן':
         return <ProjectsList key="projects" />;
       default:
-        return <ApartmentsList key="default-apartments" />;
+        return null; // Render nothing if the type is unknown
     }
   };
 
   return (
     <GlobalProvider>
       <div className="container mx-auto p-4">
+        {/* Uncomment if you want to show a logo */}
         {/* <div className="flex justify-center mb-4">
           <Image
             src="/logo.png"

@@ -1,156 +1,152 @@
 import React, { useEffect, useState } from 'react';
-import ContractModal from './ContractModal'; // Import the ContractModal component
+import { useRouter } from 'next/navigation';
+import ContractModal from './ContractModal';
+import BusinessImages from './BusinessImages';
+import CitySelector from './CitySelector';
 
 const BusinessList: React.FC = () => {
-  const [cities, setCities] = useState<string[]>([]);
-  const [filteredCities, setFilteredCities] = useState<string[]>([]);
-  const [selectedCity, setSelectedCity] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState<string>('');
   const [businesses, setBusinesses] = useState<any[]>([]);
   const [selectedBusiness, setSelectedBusiness] = useState<any>(null);
   const [showModal, setShowModal] = useState<boolean>(false);
+  const [showDetails, setShowDetails] = useState<boolean>(false);
+  const [selectedCity, setSelectedCity] = useState<string | null>(null);
+
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchCities = async () => {
-      try {
-        const response = await fetch('https://data.gov.il/api/3/action/datastore_search?resource_id=d4901968-dad3-4845-a9b0-a57d027f11ab');
-        if (!response.ok) throw new Error('Network response was not ok');
-        const data = await response.json();
-        if (data.success && data.result && data.result.records) {
-          const cityList: string[] = data.result.records
-            .map((record: any) => record['שם_ישוב'])
-            .filter((city: string) => city !== '');
-          setCities([...new Set(cityList)]);
-        } else {
-          throw new Error('Unexpected data format');
-        }
-      } catch (err) {
-        if (err instanceof Error) {
-          setError('Error fetching cities: ' + err.message);
-        } else {
-          setError('An unknown error occurred');
-        }
-        console.error('Error fetching cities:', err);
-      }
-    };
-
-    fetchCities();
-  }, []);
+  const router = useRouter();
 
   useEffect(() => {
-    setFilteredCities(cities.filter((city: string) => city.toLowerCase().includes(searchTerm.toLowerCase())));
-  }, [ cities]);
+    console.log('Component mounted. Initial selected city:', selectedCity);
 
-  useEffect(() => {
     if (selectedCity) {
       const fetchBusinesses = async () => {
+        console.log('Fetching businesses for city:', selectedCity);
         try {
           const response = await fetch(`/api/business?city=${selectedCity}`);
+          console.log('Response status:', response.status);
+
           if (!response.ok) {
             const errorData = await response.json();
+            console.error('Error data:', errorData);
             throw new Error(`Network response was not ok. Status: ${response.status}, Details: ${JSON.stringify(errorData)}`);
           }
+
           const data = await response.json();
+          console.log('Fetched businesses data:', data);
+
           if (Array.isArray(data)) {
             setBusinesses(data);
+            console.log('Businesses updated successfully:', data);
           } else {
             throw new Error('Unexpected data format');
           }
         } catch (err) {
-          if (err instanceof Error) {
-            setError('Error fetching businesses: ' + err.message);
-          } else {
-            setError('An unknown error occurred');
-          }
           console.error('Error fetching businesses:', err);
+          setError(`Error fetching businesses: ${err instanceof Error ? err.message : 'An unknown error occurred'}`);
         }
       };
 
       fetchBusinesses();
+    } else {
+      console.log('No city selected. Skipping fetch.');
     }
   }, [selectedCity]);
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
-    setFilteredCities(cities.filter((city: string) => city.toLowerCase().includes(event.target.value.toLowerCase())));
 
-  };
 
-  const handleCitySelect = (city: string) => {
-    setSelectedCity(city);
-    setSearchTerm('');
+
+
+
+
+  const checkContract = async (businessId: string) => {
+    const userId = JSON.parse(localStorage.getItem('user') || '{}').userId || null;
+    console.log('Checking contract for businessId:', businessId, 'with userId:', userId);
+
+    if (!userId) {
+      console.warn('User not logged in, redirecting to login');
+      router.push('/login');
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/moreDetails`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ businessId, userId }),
+      });
+
+      console.log('Check contract response status:', response.status);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Error data from check contract:', errorData);
+        throw new Error(`Network response was not ok. Status: ${response.status}, Details: ${JSON.stringify(errorData)}`);
+      }
+
+      const data = await response.json();
+      console.log('Contract data received:', data);
+      setShowDetails(data.exists);
+    } catch (err) {
+      console.error('Error checking contract:', err);
+      setError(`Error checking contract: ${err instanceof Error ? err.message : 'An unknown error occurred'}`);
+    }
   };
 
   const handleBusinessClick = (business: any) => {
+    console.log('Business clicked:', business);
+    checkContract(business.property_id);
     setSelectedBusiness(business);
     setShowModal(true);
+    console.log('Modal state updated to show for business:', business.property_id);
   };
 
   const handleCloseModal = () => {
+    console.log('Closing modal for business:', selectedBusiness?.property_id);
     setShowModal(false);
     setSelectedBusiness(null);
   };
 
   return (
-    <div className="bg-black text-white min-h-screen flex flex-col items-center p-6">
+    <div className="text-white min-h-screen flex flex-col items-center p-6">
       <div className="w-full max-w-4xl mx-auto">
         <h1 className="text-2xl font-bold mb-6 text-gold text-center">מצא את העסק המתאים</h1>
-        {error && <div className="text-red-600 mb-4 text-center">Error: {error}</div>}
-        <div className="mb-4">
-          <label htmlFor="city-search" className="block text-lg font-semibold mb-2 text-center">בחר עיר:</label>
-          <input
-            id="city-search"
-            type="text"
-            placeholder="Type city name..."
-            value={searchTerm}
-            onChange={handleSearchChange}
-            className="bg-gray-800 text-white border border-gold rounded-md px-4 py-2 w-full"
-          />
-          {searchTerm && (
-            <ul className="mt-2 bg-gray-800 border border-gold rounded-md">
-              {filteredCities.map((city: string, index: number) => (
-                <li
-                  key={index}
-                  onClick={() => handleCitySelect(city)}
-                  className="px-4 py-2 cursor-pointer hover:bg-gray-700"
-                >
-                  {city}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-        {selectedCity && (
-          <h2 className="text-2xl font-semibold mb-4 text-gold text-center">
-            עסקים ב{selectedCity}
-          </h2>
-        )}
+        <CitySelector onCitySelect={setSelectedCity} />
+        {selectedCity && <h2 className="text-2xl font-semibold mb-4 text-gold text-center">עסקים ב{selectedCity}</h2>}
         {businesses.length > 0 ? (
-          <ul className="space-y-4">
-            {businesses.map((business, index) => (
-              <li
-                key={index}
-                className="bg-gray-800 p-4 rounded-lg border border-gold cursor-pointer"
-                onClick={() => handleBusinessClick(business)}
-              >
+          <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {businesses.map(business => (
+              <li key={business.property_id} className="bg-gray-800 p-4 rounded-lg border border-gold cursor-pointer">
                 <p className="text-lg font-medium">שכונה/איזור: {business.neighborhood}</p>
-                <p className="text-md text-gold">מחיר: ${business.price}</p>
+                <p className="text-md text-gold">מחיר: {business.price} ש"ח</p>
                 <p className="text-sm">חדרים: {business.rooms}</p>
+                <BusinessImages property_id={business.property_id} />
+                <button
+                  className="mt-4 bg-gold text-black px-6 py-2 rounded-md font-semibold"
+                  onClick={() => handleBusinessClick(business)}
+                >
+                  לפרטים נוספים
+                </button>
+                {showModal && selectedBusiness?.property_id === business.property_id && (
+                  <div className="relative z-50">
+                    {showDetails ? (
+                      <div className="text-gold text-center mt-4">
+                        <p className="text-lg font-medium">צור קשר עם המוכר: {business.contact_seller}</p>
+                        <p className="text-md text-gold">כתובת: {business.address}</p>
+                      </div>
+                    ) : (
+                      <ContractModal property_type="business" selectedProperty={selectedBusiness} onClose={handleCloseModal} />
+                    )}
+                  </div>
+                )}
               </li>
             ))}
           </ul>
         ) : (
           selectedCity && <p className="text-gray-400 text-center">No businesses found for this city.</p>
         )}
-
-        {showModal && selectedBusiness && (
-          <ContractModal
-          property_type='business'
-            selectedProperty={selectedBusiness}
-            onClose={handleCloseModal}
-          />
-        )}
+        {error && <p className="text-red-500 text-center">{error}</p>}
       </div>
     </div>
   );
