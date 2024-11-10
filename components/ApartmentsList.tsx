@@ -45,6 +45,8 @@ const ApartmentList: React.FC = () => {
   }, [selectedCity]);
 
 
+  
+
   const checkContract = async (apartmentId: string) => {
     const userId = JSON.parse(localStorage.getItem('user') || '{}').userId || null;
     if (!userId) {
@@ -91,29 +93,30 @@ const ApartmentList: React.FC = () => {
 
 
   useEffect(() => {
-    const fetchFilteredApartments = async () => {
-      let url = `/api/apartments?`;
-      if (selectedCity) url += `city=${selectedCity}&`;
-      if (priceFilter) url += `minPrice=${priceFilter.min}&maxPrice=${priceFilter.max}&`;
-      if (roomsFilter !== null) url += `rooms=${roomsFilter}`;
-  
-      try {
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch data, status: ${response.status}`);
-        }
-  
-        const data = await response.json();
-        setApartments(data);
-      } catch (err) {
-        console.error("Error fetching filtered apartments:", err);
-        setError('Error fetching apartments');
-      }
-    };
-  
     fetchFilteredApartments();
   }, [selectedCity, priceFilter, roomsFilter]);
     
+  const fetchFilteredApartments = async () => {
+    let url = `/api/apartments?`;
+    if (selectedCity) url += `city=${selectedCity}&`;
+    if (priceFilter) url += `minPrice=${priceFilter.min}&maxPrice=${priceFilter.max}&`;
+    if (roomsFilter !== null) url += `rooms=${roomsFilter}`;
+
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch data, status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setApartments(data);
+    } catch (err) {
+      console.error("Error fetching filtered apartments:", err);
+      setError('Error fetching apartments');
+    }
+  };
+
+
 
 
 

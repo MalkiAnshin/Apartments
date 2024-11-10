@@ -6,7 +6,7 @@ interface FiltersProps {
 }
 
 const Filters: React.FC<FiltersProps> = ({ onPriceChange, onRoomsChange }) => {
-  const [minPrice, setMinPrice] = useState<string>(''); // הערך התחלתי הוא ריק
+  const [minPrice, setMinPrice] = useState<string>('0'); // הערך התחלתי הוא ריק
   const [maxPrice, setMaxPrice] = useState<string>(''); // הערך התחלתי הוא ריק
   const [rooms, setRooms] = useState<string>(''); // הערך התחלתי הוא ריק
 
