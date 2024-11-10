@@ -10,21 +10,35 @@ const ApartmentList: React.FC = () => {
   const [selectedApartment, setSelectedApartment] = useState<any>(null);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
-  const [filters, setFilters] = useState<any>({});
+  const [filters, setFilters] = useState<{ minPrice?: number; maxPrice?: number; rooms?: string }>({});
   const [error, setError] = useState<string | null>(null);
 
   const router = useRouter();
+
+  // Define setPriceFilter and setRoomsFilter functions to update the filters state
+  const setPriceFilter = (price: { min: number; max: number }) => {
+    setFilters(prevFilters => ({
+      ...prevFilters,
+      minPrice: price.min,
+      maxPrice: price.max,
+    }));
+  };
+
+  const setRoomsFilter = (rooms: number) => {
+    setFilters(prevFilters => ({
+      ...prevFilters,
+      rooms: rooms.toString(),
+    }));
+  };
 
   // Fetch apartments when city or filters change
   useEffect(() => {
     const fetchApartments = async () => {
       const query = new URLSearchParams();
       if (selectedCity) query.append('city', selectedCity);
-      if (filters.price) {
-        query.append('minPrice', filters.price.min.toString());
-        query.append('maxPrice', filters.price.max.toString());
-      }
-      if (filters.rooms) query.append('rooms', filters.rooms.toString());
+      if (filters.minPrice) query.append('minPrice', filters.minPrice.toString());
+      if (filters.maxPrice) query.append('maxPrice', filters.maxPrice.toString());
+      if (filters.rooms) query.append('rooms', filters.rooms);
 
       try {
         const response = await fetch(`/api/apartments?${query.toString()}`);
@@ -75,22 +89,28 @@ const ApartmentList: React.FC = () => {
   };
 
   return (
-    <div className="text-white min-h-screen flex flex-col items-center p-6">
+    <div className="text-white min-h-screen flex flex-col items-center p-6 rtl">
       <div className="w-full max-w-4xl mx-auto">
         <h1 className="text-2xl font-bold mb-6 text-gold text-center">מצא את הדירה המתאימה</h1>
-        
+
         {/* City Selector Component */}
         <CitySelector onCitySelect={setSelectedCity} />
-        
+
         {/* Display Filters and Apartments only if a city is selected */}
         {selectedCity && (
           <>
-            <Filters onFilterChange={setFilters} />
+            <Filters
+              onPriceChange={setPriceFilter}
+              onRoomsChange={setRoomsFilter}
+            />
             <h2 className="text-2xl font-semibold mb-4 text-gold text-center">דירות ב{selectedCity}</h2>
             {apartments.length > 0 ? (
               <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {apartments.map(apartment => (
-                  <li key={apartment.property_id} className="bg-gray-800 p-4 rounded-lg border border-gold cursor-pointer">
+                  <li
+                    key={apartment.property_id}
+                    className="bg-gray-800 p-4 rounded-lg border border-gold cursor-pointer rtl"
+                  >
                     <p className="text-lg font-medium">שכונה/איזור: {apartment.neighborhood}</p>
                     <p className="text-md text-gold">מחיר: {apartment.price} ש"ח</p>
                     <p className="text-sm">חדרים: {apartment.rooms}</p>
