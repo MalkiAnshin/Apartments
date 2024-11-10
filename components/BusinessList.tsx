@@ -16,14 +16,14 @@ const BusinessList: React.FC = () => {
   const router = useRouter();
 
   useEffect(() => {
-    console.log('Component mounted. Initial selected city:', selectedCity);
+    // console.log('Component mounted. Initial selected city:', selectedCity);
 
     if (selectedCity) {
       const fetchBusinesses = async () => {
-        console.log('Fetching businesses for city:', selectedCity);
+        // console.log('Fetching businesses for city:', selectedCity);
         try {
           const response = await fetch(`/api/business?city=${selectedCity}`);
-          console.log('Response status:', response.status);
+          // console.log('Response status:', response.status);
 
           if (!response.ok) {
             const errorData = await response.json();
@@ -32,11 +32,11 @@ const BusinessList: React.FC = () => {
           }
 
           const data = await response.json();
-          console.log('Fetched businesses data:', data);
+          // console.log('Fetched businesses data:', data);
 
           if (Array.isArray(data)) {
             setBusinesses(data);
-            console.log('Businesses updated successfully:', data);
+            // console.log('Businesses updated successfully:', data);
           } else {
             throw new Error('Unexpected data format');
           }
@@ -48,7 +48,7 @@ const BusinessList: React.FC = () => {
 
       fetchBusinesses();
     } else {
-      console.log('No city selected. Skipping fetch.');
+      // console.log('No city selected. Skipping fetch.');
     }
   }, [selectedCity]);
 
@@ -60,7 +60,7 @@ const BusinessList: React.FC = () => {
 
   const checkContract = async (businessId: string) => {
     const userId = JSON.parse(localStorage.getItem('user') || '{}').userId || null;
-    console.log('Checking contract for businessId:', businessId, 'with userId:', userId);
+    // console.log('Checking contract for businessId:', businessId, 'with userId:', userId);
 
     if (!userId) {
       console.warn('User not logged in, redirecting to login');
@@ -77,7 +77,7 @@ const BusinessList: React.FC = () => {
         body: JSON.stringify({ businessId, userId }),
       });
 
-      console.log('Check contract response status:', response.status);
+      // console.log('Check contract response status:', response.status);
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -86,7 +86,7 @@ const BusinessList: React.FC = () => {
       }
 
       const data = await response.json();
-      console.log('Contract data received:', data);
+      // console.log('Contract data received:', data);
       setShowDetails(data.exists);
     } catch (err) {
       console.error('Error checking contract:', err);
@@ -95,15 +95,15 @@ const BusinessList: React.FC = () => {
   };
 
   const handleBusinessClick = (business: any) => {
-    console.log('Business clicked:', business);
+    // console.log('Business clicked:', business);
     checkContract(business.property_id);
     setSelectedBusiness(business);
     setShowModal(true);
-    console.log('Modal state updated to show for business:', business.property_id);
+    // console.log('Modal state updated to show for business:', business.property_id);
   };
 
   const handleCloseModal = () => {
-    console.log('Closing modal for business:', selectedBusiness?.property_id);
+    // console.log('Closing modal for business:', selectedBusiness?.property_id);
     setShowModal(false);
     setSelectedBusiness(null);
   };

@@ -23,8 +23,6 @@ export async function POST(request: Request) {
         `;
         const result = await pool.query(query, [userId, apartmentId]);
 
-        // Log the result of the database query
-        console.info(`Database query executed successfully. Result: ${JSON.stringify(result.rows)}`);
 
         return NextResponse.json({ exists: result.rows[0].exists_contract });
     } catch (error) {

@@ -8,9 +8,13 @@ import BusinessList from '../components/BusinessList';
 import ProjectsList from '../components/ProjectsList';
 import { GlobalProvider, useGlobalContext } from '../app/context/GlobalContext';
 
+import RandomApartmentsCarousel from '../components/random-apartments';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
+
 const HomePage: React.FC = () => {
   const [selectedType, setSelectedType] = useState<string | null>(null);
-  
+
   // Global context hook
   const { setUser, setUserType, setUserId, setFirstListingFree } = useGlobalContext();
 
@@ -23,13 +27,10 @@ const HomePage: React.FC = () => {
       setUserType(parsedUser.userType);
       setUserId(parsedUser.userId);
       setFirstListingFree(parsedUser.firstListingFree);
-      
-      console.log('User data loaded from localStorage:', parsedUser);
     } else {
-      console.log('No user data found in localStorage.');
     }
-  }, []); 
-  
+  }, []);
+
   const renderComponent = () => {
     if (!selectedType) return null; // Do not render anything if no type is selected
 
@@ -50,17 +51,6 @@ const HomePage: React.FC = () => {
   return (
     <GlobalProvider>
       <div className="container mx-auto p-4">
-        {/* Uncomment if you want to show a logo */}
-        {/* <div className="flex justify-center mb-4">
-          <Image
-            src="/logo.png"
-            alt="Logo"
-            width={250}
-            height={250}
-            className="object-contain"
-            priority
-          />
-        </div> */}
         <h1 className="text-3xl font-bold mb-6 text-center">
           מצא את הנכס או הקרקע המושלם המתאים לצרכים שלך
         </h1>
@@ -69,6 +59,11 @@ const HomePage: React.FC = () => {
           {renderComponent()}
         </div>
       </div>
+
+      {/* קרוסלת הדירות האקראיות */}
+      {/* <div className="mt-12">
+        <RandomApartmentsCarousel />
+      </div> */}
     </GlobalProvider>
   );
 };

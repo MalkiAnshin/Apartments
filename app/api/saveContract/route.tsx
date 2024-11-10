@@ -3,11 +3,11 @@ import pool from '../../../lib/db';
 
 export async function POST(request: Request) {
   try {
-    console.log('--- Starting POST request to save contract ---');
+    // console.log('--- Starting POST request to save contract ---');
     
     // Parse the request body from JSON
     const { userId, property_type, fileName, pdfBytes, signed_date, property_id, notes } = await request.json();
-    console.log('Parsed request body:', { userId, property_type, fileName, property_id, notes, pdfBytes: pdfBytes ? '[PDF Content Present]' : '[Missing PDF Content]' });
+    // console.log('Parsed request body:', { userId, property_type, fileName, property_id, notes, pdfBytes: pdfBytes ? '[PDF Content Present]' : '[Missing PDF Content]' });
 
     // Check required fields
     const missingFields = [];
@@ -27,7 +27,7 @@ export async function POST(request: Request) {
 
     // Default `signed_date` if not provided
     const currentSignedDate = signed_date || new Date().toISOString();
-    console.log(`Using signed_date: ${currentSignedDate}`);
+    // console.log(`Using signed_date: ${currentSignedDate}`);
 
     // Insert contract data into the database
     const result = await pool.query(
@@ -41,7 +41,7 @@ export async function POST(request: Request) {
     }
 
     const contractId = result.rows[0].contract_id;
-    console.log(`Successfully inserted contract with ID: ${contractId}`);
+    // console.log(`Successfully inserted contract with ID: ${contractId}`);
 
     return NextResponse.json({ success: true, contractId, message: 'Contract saved successfully' });
   } catch (error) {

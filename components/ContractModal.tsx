@@ -25,7 +25,7 @@ const ContractModal: React.FC<{ selectedProperty: any; property_type: string; on
     const today = new Date();
     const formattedDate = today.toISOString().split('T')[0]; // Format YYYY-MM-DD
     setSigned_date(formattedDate);
-    console.log("Today's date set:", formattedDate);
+    // console.log("Today's date set:", formattedDate);
   }, []);
 
   const handleSaveSignature = () => {
@@ -53,7 +53,7 @@ const ContractModal: React.FC<{ selectedProperty: any; property_type: string; on
   const handleSignatureSave = async () => {
     if (!signature || !name || !signed_date || !property_type || !image || !property_id || !notes) {
       alert('אנא מלא את כל השדות.');
-      console.log("Missing fields:", { signature, name, signed_date, property_type, image, property_id, notes });
+      // console.log("Missing fields:", { signature, name, signed_date, property_type, image, property_id, notes });
       return;
     }
 
@@ -163,13 +163,13 @@ const ContractModal: React.FC<{ selectedProperty: any; property_type: string; on
             width: 100,
             height: 60,
           });
-          console.log("ID card image added to PDF");
+          // console.log("ID card image added to PDF");
 
           const pdfBytes = await pdfDoc.save();
-          console.log("PDF document saved");
+          // console.log("PDF document saved");
 
           const base64Pdf = Buffer.from(pdfBytes).toString('base64');
-          console.log("PDF document saved without ID card image");
+          // console.log("PDF document saved without ID card image");
 
           // Send the request to the API with property ID
           const response = await fetch('/api/saveContract', {
@@ -201,7 +201,7 @@ const ContractModal: React.FC<{ selectedProperty: any; property_type: string; on
       } else {
         const pdfBytes = await pdfDoc.save();
         const base64Pdf = Buffer.from(pdfBytes).toString('base64');
-        console.log('מנסה לשמור את החוזה');
+        // console.log('מנסה לשמור את החוזה');
         const response = await fetch('/api/saveContract', {
           method: 'POST',
           headers: {
@@ -218,15 +218,15 @@ const ContractModal: React.FC<{ selectedProperty: any; property_type: string; on
 
           }),
         });
-        console.log('נשלחה הבקשה', response);
-        console.log({
-          pdfBytes: base64Pdf,
-          fileName: `contract_${name}_${signed_date}.pdf`,
-          userId: 'userId',
-          property_type: property_type,
-          signed_date: signed_date,
-          notes: notes,
-        });
+        // console.log('נשלחה הבקשה', response);
+        // console.log({
+        //   pdfBytes: base64Pdf,
+        //   fileName: `contract_${name}_${signed_date}.pdf`,
+        //   userId: 'userId',
+        //   property_type: property_type,
+        //   signed_date: signed_date,
+        //   notes: notes,
+        // });
 
         if (response.ok) {
           alert('החוזה נשמר בתיקיית "חוזה" בהצלחה!');

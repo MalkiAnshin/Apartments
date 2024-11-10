@@ -35,10 +35,10 @@ const LoginPage = () => {
 
       const result = await response.json();
 
-      console.log('API Response:', result);
+      // console.log('API Response:', result);
 
       if (response.ok) {
-        console.log('Login successful:', result.userType);
+        // console.log('Login successful:', result.userType);
         setUser(result.username); // Update global state with username
 
         // Update global state with userId and firstListingFree
@@ -50,7 +50,7 @@ const LoginPage = () => {
         };
 
         localStorage.setItem('user', JSON.stringify(userDetails));
-        console.log("User saved to localStorage:", userDetails);
+        // console.log("User saved to localStorage:", userDetails);
 
         setUserType(result.userType);
         setUserId(result.userId); // Set userId in global state
@@ -83,7 +83,7 @@ const LoginPage = () => {
   
       if (response.ok) {
         const result = await response.json();
-        console.log('Registration successful:', name); // Log on successful registration
+        // console.log('Registration successful:', name); // Log on successful registration
   
         // Update global state with user details
         setUser(name); 
@@ -98,7 +98,7 @@ const LoginPage = () => {
         };
   
         localStorage.setItem('user', JSON.stringify(userDetails));
-        console.log("User saved to localStorage:", userDetails);
+        // console.log("User saved to localStorage:", userDetails);
   
         setUserId(result.userId); // Set userId in global state
         setFirstListingFree(result.firstListingFree); // Set firstListingFree in global state

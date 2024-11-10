@@ -1,47 +1,43 @@
 import React, { useState, useEffect } from 'react';
 
 interface FiltersProps {
-  onPriceChange: (price: { min: number, max: number }) => void;
-  onRoomsChange: (rooms: number) => void;
+  onFilterChange: (filters: { price: { min: number, max: number }, rooms: number }) => void;
 }
 
-const Filters: React.FC<FiltersProps> = ({ onPriceChange, onRoomsChange }) => {
-  const [minPrice, setMinPrice] = useState<string>('0'); // הערך התחלתי הוא ריק
-  const [maxPrice, setMaxPrice] = useState<string>(''); // הערך התחלתי הוא ריק
-  const [rooms, setRooms] = useState<string>(''); // הערך התחלתי הוא ריק
+const Filters: React.FC<FiltersProps> = ({ onFilterChange }) => {
+  const [minPrice, setMinPrice] = useState<number>(100);  // Default minimum price is 100
+  const [maxPrice, setMaxPrice] = useState<number>(30000000); // Default maximum price is 30 million
+  const [rooms, setRooms] = useState<string>(''); // Initial value is empty
 
-  // עדכון טווח המחירים בזמן אמת
+  // Update the price range in real-time
   useEffect(() => {
-    if (minPrice && maxPrice) {
-      onPriceChange({ min: Number(minPrice), max: Number(maxPrice) });
-    }
-  }, [minPrice, maxPrice, onPriceChange]);
-
-  // עדכון מספר החדרים בזמן אמת
-  useEffect(() => {
-    if (rooms) {
-      onRoomsChange(Number(rooms));
-    }
-  }, [rooms, onRoomsChange]);
+    onFilterChange({
+      price: { min: minPrice, max: maxPrice },
+      rooms: Number(rooms),
+    });
+  }, [minPrice, maxPrice, rooms, onFilterChange]);
 
   return (
     <div className="flex flex-col items-center mb-6 w-full max-w-4xl mx-auto">
       <div className="mb-4">
         <label className="text-lg font-semibold text-center mb-2">טווח מחירים:</label>
-        <div className="flex gap-4">
+        <div className="flex gap-4 items-center">
           <input
-            type="number"
+            type="range"
+            min="100"  // Min price is 100
+            max="30000000"  // Max price is 30 million
             value={minPrice}
-            onChange={(e) => setMinPrice(e.target.value)} // ערך התחלתי ריק
-            placeholder="מחיר מינימלי"
-            className="bg-gray-800 text-white border border-gold rounded-md px-4 py-2"
+            onChange={(e) => setMinPrice(Number(e.target.value))}
+            className="bg-gray-700 text-white"
           />
+          <span>{minPrice} - {maxPrice}</span>
           <input
-            type="number"
+            type="range"
+            min="100"  // Min price is 100
+            max="30000000"  // Max price is 30 million
             value={maxPrice}
-            onChange={(e) => setMaxPrice(e.target.value)} // ערך התחלתי ריק
-            placeholder="מחיר מקסימלי"
-            className="bg-gray-800 text-white border border-gold rounded-md px-4 py-2"
+            onChange={(e) => setMaxPrice(Number(e.target.value))}
+            className="bg-gray-700 text-white"
           />
         </div>
       </div>
@@ -51,7 +47,7 @@ const Filters: React.FC<FiltersProps> = ({ onPriceChange, onRoomsChange }) => {
         <input
           type="number"
           value={rooms}
-          onChange={(e) => setRooms(e.target.value)} // ערך התחלתי ריק
+          onChange={(e) => setRooms(e.target.value)}
           placeholder="מספר חדרים"
           className="bg-gray-800 text-white border border-gold rounded-md px-4 py-2 w-full"
         />

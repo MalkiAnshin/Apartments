@@ -35,7 +35,7 @@ const CitySelector: React.FC<CitySelectorProps> = ({ onCitySelect }) => {
 
   const handleCityClick = (city: string) => {
     setSelectedCity(city);
-    setSearchTerm(''); // מנקה את השדה של החיפוש אחרי הבחירה
+    setSearchTerm('');
     onCitySelect(city);
   };
 
@@ -51,7 +51,7 @@ const CitySelector: React.FC<CitySelectorProps> = ({ onCitySelect }) => {
         value={searchTerm || selectedCity || ''}
         onChange={e => {
           setSearchTerm(e.target.value);
-          setSelectedCity(null); // מאפס את העיר הנבחרת כאשר מתחילים חיפוש חדש
+          setSelectedCity(null);
         }}
         className="bg-gray-800 text-white border border-gold rounded-md px-4 py-2 w-full"
       />

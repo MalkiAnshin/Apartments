@@ -12,7 +12,6 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'ID parameter is missing' }, { status: 400 });
     }
 
-    console.log('Preparing to query for ID:', id);
 
     // בצע שאילתה למסד הנתונים
     const result = await pool.query(
@@ -20,7 +19,6 @@ export async function GET(request: Request) {
       [id]
     );
 
-    console.log('Query executed successfully. Result:', result.rows);
 
     // בדוק אם יש תוצאות מהשאילתה
     if (result.rows.length === 0) {
@@ -33,7 +31,6 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'No image paths available for the given ID' }, { status: 404 });
     }
 
-    console.log('Image paths retrieved:', imagePaths);
 
     // בניית הנתיבים של התמונות בהתאם למספר הדירה
     const images = imagePaths.map((imageName: string) => {

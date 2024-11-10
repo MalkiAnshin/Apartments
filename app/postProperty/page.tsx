@@ -79,7 +79,6 @@ const AddPropertyForm: React.FC = () => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    console.log(`user id :::::::::::::::::::${userId}`)
 
     if (Number(price) <= 0 || Number(rooms) <= 0) {
       setMessage('Price and Rooms must be positive numbers');

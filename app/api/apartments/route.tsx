@@ -9,14 +9,23 @@ export async function GET(request: Request) {
   const minPrice = url.searchParams.get('minPrice');
   const maxPrice = url.searchParams.get('maxPrice');
 
+  console.log('Received GET request with parameters:', {
+    city,
+    rooms,
+    type,
+    minPrice,
+    maxPrice
+  });
+
   try {
     const client = await pool.connect();
+    console.log('Database client connected');
 
-    // יצירת שאילתה בסיסית ומערך פרמטרים
+    // Create basic query and parameter array
     let query = 'SELECT * FROM apartments WHERE 1=1';
     const params: (string | number)[] = [];
 
-    // הוספת פילטרים בהתאם לפרמטרים שסופקו
+    // Add filters based on provided parameters
     if (city) {
       params.push(city);
       query += ` AND city = $${params.length}`;
@@ -42,11 +51,13 @@ export async function GET(request: Request) {
       query += ` AND price <= $${params.length}`;
     }
 
-    console.log("Query:", query);
-    console.log("Params:", params);
+    console.log('Final query:', query);
+    console.log('Query parameters:', params);
 
     const { rows } = await client.query(query, params);
     client.release();
+
+    console.log('Fetched apartments:', rows);
 
     return NextResponse.json(rows);
   } catch (error) {

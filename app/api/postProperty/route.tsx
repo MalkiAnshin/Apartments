@@ -5,7 +5,7 @@ import pool from '../../../lib/db'; // Update the path to your database file
 
 export async function POST(request: Request) {
   try {
-    console.log('--- Starting POST request to add property ---');
+    // console.log('--- Starting POST request to add property ---');
 
     const formData = await request.formData();
 
@@ -28,10 +28,10 @@ export async function POST(request: Request) {
     const parking = formData.get('parking') === 'true';
 
     // Log parsed values for debugging
-    console.log({
-      city, neighborhood, price, rooms, propertyType, userId, hasBalcony, floor,
-      contactSeller, address, elevator, warehouse, parking
-    });
+    // console.log({
+    //   city, neighborhood, price, rooms, propertyType, userId, hasBalcony, floor,
+    //   contactSeller, address, elevator, warehouse, parking
+    // });
 
     // Save the property in the database based on its type
     const client = await pool.connect();
@@ -70,10 +70,10 @@ export async function POST(request: Request) {
     }
 
     // Insert into the database
-    console.log('Executing query to insert property into the database');
+    // console.log('Executing query to insert property into the database');
     const result = await client.query(query, values);
     const propertyId = result.rows[0].property_id;
-    console.log(`Property inserted with ID: ${propertyId}`);
+    // console.log(`Property inserted with ID: ${propertyId}`);
 
     // ** Update the user's first_listing_free to TRUE **
     const updateQuery = `
@@ -83,13 +83,13 @@ export async function POST(request: Request) {
     `;
     await client.query(updateQuery, [userId]);
 
-    console.log(`User ${userId}'s first_listing_free has been updated to TRUE`);
+    // console.log(`User ${userId}'s first_listing_free has been updated to TRUE`);
 
     client.release();
 
     // Create a directory for the property under public/pictures/<property_id>
     const propertyDir = path.join(process.cwd(), 'public', 'pictures', propertyType, propertyId.toString());
-    console.log(`Creating directory for property images at: ${propertyDir}`);
+    // console.log(`Creating directory for property images at: ${propertyDir}`);
     await fs.mkdir(propertyDir, { recursive: true });
 
     // Save the images in the directory with numeric names (1.jpg, 2.jpg, etc.)
@@ -97,7 +97,7 @@ export async function POST(request: Request) {
       const imageFile = images[i] as File;
       const imageBuffer = Buffer.from(await imageFile.arrayBuffer());
       const filePath = path.join(propertyDir, `${i + 1}.jpg`);
-      console.log(`Saving image to: ${filePath}`);
+      // console.log(`Saving image to: ${filePath}`);
       await fs.writeFile(filePath, imageBuffer);
     }
 

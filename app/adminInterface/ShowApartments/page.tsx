@@ -17,14 +17,14 @@ const ShowApartments: React.FC = () => {
     try {
       const trimmedCity = selectedCity?.trim() || ''; // Clean the city name
       const encodedCity = encodeURIComponent(trimmedCity); // Manually encode the city name
-      console.log('Fetching apartments with city:', encodedCity);
+      // console.log('Fetching apartments with city:', encodedCity);
 
       const response = await fetch(`/api/AdminInterface/ShowApartments?city=${encodedCity}`);
       if (!response.ok) {
         throw new Error('Response from server was not OK');
       }
       const data = await response.json();
-      console.log('Apartments fetched:', data);
+      // console.log('Apartments fetched:', data);
       setApartments(data);
     } catch (err) {
       setError('Error fetching apartments: ' + (err instanceof Error ? err.message : 'Unknown error'));
@@ -33,7 +33,7 @@ const ShowApartments: React.FC = () => {
   };
     
   useEffect(() => {
-    console.log('Component mounted or city changed, fetching apartments...');
+    // console.log('Component mounted or city changed, fetching apartments...');
     fetchApartments();
   }, [selectedCity]); // Re-run when city changes
 
@@ -44,7 +44,7 @@ const ShowApartments: React.FC = () => {
     const isInCity = selectedCity ? apartment.city === selectedCity : true; // Filter by selected city or show all
 
     // Log for debugging
-    console.log('Apartment:', apartment.city, isInCity, isInPriceRange, isInRoomsRange);
+    // console.log('Apartment:', apartment.city, isInCity, isInPriceRange, isInRoomsRange);
 
     return isInPriceRange && isInRoomsRange && isInCity;
   });

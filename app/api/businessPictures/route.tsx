@@ -12,7 +12,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'ID parameter is missing' }, { status: 400 });
     }
 
-    console.log('Preparing to query for Business ID:', id);
+    // console.log('Preparing to query for Business ID:', id);
 
     // Query the database for the image paths of the business property
     const result = await pool.query(
@@ -20,7 +20,6 @@ export async function GET(request: Request) {
       [id]
     );
 
-    console.log('Query executed successfully. Result:', result.rows);
 
     // Check if the query returned any results
     if (result.rows.length === 0) {
@@ -33,7 +32,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'No image paths available for the given ID' }, { status: 404 });
     }
 
-    console.log('Image paths retrieved:', imagePaths);
+    // console.log('Image paths retrieved:', imagePaths);
 
     // Construct image URLs based on the property ID and image names
     const images = imagePaths.map((imageName: string) => {
