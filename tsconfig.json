@@ -1,10 +1,6 @@
 {
   "compilerOptions": {
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": false,
@@ -16,13 +12,10 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "target": "es2015", // או גרסה גבוהה יותר כמו "esnext"
-    "downlevelIteration": true, // הוסף את השורה הזו
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ]
+    "target": "es2015",
+    "downlevelIteration": true,
+    "plugins": [{ "name": "next" }],
+    "typeRoots": ["./node_modules/@types"] // Add this line
   },
   "include": [
     "next-env.d.ts",
@@ -30,7 +23,5 @@
     "**/*.ts",
     "**/*.tsx"
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }
