@@ -45,6 +45,14 @@ const Navbar: React.FC = () => {
           <Link href="/login" className={`hover:text-zinc-950 ${pathname === '/login' ? 'font-bold' : ''}`}>
             התחברות
           </Link>
+          <Link href="/contactForm" className={`hover:text-zinc-950 ${pathname === '/contactForm' ? 'font-bold' : ''}`}>
+            צור קשר
+          </Link>
+          <Link href="/adminInterface/ShowMessages" className={`hover:text-zinc-950 ${pathname === '/adminInterface/ShowMessages' ? 'font-bold' : ''}`}>
+             הצג הודעות
+          </Link>
+
+
           <Link href="/about" className={`hover:text-zinc-950 ${pathname === '/about' ? 'font-bold' : ''}`}>
             אודות
           </Link>

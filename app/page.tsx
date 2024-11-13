@@ -27,7 +27,6 @@ const HomePage: React.FC = () => {
       setUserType(parsedUser.userType);
       setUserId(parsedUser.userId);
       setFirstListingFree(parsedUser.firstListingFree);
-    } else {
     }
   }, []);
 
@@ -61,9 +60,25 @@ const HomePage: React.FC = () => {
       </div>
 
       {/* קרוסלת הדירות האקראיות */}
-      {/* <div className="mt-12">
+      <div className="mt-12">
         <RandomApartmentsCarousel />
-      </div> */}
+        <div id="bthn" lang="en"></div>
+        
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function () {
+                var script = document.createElement("script");
+                script.type = "text/javascript";
+                script.src = "https://bringthemhomenow.net/1.1.0/hostages-ticker.js";
+                script.setAttribute("integrity", "sha384-DHuakkmS4DXvIW79Ttuqjvl95NepBRwfVGx6bmqBJVVwqsosq8hROrydHItKdsne");
+                script.setAttribute("crossorigin", "anonymous");
+                document.getElementsByTagName("head")[0].appendChild(script);
+              })();
+            `,
+          }}
+        />
+      </div>
     </GlobalProvider>
   );
 };
