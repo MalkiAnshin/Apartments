@@ -28,7 +28,7 @@ export async function POST(request: Request) {
     const contractId = result.rows[0].contract_id;
 
     // יצירת תיקייה לשמירת הקבצים
-    const directory = path.join(`public/contracts/${propertyType}`, `${contractId}`);
+    const directory = path.join(`contracts/${propertyType}`, `${contractId}`);
     const pdfPath = path.join(directory, 'contract.pdf');
     const imagePath = path.join(directory, 'id_image.png');
 

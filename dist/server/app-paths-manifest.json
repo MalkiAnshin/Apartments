@@ -1,6 +1,1 @@
-{
-  "/page": "app/page.js",
-  "/api/apartmentsPictures/route": "app/api/apartmentsPictures/route.js",
-  "/api/apartments/route": "app/api/apartments/route.js",
-  "/api/moreDetails/route": "app/api/moreDetails/route.js"
-}
+{}
