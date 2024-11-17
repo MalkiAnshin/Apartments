@@ -1,10 +1,7 @@
-'use client';
 import React, { useState, useRef, useEffect } from 'react';
 import SignaturePad from 'react-signature-canvas';
-import { PDFDocument, rgb } from 'pdf-lib';
-import * as fontkit from 'fontkit';
-
-const fontkitModule: any = fontkit;
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 const ContractModal: React.FC<{ selectedProperty: any; property_type: string; onClose: () => void }> = ({ selectedProperty, property_type, onClose }) => {
   const [signature, setSignature] = useState<string | null>(null);
@@ -12,240 +9,96 @@ const ContractModal: React.FC<{ selectedProperty: any; property_type: string; on
   const [signed_date, setSigned_date] = useState<string>('');
   const [notes, setNotes] = useState<string>('');
   const [image, setImage] = useState<File | null>(null);
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null); // state for image preview
   const property_id = selectedProperty.property_id;
 
   const signaturePadRef = useRef<SignaturePad>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const formRef = useRef<HTMLDivElement>(null);
 
   const storedUser = localStorage.getItem('user');
   const userId = storedUser ? JSON.parse(storedUser).userId : null;
 
   useEffect(() => {
-    const today = new Date();
-    const formattedDate = today.toISOString().split('T')[0]; // Format YYYY-MM-DD
-    setSigned_date(formattedDate);
-    // console.log("Today's date set:", formattedDate);
+    const today = new Date().toISOString().split('T')[0];
+    setSigned_date(today);
   }, []);
 
   const handleSaveSignature = () => {
     if (signaturePadRef.current) {
       setSignature(signaturePadRef.current.toDataURL());
     }
-
   };
 
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files ? event.target.files[0] : null;
-    if (file) {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
       setImage(file);
 
-      // המרת התמונה ל-Data URL
+      // Create a preview of the image
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImageUrl(reader.result as string);
+        setImagePreview(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
   };
 
-
-  const handleSignatureSave = async () => {
-    if (!signature || !name || !signed_date || !property_type || !image || !property_id || !notes) {
+  const handleCaptureAndSave = async () => {
+    if (!signature || !name || !signed_date || !property_type || !property_id || !notes || !image) {
       alert('אנא מלא את כל השדות.');
-      // console.log("Missing fields:", { signature, name, signed_date, property_type, image, property_id, notes });
       return;
     }
 
-    try {
-      const pdfDoc = await PDFDocument.create();
-      pdfDoc.registerFontkit(fontkitModule);
+    if (formRef.current) {
+      try {
+        // Capture the form as an image
+        const canvas = await html2canvas(formRef.current);
+        const imgData = canvas.toDataURL('image/png');
 
-      const page = pdfDoc.addPage([600, 800]);
-      const fontBytes = await fetch('/fonts/NotoSansHebrew.ttf').then(res => res.arrayBuffer());
-      const font = await pdfDoc.embedFont(fontBytes);
+        // Convert the image to a PDF
+        const pdf = new jsPDF();
+        pdf.addImage(imgData, 'PNG', 10, 10, 180, 0);
 
-      const { width, height } = page.getSize();
-      const fontSize = 12;
+        // Generate a blob from the PDF
+        const pdfBlob = pdf.output('blob');
 
-      page.drawText('פרטי החוזה:', {
-        x: 50,
-        y: height - 100,
-        size: fontSize,
-        font,
-        color: rgb(0, 0, 0),
-        maxWidth: width - 100,
-        lineHeight: fontSize * 1.2,
-      });
-      page.drawText(`סוג נכס: ${property_type}`, {
-        x: 50,
-        y: height - 120,
-        size: fontSize,
-        font,
-        color: rgb(0, 0, 0),
-        maxWidth: width - 100,
-        lineHeight: fontSize * 1.2,
-      });
-      page.drawText(`מזהה נכס : ${property_id}`, {
-        x: 50,
-        y: height - 120,
-        size: fontSize,
-        font,
-        color: rgb(0, 0, 0),
-        maxWidth: width - 100,
-        lineHeight: fontSize * 1.2,
-      });
+        // Append form data and PDF file to be sent to the server
+        const formData = new FormData();
+        formData.append('signature', signature);
+        formData.append('name', name);
+        formData.append('signed_date', signed_date);
+        formData.append('property_type', property_type);
+        formData.append('property_id', property_id);
+        formData.append('notes', notes);
+        formData.append('userId', userId || '');
+        formData.append('pdf', pdfBlob, 'contract.pdf');
+        formData.append('image', image);
 
-      page.drawText(`תאריך: ${signed_date}`, {
-        x: 50,
-        y: height - 120,
-        size: fontSize,
-        font,
-        color: rgb(0, 0, 0),
-        maxWidth: width - 100,
-        lineHeight: fontSize * 1.2,
-      });
-      page.drawText(`שם: ${name}`, {
-        x: 50,
-        y: height - 140,
-        size: fontSize,
-        font,
-        color: rgb(0, 0, 0),
-        maxWidth: width - 100,
-        lineHeight: fontSize * 1.2,
-      });
-      page.drawText(`תעודת זהות: ${userId}`, {
-        x: 50,
-        y: height - 160,
-        size: fontSize,
-        font,
-        color: rgb(0, 0, 0),
-        maxWidth: width - 100,
-        lineHeight: fontSize * 1.2,
-      });
-      page.drawText(`הערות: ${notes}`, {
-        x: 50,
-        y: height - 180,
-        size: fontSize,
-        font,
-        color: rgb(0, 0, 0),
-        maxWidth: width - 100,
-        lineHeight: fontSize * 1.2,
-      });
-      page.drawText(`שם: ${name}`, {
-        x: 50,
-        y: height - 140,
-        size: fontSize,
-        font,
-        color: rgb(0, 0, 0),
-        maxWidth: width - 100,
-        lineHeight: fontSize * 1.2,
-      });
-      page.drawText(`תעודת זהות: ${imageUrl}`, {
-        x: 50,
-        y: height - 140,
-        size: fontSize,
-        font,
-        color: rgb(0, 0, 0),
-        maxWidth: width - 100,
-        lineHeight: fontSize * 1.2,
-      });
-
-
-      if (image) {
-        const reader = new FileReader();
-        reader.onload = async function (event) {
-          const imgData = event.target?.result as ArrayBuffer;
-          const jpegImage = await pdfDoc.embedJpg(imgData);
-          page.drawImage(jpegImage, {
-            x: 50,
-            y: height - 400,
-            width: 100,
-            height: 60,
-          });
-          // console.log("ID card image added to PDF");
-
-          const pdfBytes = await pdfDoc.save();
-          // console.log("PDF document saved");
-
-          const base64Pdf = Buffer.from(pdfBytes).toString('base64');
-          // console.log("PDF document saved without ID card image");
-
-          // Send the request to the API with property ID
-          const response = await fetch('/api/saveContract', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              pdfBytes: base64Pdf,
-              fileName: `contract_${name}_${signed_date}.pdf`,
-              userId: userId, // Replace with actual user ID
-              property_type: property_type, // Adjust as needed
-              signed_date: signed_date,
-              property_id: property_id,
-              notes: notes,
-            }),
-          });
-
-          if (response.ok) {
-            alert('החוזה נשמר בתיקיית "חוזה" בהצלחה!');
-            onClose();
-          } else {
-            alert('שגיאה בשמירת החוזה.');
-            const errorText = await response.text();
-            console.error('Server error:', errorText);
-          }
-        };
-        reader.readAsArrayBuffer(image);
-      } else {
-        const pdfBytes = await pdfDoc.save();
-        const base64Pdf = Buffer.from(pdfBytes).toString('base64');
-        // console.log('מנסה לשמור את החוזה');
+        // Send the form data to the server
         const response = await fetch('/api/saveContract', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            pdfBytes: base64Pdf,
-            fileName: `contract_${name}_${signed_date}.pdf`,
-            userId: userId, // החלף עם מזהה המשתמש האמיתי
-            property_type: property_type,
-            signed_date: signed_date,
-            property_id: property_id,
-            notes: notes,
-
-          }),
+          body: formData,
         });
-        // console.log('נשלחה הבקשה', response);
-        // console.log({
-        //   pdfBytes: base64Pdf,
-        //   fileName: `contract_${name}_${signed_date}.pdf`,
-        //   userId: 'userId',
-        //   property_type: property_type,
-        //   signed_date: signed_date,
-        //   notes: notes,
-        // });
 
         if (response.ok) {
-          alert('החוזה נשמר בתיקיית "חוזה" בהצלחה!');
+          alert('החוזה נשמר בהצלחה!');
           onClose();
         } else {
-          alert('שגיאה בשמירת החוזה.');
           const errorText = await response.text();
-          console.error('Server error:', errorText);
+          console.error('Server Error:', errorText);
+          alert(`שגיאה: ${response.status} - ${errorText}`);
         }
+      } catch (error) {
+        console.error('Network Error:', error);
+        alert('שגיאה בתקשורת לשרת. נסי שוב.');
       }
-    } catch (error) {
-      console.error('שגיאה ביצירת ה-PDF:', error);
     }
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-      <div className="bg-white text-black p-6 rounded-lg w-full max-w-3xl max-h-[90%] overflow-auto">
-        <h2 className="text-2xl font-bold mb-4">חתום על החוזה</h2>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center overflow-y-auto z-50">
+<div ref={formRef} className="bg-white text-black p-6 rounded-lg w-full max-w-3xl mx-4 sm:mx-6 lg:max-w-4xl max-h-screen overflow-auto">
+<h2 className="text-2xl font-bold mb-4">חתום על החוזה</h2>
         <p className="text-base mb-2">טופס הזמנת שירותי תיווך בלעדיים למכירת/השכרת נכס מקרקעין 0014</p>
         <p className="text-sm mb-2">(בהתאם ל"חוק המתווכים במקרקעין, התשנ"ז 1996")</p>
         <h3 className="text-lg font-semibold mb-2">סעיפים:</h3>
@@ -263,71 +116,36 @@ const ContractModal: React.FC<{ selectedProperty: any; property_type: string; on
           </ul>
         </li>
         <li>הלקוח מאשר שהומלץ לו ע"י המתווך להסתייע בשירותי עורך דין ו/או מומחים אחראים לפי הענין והצורך במהלך העסקה.</li>
-        <div className="mb-6">
-          <ul className="list-disc list-inside pl-4">
-          </ul>
+        <div className="my-4">
+          <label className="block text-sm font-medium mb-2">שם מלא</label>
+          <input type="text" value={name} onChange={(e) => setName(e.target.value)} className="w-full px-3 py-2 border rounded" />
         </div>
-
         <label className="block mb-1">תאריך:</label>
         <input
-          type="signed_date"
+          type="date"
           value={signed_date}
           onChange={(e) => setSigned_date(e.target.value)}
           className="border rounded w-full p-2"
         />
-
-        <p className="mb-4">שם: <input type="text" value={name} onChange={(e) => setName(e.target.value)} className="bg-gray-200 border border-gray-300 rounded-md px-4 py-2 w-full" /></p>
-        {/* <p className="mb-4">תעודת זהות: <input type="text" value={id !== undefined ? id.toString() : ''} onChange={(e) => setId(parseInt(e.target.value, 10))} className="bg-gray-200 border border-gray-300 rounded-md px-4 py-2 w-full" /></p> */}
-        <p className="mb-4">הערות: <textarea value={notes} onChange={(e) => setNotes(e.target.value)} className="bg-gray-200 border border-gray-300 rounded-md px-4 py-2 w-full" /></p>
-
-        <div className="mb-4">
-          <SignaturePad
-            ref={signaturePadRef}
-            canvasProps={{ className: 'border border-gray-300 w-full h-40' }}
-            onEnd={handleSaveSignature}
-          />
+        <div className="my-4">
+          <label className="block text-sm font-medium mb-2">הערות</label>
+          <textarea value={notes} onChange={(e) => setNotes(e.target.value)} className="w-full px-3 py-2 border rounded"></textarea>
         </div>
-
-        <div className="mb-4 flex items-center">
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            className="bg-gray-200 border border-gray-300 rounded-md px-4 py-2 flex items-center"
-          >
-            <svg className="w-6 h-6 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 2L12 6M12 18L12 22M4.22 4.22l1.42 1.42M17.36 17.36l1.42 1.42M2 12h4m12 0h4M4.22 19.78l1.42-1.42M17.36 6.64l1.42-1.42" />
-            </svg>
-            צירוף צילום תעודת זהות
-          </button>
-          <input
-            type="file"
-            id="fileInput"
-            accept="image/*"
-            onChange={handleImageChange}
-            ref={fileInputRef}
-            className="hidden"
-          />
+        <div className="my-4">
+          <label className="block text-sm font-medium mb-2">חתימה</label>
+          <SignaturePad ref={signaturePadRef} onEnd={handleSaveSignature} canvasProps={{ width: 500, height: 200, className: 'border' }} />
         </div>
-        {imageUrl && (
-          <div className="mt-4">
-            <h3>התמונה שנבחרה:</h3>
-            <img src={imageUrl} alt="תמונה" className="border border-gray-300 w-full h-auto" />
+        <div className="my-4">
+          <div className="flex items-center space-x-2">
+            <img width="30" height="30" src="https://img.icons8.com/ios/50/insert-page.png" alt="insert-page" />
+            <label className="block text-sm font-medium">העלה צילום תעודת זהות</label>
           </div>
-        )}
+          <input type="file" accept="image/*" onChange={handleFileChange} className="w-full mt-2 px-3 py-2 border rounded" />
+        </div>
 
-
-        <div className="flex justify-end">
-          <button
-            onClick={handleSignatureSave}
-            className="bg-gold text-black px-4 py-2 rounded-md hover:bg-yellow-600"
-          >
-            שמור וחתום
-          </button>
-          <button
-            onClick={onClose}
-            className="ml-2 bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-500"
-          >
-            סגור
-          </button>
+        <div className="flex justify-between mt-6">
+          <button onClick={onClose} className="bg-gray-300 text-black py-2 px-4 rounded">סגור</button>
+          <button onClick={handleCaptureAndSave} className="bg-black text-white py-2 px-4 rounded">שלח וחתום</button>
         </div>
       </div>
     </div>

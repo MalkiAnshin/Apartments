@@ -14,7 +14,7 @@ const ApartmentImages: React.FC<ApartmentImagesProps> = ({ property_id }) => {
       try {
         const response = await fetch(`/api/apartmentsPictures?id=${property_id}`);
         if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
-
+  
         const data = await response.json();
         setImages(data.images || []); // ודא ש-setImages מקבל מערך גם אם images הוא null
       } catch (err: any) {
@@ -22,10 +22,12 @@ const ApartmentImages: React.FC<ApartmentImagesProps> = ({ property_id }) => {
         console.error('Error fetching images:', err);
       }
     };
-
-    fetchImages();
-  }, [property_id]);
-
+  
+    if (property_id) {
+      fetchImages();
+    }
+  }, [property_id]); // הקשב רק לשינוי ב-property_id
+  
   // מעבר לתמונה הבאה
   const handleNext = () => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);

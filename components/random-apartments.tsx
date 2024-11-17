@@ -58,10 +58,10 @@ const RandomApartmentsCarousel: React.FC = () => {
 
     return (
         <div className="mt-8 mb-16 min-h-[300px]">
-            <h2 className="text-center text-2xl font-semibold mb-4 text-gray-700">דירות אקראיות</h2>
+            <h2 className="text-center text-2xl font-semibold mb-4 text-gray-700">דירות למכירה באתר</h2>
             <Slider {...settings}>
                 {apartments.map((apartment) => (
-                    <div key={apartment.id} className="px-1">
+                    <div key={apartment.property_id} className="px-1">
                         <div className="bg-white bg-opacity-50 text-gray-800 p-3 rounded-lg shadow-md hover:shadow-xl transition duration-300 ease-in-out max-w-xs mx-auto">
                             {/* הגדרת מקום לתמונה מתוך הכרטיס */}
                             <div className="relative w-full h-40 mb-4 overflow-hidden">

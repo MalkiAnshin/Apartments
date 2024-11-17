@@ -45,6 +45,8 @@ const ApartmentList: React.FC = () => {
         if (!response.ok) throw new Error(`Failed to fetch data, status: ${response.status}`);
         const data = await response.json();
         setApartments(data);
+        console.log(data);
+        
       } catch (err) {
         console.error("Error fetching apartments:", err);
         setError('Error fetching apartments');
@@ -57,7 +59,6 @@ const ApartmentList: React.FC = () => {
   const handleApartmentClick = (apartment: any) => {
     checkContract(apartment.property_id);
     setSelectedApartment(apartment);
-    setShowModal(true);
   };
 
   const handleCloseModal = () => {
@@ -82,7 +83,20 @@ const ApartmentList: React.FC = () => {
       if (!response.ok) throw new Error(`Network response was not ok`);
 
       const data = await response.json();
-      // Handle the contract status here
+      console.log("Received data: ", data); // שים לב להדפיס את המידע במונחים של המפתחות
+
+
+      if (data.exists) {
+        // אם החוזה קיים, אפשר להציג את המידע המלא
+        setSelectedApartment(prev => ({
+          ...prev,
+          moreDetails: true, // לדוגמה, פשוט מסמן שהמידע המלא זמין
+        }));
+        (prev => ({ ...prev, moreDetails: data.details }));
+      } else {
+        // If contract doesn't exist (false), show the modal
+        setShowModal(true);
+      }
     } catch (err) {
       setError(`Error checking contract: ${err instanceof Error ? err.message : 'An unknown error occurred'}`);
     }
@@ -127,6 +141,14 @@ const ApartmentList: React.FC = () => {
                         property_type="apartment"
                         onClose={handleCloseModal}
                       />
+                    )}
+                    {selectedApartment?.property_id === apartment.property_id && !showModal && (
+                      <div className="mt-4 text-gold">
+                        {/* Show additional apartment details when contract exists */}
+                        <p>כתובת: {apartment.address}</p>
+                        <p>פרטי יצירת קשר: {apartment.contact_seller}</p>
+                        {/* Add more fields as needed */}
+                      </div>
                     )}
                   </li>
                 ))}

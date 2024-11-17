@@ -1,49 +1,49 @@
 import { NextResponse } from 'next/server';
 import pool from '../../../lib/db';
+import fs from 'fs';
+import path from 'path';
 
 export async function POST(request: Request) {
   try {
-    // console.log('--- Starting POST request to save contract ---');
-    
-    // Parse the request body from JSON
-    const { userId, property_type, fileName, pdfBytes, signed_date, property_id, notes } = await request.json();
-    // console.log('Parsed request body:', { userId, property_type, fileName, property_id, notes, pdfBytes: pdfBytes ? '[PDF Content Present]' : '[Missing PDF Content]' });
+    const formData = await request.formData();
+    const pdf = formData.get('pdf') as File;
+    const image = formData.get('image') as File;
+    const userId = formData.get('userId');
+    const propertyType = formData.get('property_type');
+    const signedDate = formData.get('signed_date');
+    const propertyId = formData.get('property_id');
+    const notes = formData.get('notes');
 
-    // Check required fields
-    const missingFields = [];
-    if (!userId) missingFields.push('userId');
-    if (!property_type) missingFields.push('property_type');
-    if (!fileName) missingFields.push('fileName');
-    if (!property_id) missingFields.push('property_id');
-    if (!notes) missingFields.push('notes');
-
-    if (!pdfBytes) missingFields.push('pdfBytes');
-
-
-    if (missingFields.length > 0) {
-      console.error('Missing required fields:', missingFields);
-      return NextResponse.json({ success: false, message: 'Missing required fields', missingFields }, { status: 400 });
+    // בדיקת שדות חובה
+    if (!pdf || !userId || !propertyType || !signedDate || !propertyId || !notes || !image) {
+      return NextResponse.json({ success: false, message: 'Missing required fields' }, { status: 400 });
     }
 
-    // Default `signed_date` if not provided
-    const currentSignedDate = signed_date || new Date().toISOString();
-    // console.log(`Using signed_date: ${currentSignedDate}`);
-
-    // Insert contract data into the database
+    // הוספת רשומה למסד הנתונים
     const result = await pool.query(
       'INSERT INTO contracts (user_id, property_type, file_name, signed_date, property_id, notes) VALUES ($1, $2, $3, $4, $5, $6) RETURNING contract_id',
-      [userId, property_type, fileName, currentSignedDate, property_id, notes]
+      [userId, propertyType, 'contract.pdf', signedDate, propertyId, notes]
     );
 
-    if (!result || result.rows.length === 0) {
-      console.error('Failed to insert contract data.');
-      return NextResponse.json({ success: false, message: 'Failed to insert contract data' }, { status: 500 });
-    }
-
     const contractId = result.rows[0].contract_id;
-    // console.log(`Successfully inserted contract with ID: ${contractId}`);
 
-    return NextResponse.json({ success: true, contractId, message: 'Contract saved successfully' });
+    // יצירת תיקייה לשמירת הקבצים
+    const directory = path.join(`public/contracts/${propertyType}`, `${contractId}`);
+    const pdfPath = path.join(directory, 'contract.pdf');
+    const imagePath = path.join(directory, 'id_image.png');
+
+    fs.mkdirSync(directory, { recursive: true });
+
+    // שמירת ה-PDF
+    const pdfBuffer = Buffer.from(await pdf.arrayBuffer());
+    fs.writeFileSync(pdfPath, pdfBuffer);
+
+    // שמירת התמונה
+    const imageBuffer = Buffer.from(await image.arrayBuffer());
+    fs.writeFileSync(imagePath, imageBuffer);
+
+    // תשובה ללקוח
+    return NextResponse.json({ success: true, contractId, message: 'Contract and ID image saved successfully' });
   } catch (error) {
     console.error('Error saving contract:', error);
     return NextResponse.json({ success: false, message: 'Error saving contract', error: error.message }, { status: 500 });
