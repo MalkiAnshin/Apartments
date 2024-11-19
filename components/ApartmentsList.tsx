@@ -13,6 +13,10 @@ const ApartmentList: React.FC = () => {
   const [filters, setFilters] = useState<{ minPrice?: number; maxPrice?: number; rooms?: string }>({});
   const [error, setError] = useState<string | null>(null);
 
+  const storedUser = localStorage.getItem('user');
+  const userId = storedUser ? JSON.parse(storedUser).userId : null;
+
+
   const router = useRouter();
 
   // Define setPriceFilter and setRoomsFilter functions to update the filters state
@@ -46,7 +50,7 @@ const ApartmentList: React.FC = () => {
         const data = await response.json();
         setApartments(data);
         console.log(data);
-        
+
       } catch (err) {
         console.error("Error fetching apartments:", err);
         setError('Error fetching apartments');
@@ -57,6 +61,12 @@ const ApartmentList: React.FC = () => {
   }, [selectedCity, filters]);
 
   const handleApartmentClick = (apartment: any) => {
+
+    console.log(222222222222222222);
+    if (!userId) {
+
+      router.push('/login');
+    }
     checkContract(apartment.property_id);
     setSelectedApartment(apartment);
   };

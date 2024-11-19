@@ -7,26 +7,26 @@ const ContactForm: React.FC = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
-  const [userId, setUserId] = useState<string | null>(null);
+  // const [userId, setUserId] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const router = useRouter(); // הוספת router לשימוש בניתוב
 
-  useEffect(() => {
-    // Fetch user ID from localStorage
-    const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
-    setUserId(storedUser.userId || null);
-  }, []);
+  // useEffect(() => {
+  //   // Fetch user ID from localStorage
+  //   const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+  //   setUserId(storedUser.userId || null);
+  // }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!userId) {
-      setStatus('error');
-      console.error('User ID not found');
-      return;
-    }
+    // if (!userId) {
+    //   setStatus('error');
+    //   console.error('User ID not found');
+    //   return;
+    // }
 
-    const formData = { userId, username, email, message };
+    const formData = { username, email, message };
 
     try {
       const response = await fetch('/api/contactForm', {
