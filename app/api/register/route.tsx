@@ -8,7 +8,7 @@ export async function POST(req) {
 
   try {
     // Check if the user already exists
-    const existingUser = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    const existingUser = await pool.query('SELECT * FROM users WHERE identity_number = $1', [identityNumber]);
     if (existingUser.rows.length > 0) {
       return NextResponse.json({ message: 'המשתמש כבר קיים' }, { status: 409 });
     }

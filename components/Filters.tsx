@@ -26,12 +26,12 @@ const Filters: React.FC<FiltersProps> = ({ onPriceChange, onRoomsChange }) => {
   };
 
   return (
-    <div className="filters-container mb-6 bg-white rounded-lg shadow-lg p-6 max-w-md mx-auto space-y-6">
+    <div className="filters-container mb-6 bg-transparent rounded-lg shadow-lg p-6 max-w-md mx-auto space-y-6" dir="rtl">
       <div className="filter-item">
-        <label className="block text-gray-700 font-semibold mb-2">טווח מחיר:</label>
+        <label className="block text-gold font-semibold mb-2 text-right">טווח מחיר:</label>
         <div className="flex space-x-4">
           <div className="w-1/2">
-            <label htmlFor="minPrice" className="block text-gray-500 text-sm mb-1">מינימום</label>
+            <label htmlFor="minPrice" className="block text-gold-lighter text-sm mb-1 text-right">מינימום</label>
             <input
               type="number"
               id="minPrice"
@@ -40,12 +40,12 @@ const Filters: React.FC<FiltersProps> = ({ onPriceChange, onRoomsChange }) => {
               step="50000"
               value={minPrice}
               onChange={handleMinPriceChange}
-              className="w-full border border-gray-300 rounded-lg py-2 px-3 text-gray-700 focus:outline-none focus:border-gold"
+              className="w-full bg-transparent border border-gold rounded-lg py-2 px-3 text-gold focus:outline-none focus:border-gold-light placeholder-gold-lighter"
               placeholder="מינימום"
             />
           </div>
           <div className="w-1/2">
-            <label htmlFor="maxPrice" className="block text-gray-500 text-sm mb-1">מקסימום</label>
+            <label htmlFor="maxPrice" className="block text-gold-lighter text-sm mb-1 text-right">מקסימום</label>
             <input
               type="number"
               id="maxPrice"
@@ -54,7 +54,7 @@ const Filters: React.FC<FiltersProps> = ({ onPriceChange, onRoomsChange }) => {
               step="50000"
               value={maxPrice}
               onChange={handleMaxPriceChange}
-              className="w-full border border-gray-300 rounded-lg py-2 px-3 text-gray-700 focus:outline-none focus:border-gold"
+              className="w-full bg-transparent border border-gold rounded-lg py-2 px-3 text-gold focus:outline-none focus:border-gold-light placeholder-gold-lighter"
               placeholder="מקסימום"
             />
           </div>
@@ -62,13 +62,13 @@ const Filters: React.FC<FiltersProps> = ({ onPriceChange, onRoomsChange }) => {
       </div>
 
       <div className="filter-item">
-        <label htmlFor="rooms" className="block text-gray-700 font-semibold mb-2">חדרים:</label>
+        <label htmlFor="rooms" className="block text-gold font-semibold mb-2 text-right">חדרים:</label>
         <input
           type="number"
           id="rooms"
           min="1"
           onChange={handleRoomsChange}
-          className="w-full border border-gray-300 rounded-lg py-2 px-3 text-gray-700 focus:outline-none focus:border-gold"
+          className="w-full bg-transparent border border-gold rounded-lg py-2 px-3 text-gold focus:outline-none focus:border-gold-light placeholder-gold-lighter"
           placeholder="בחר מספר חדרים"
         />
       </div>

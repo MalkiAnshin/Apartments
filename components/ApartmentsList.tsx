@@ -61,10 +61,7 @@ const ApartmentList: React.FC = () => {
   }, [selectedCity, filters]);
 
   const handleApartmentClick = (apartment: any) => {
-
-    console.log(222222222222222222);
     if (!userId) {
-
       router.push('/login');
     }
     checkContract(apartment.property_id);

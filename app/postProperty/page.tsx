@@ -160,43 +160,43 @@ const AddPropertyForm: React.FC = () => {
 
 
   return (
-    <div className="bg-gray-800 text-white p-6 rounded-md relative">
-      <h2 className="text-xl font-semibold mb-4">Add New Property</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <div dir="rtl" className="bg-black bg-opacity-30 text-white p-8 rounded-lg shadow-xl max-w-lg mx-auto">
+      <h2 className="text-3xl font-bold mb-6 text-center text-gold-300">פרסום נכס</h2>
+      <form onSubmit={handleSubmit} className="space-y-6">
         {/* Property Type Selection */}
         <div>
-          <label htmlFor="propertyType" className="block mb-2">Property Type</label>
+          <label htmlFor="propertyType" className="block text-sm font-medium mb-2 text-gold-300">סוג נכס</label>
           <select
             id="propertyType"
             value={propertyType}
             onChange={(e) => setPropertyType(e.target.value)}
-            className="bg-gray-700 p-2 rounded-md w-full"
+            className="bg-black bg-opacity-70 text-white p-3 rounded-md w-full focus:outline-none focus:ring focus:ring-gold-300"
           >
-            <option value="Apartment">Apartment</option>
-            <option value="Project">Project</option>
-            <option value="Land">Land</option>
-            <option value="Business">Business</option>
+            <option value="Apartment">דירה</option>
+            <option value="Project">פרויקט קבלן</option>
+            <option value="Land">קרקע</option>
+            <option value="Business">בית עסק</option>
           </select>
         </div>
-
+  
         {/* City Input */}
         <div>
-          <label htmlFor="city" className="block mb-2">City</label>
+          <label htmlFor="city" className="block text-sm font-medium mb-2 text-gold-300">עיר</label>
           <input
             type="text"
             id="city"
             value={selectedCity}
             onChange={handleCityChange}
-            className="bg-gray-700 p-2 rounded-md w-full"
-            placeholder="Choose a city"
+            className="bg-black bg-opacity-70 text-white p-3 rounded-md w-full focus:outline-none focus:ring focus:ring-gold-300"
+            placeholder="הקלד שם עיר"
           />
           {cities.length > 0 && (
-            <ul className="absolute bg-gray-600 text-white border border-gray-500 w-full max-h-60 overflow-y-auto z-10">
+            <ul className="absolute bg-gray-800 text-white border border-gray-600 w-full max-h-60 overflow-y-auto z-10 rounded-md mt-1">
               {cities.map((city) => (
                 <li
                   key={city}
                   onClick={() => handleCitySelect(city)}
-                  className="cursor-pointer hover:bg-gray-500 p-2"
+                  className="cursor-pointer hover:bg-gray-700 p-3"
                 >
                   {city}
                 </li>
@@ -204,165 +204,155 @@ const AddPropertyForm: React.FC = () => {
             </ul>
           )}
         </div>
-
+  
         {/* Neighborhood Input */}
         <div>
-          <label htmlFor="neighborhood" className="block mb-2">Neighborhood</label>
+          <label htmlFor="neighborhood" className="block text-sm font-medium mb-2 text-gold-300">שכונה/איזור</label>
           <input
             type="text"
             id="neighborhood"
             value={neighborhood}
             onChange={(e) => setNeighborhood(e.target.value)}
-            className="bg-gray-700 p-2 rounded-md w-full"
+            className="bg-black bg-opacity-70 text-white p-3 rounded-md w-full focus:outline-none focus:ring focus:ring-gold-300"
             required
           />
         </div>
-
+  
         {/* Price Input */}
         <div>
-          <label htmlFor="price" className="block mb-2">Price</label>
+          <label htmlFor="price" className="block text-sm font-medium mb-2 text-gold-300">מחיר</label>
           <input
             type="number"
             id="price"
             value={price}
             onChange={(e) => setPrice(e.target.value)}
-            className="bg-gray-700 p-2 rounded-md w-full"
+            className="bg-black bg-opacity-70 text-white p-3 rounded-md w-full focus:outline-none focus:ring focus:ring-gold-300"
             required
           />
         </div>
-
+  
         {/* Rooms Input */}
         <div>
-          <label htmlFor="rooms" className="block mb-2">Rooms</label>
+          <label htmlFor="rooms" className="block text-sm font-medium mb-2 text-gold-300">מספר חדרים</label>
           <input
             type="number"
             id="rooms"
             value={rooms}
             onChange={(e) => setRooms(e.target.value)}
-            className="bg-gray-700 p-2 rounded-md w-full"
+            className="bg-black bg-opacity-70 text-white p-3 rounded-md w-full focus:outline-none focus:ring focus:ring-gold-300"
             required
           />
         </div>
-
+  
         {/* Floor Input */}
         <div>
-          <label htmlFor="floor" className="block mb-2">Floor</label>
+          <label htmlFor="floor" className="block text-sm font-medium mb-2 text-gold-300">קומה</label>
           <input
             type="number"
             id="floor"
             value={floor}
             onChange={(e) => setFloor(e.target.value)}
-            className="bg-gray-700 p-2 rounded-md w-full"
+            className="bg-black bg-opacity-70 text-white p-3 rounded-md w-full focus:outline-none focus:ring focus:ring-gold-300"
           />
         </div>
-
-        {/* Has Balcony Checkbox */}
-        <div>
-          <label htmlFor="hasBalcony" className="flex items-center mb-2">
-            <input
-              type="checkbox"
-              id="hasBalcony"
-              checked={hasBalcony}
-              onChange={() => setHasBalcony(!hasBalcony)}
-              className="mr-2"
-            />
-            Has Balcony
-          </label>
-        </div>
-
-
+  
         {/* Address Input */}
         <div>
-          <label htmlFor="address" className="block mb-2">Address</label>
+          <label htmlFor="address" className="block text-sm font-medium mb-2 text-gold-300">כתובת</label>
           <input
             type="text"
             id="address"
             value={address}
             onChange={(e) => setAddress(e.target.value)}
-            className="bg-gray-700 p-2 rounded-md w-full"
+            className="bg-black bg-opacity-70 text-white p-3 rounded-md w-full focus:outline-none focus:ring focus:ring-gold-300"
           />
         </div>
-
+  
         {/* Contact Seller Input */}
         <div>
-          <label htmlFor="contactSeller" className="block mb-2">Contact Seller</label>
+          <label htmlFor="contactSeller" className="block text-sm font-medium mb-2 text-gold-300">דרכי יצירת קשר עם המוכר</label>
           <input
             type="text"
             id="contactSeller"
             value={contactSeller}
             onChange={(e) => setContactSeller(e.target.value)}
-            className="bg-gray-700 p-2 rounded-md w-full"
+            className="bg-black bg-opacity-70 text-white p-3 rounded-md w-full focus:outline-none focus:ring focus:ring-gold-300"
           />
         </div>
-
+  
+        {/* Has Balcony Checkbox */}
+        <div className="flex items-center mb-4">
+          <label htmlFor="hasBalcony" className="text-gold-300">מרפסת</label>
+          <input
+            type="checkbox"
+            id="hasBalcony"
+            checked={hasBalcony}
+            onChange={() => setHasBalcony(!hasBalcony)}
+            className="ml-2 text-gold-300 focus:ring focus:ring-gold-300"
+          />
+        </div>
+  
         {/* Parking Checkbox */}
-        <div>
-          <label htmlFor="parking" className="flex items-center mb-2">
-            <input
-              type="checkbox"
-              id="parking"
-              checked={parking}
-              onChange={() => setParking(!parking)}
-              className="mr-2"
-            />
-            Parking
-          </label>
+        <div className="flex items-center mb-4">
+          <label htmlFor="parking" className="text-gold-300">חניה</label>
+          <input
+            type="checkbox"
+            id="parking"
+            checked={parking}
+            onChange={() => setParking(!parking)}
+            className="ml-2 text-gold-300 focus:ring focus:ring-gold-300"
+          />
         </div>
-
+  
         {/* Warehouse Checkbox */}
-        <div>
-          <label htmlFor="warehouse" className="flex items-center mb-2">
-            <input
-              type="checkbox"
-              id="warehouse"
-              checked={warehouse}
-              onChange={() => setWarehouse(!warehouse)}
-              className="mr-2"
-            />
-            Warehouse
-          </label>
+        <div className="flex items-center mb-4">
+          <label htmlFor="warehouse" className="text-gold-300">מחסן</label>
+          <input
+            type="checkbox"
+            id="warehouse"
+            checked={warehouse}
+            onChange={() => setWarehouse(!warehouse)}
+            className="ml-2 text-gold-300 focus:ring focus:ring-gold-300"
+          />
         </div>
-
+  
         {/* Elevator Checkbox */}
-        <div>
-          <label htmlFor="elevator" className="flex items-center mb-2">
-            <input
-              type="checkbox"
-              id="elevator"
-              checked={elevator}
-              onChange={() => setElevator(!elevator)}
-              className="mr-2"
-            />
-            Elevator
-          </label>
+        <div className="flex items-center mb-4">
+          <label htmlFor="elevator" className="text-gold-300">מעלית</label>
+          <input
+            type="checkbox"
+            id="elevator"
+            checked={elevator}
+            onChange={() => setElevator(!elevator)}
+            className="ml-2 text-gold-300 focus:ring focus:ring-gold-300"
+          />
         </div>
-
+  
         {/* Image Upload */}
         <div>
-          <label htmlFor="images" className="block mb-2">Upload Images</label>
+          <label htmlFor="images" className="block text-sm font-medium mb-2 text-gold-300">העלת תמונות מהנכס</label>
           <input
             type="file"
             id="images"
             multiple
             onChange={handleFileChange}
-            className="bg-gray-700 p-2 rounded-md w-full"
+            className="bg-black bg-opacity-70 text-white p-3 rounded-md w-full focus:outline-none focus:ring focus:ring-gold-300"
           />
         </div>
-
+  
         {/* Submit Button */}
         <button
           type="submit"
           className={`bg-blue-500 text-white py-2 rounded-md w-full ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
           disabled={isLoading}
         >
-          {isLoading ? 'Loading...' : 'Add Property'}
+          {isLoading ? 'Loading...' : 'הוסף נכס'}
         </button>
-
+  
         {/* Error Message */}
         {message && <p className="text-red-500">{message}</p>}
       </form>
     </div>
   );
-};
-
+  }  
 export default AddPropertyForm;

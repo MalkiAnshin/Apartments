@@ -1,11 +1,11 @@
 {
-  "/page": "app/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/postProperty/page": "app/postProperty/page.js",
   "/login/page": "app/login/page.js",
+  "/page": "app/page.js",
   "/api/random-apartments/route": "app/api/random-apartments/route.js",
-  "/api/apartmentsPictures/route": "app/api/apartmentsPictures/route.js",
-  "/api/apartments/route": "app/api/apartments/route.js",
-  "/api/login/route": "app/api/login/route.js",
   "/api/register/route": "app/api/register/route.js",
-  "/api/moreDetails/route": "app/api/moreDetails/route.js",
-  "/api/saveContract/route": "app/api/saveContract/route.js"
+  "/api/apartmentsPictures/route": "app/api/apartmentsPictures/route.js",
+  "/api/postProperty/route": "app/api/postProperty/route.js",
+  "/api/apartments/route": "app/api/apartments/route.js"
 }

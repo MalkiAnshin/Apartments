@@ -68,7 +68,7 @@ const RandomApartmentsCarousel: React.FC = () => {
                                 <ApartmentImages property_id={apartment.property_id} />
                             </div>
                             <div className="mb-2">
-                                <p className="text-lg font-semibold">{`חדרים${apartment.rooms}`}</p>
+                                <p className="text-lg font-semibold">{`חדרים ${apartment.rooms}`}</p>
                                 <p className="text-lg font-semibold">{`שכונת ${apartment.neighborhood}`}</p>
                                 <p className="text-sm text-gray-600">{`עיר ${apartment.city}`}</p>
                             </div>
