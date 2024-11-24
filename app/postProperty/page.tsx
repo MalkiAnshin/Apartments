@@ -27,6 +27,8 @@ const AddPropertyForm: React.FC = () => {
   const { user, userId, firstListingFree, setFirstListingFree } = useGlobalContext(); // Add firstListingFree
 
   useEffect(() => {
+    console.log(userId);
+    console.table(user);
     if (!user) {
       alert("משתמש לא מחובר נא לבצע התחברות");
       router.push('/login');
@@ -106,9 +108,15 @@ const AddPropertyForm: React.FC = () => {
     formData.append('floor', floor.toString()); // Add floor
     formData.append('hasBalcony', hasBalcony.toString()); // Add has balcony
 
+
     images.forEach((image) => {
       formData.append('images', image);
     });
+
+    formData.forEach((value, key) => {
+      console.log(`${key}: ${value}`);
+    });
+  
 
     setIsLoading(true);
     try {
