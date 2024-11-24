@@ -9,14 +9,6 @@ export async function GET(request: Request) {
   const minPrice = url.searchParams.get('minPrice');
   const maxPrice = url.searchParams.get('maxPrice');
 
-  console.log('Received GET request with parameters:', {
-    city,
-    rooms,
-    type,
-    minPrice,
-    maxPrice
-  });
-
   try {
     const client = await pool.connect();
     console.log('Database client connected');

@@ -12,8 +12,13 @@ const ApartmentImages: React.FC<ApartmentImagesProps> = ({ property_id }) => {
   useEffect(() => {
     const fetchImages = async () => {
       try {
-        const response = await fetch(`/api/apartmentsPictures?id=${property_id}`);
-        if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
+        const response = await fetch('/api/apartmentsPictures', {
+          method: 'GET',
+          headers: {
+            'property_id': property_id.toString(), // שולח את ה-ID בהדר
+          },
+        });
+              if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
   
         const data = await response.json();
         setImages(data.images || []); // ודא ש-setImages מקבל מערך גם אם images הוא null

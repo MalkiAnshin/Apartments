@@ -8,7 +8,7 @@ import BusinessList from '../components/BusinessList';
 import ProjectsList from '../components/ProjectsList';
 import { GlobalProvider, useGlobalContext } from '../app/context/GlobalContext';
 
-import RandomApartmentsCarousel from '../components/random-apartments';
+// import RandomApartmentsCarousel from '../components/random-apartments';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 
@@ -61,7 +61,7 @@ const HomePage: React.FC = () => {
 
       {/* קרוסלת הדירות האקראיות */}
       <div className="mt-12">
-        <RandomApartmentsCarousel />
+        {/* <RandomApartmentsCarousel /> */}
       </div>
     </GlobalProvider>
   );

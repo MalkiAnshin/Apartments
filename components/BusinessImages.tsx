@@ -12,7 +12,12 @@ const BusinessImages: React.FC<BusinessImagesProps> = ({ property_id }) => {
   useEffect(() => {
     const fetchImages = async () => {
       try {
-        const response = await fetch(`/api/businessPictures?id=${property_id}`); // Adjusted endpoint for business images
+        const response = await fetch('/api/businessPictures', {
+          method: 'GET',
+          headers: {
+            'property_id': property_id.toString(), // שולח את ה-ID בהדר
+          },
+        });
         if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
 
         const data = await response.json();

@@ -2,14 +2,14 @@ import { NextResponse } from 'next/server';
 import pool from '../../../lib/db';
 import path from 'path';
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(request: Request) {
   try {
-    // השתמש ב-query במקום ב-url
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
+    const id = request.headers.get('property_id');
 
     if (!id) {
-      return NextResponse.json({ error: 'ID parameter is missing' }, { status: 400 });
+      return NextResponse.json({ error: 'ID parameter is missing in headers' }, { status: 400 });
     }
 
     const result = await pool.query(
@@ -27,12 +27,12 @@ export async function GET(request: Request) {
     }
 
     const images = imagePaths.map((imageName: string) => {
-      return path.join(`/pictures/Business/${id}`, imageName); 
+      return path.join(`/pictures/business/${id}`, imageName); 
     });
 
     return NextResponse.json({ images });
   } catch (error) {
-    console.error('Error fetching business images:', error);
+    console.error('Error fetching apartment images:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
