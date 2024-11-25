@@ -26,8 +26,8 @@ const PaymentPage: React.FC = () => {
                 {showDetails && (
                     <div className="mt-4">
                         <h3 className="text-lg font-semibold mb-2 text-center">פרטי יצירת קשר:</h3>
-                        <p className="text-center">טלפון: 050-1234567</p>
-                        <p className="text-center">אימייל: Y@example.com</p>
+                        {/* <p className="text-center">טלפון: 050-1234567</p> */}
+                        <p className="text-center">אימייל: sh0504167870@gmail.com</p>
                     </div>
                 )}
             </div>
