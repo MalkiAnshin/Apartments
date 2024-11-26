@@ -4,30 +4,38 @@ import pool from '../../../lib/db';
 import { v4 as uuidv4 } from 'uuid'; // Make sure you have uuid installed
 
 export async function POST(req) {
-  const { identityNumber, name, email, password } = await req.json(); // Add identityNumber here
+  const { identityNumber, name, email, password } = await req.json();
 
   try {
-    // Check if the user already exists
-    const existingUser = await pool.query('SELECT * FROM users WHERE identity_number = $1', [identityNumber]);
+    // Check if the user already exists by identity number or email
+    const existingUser = await pool.query(
+      'SELECT * FROM users WHERE identity_number = $1 OR email = $2',
+      [identityNumber, email]
+    );
+
     if (existingUser.rows.length > 0) {
-      return NextResponse.json({ message: 'המשתמש כבר קיים' }, { status: 409 });
+      const conflictField = existingUser.rows[0].identity_number === identityNumber 
+        ? 'תעודת זהות' 
+        : 'כתובת אימייל';
+      return NextResponse.json({ message: `המשתמש עם ${conflictField} זה כבר קיים` }, { status: 409 });
     }
 
-    const userId = uuidv4(); // Generate unique user_id
+    // Generate unique user_id
+    const userId = uuidv4();
 
     // Insert the new user into the table
     await pool.query(
       'INSERT INTO users (user_id, username, email, password, identity_number) VALUES ($1, $2, $3, $4, $5)',
-      [userId, name, email, password, identityNumber] // Insert identityNumber
+      [userId, name, email, password, identityNumber]
     );
 
     return NextResponse.json(
       {
         message: 'הרשמה הצליחה',
-        username: name, // Include username
-        userType: 'user', // Set the default userType; modify if necessary
-        userId: identityNumber, // Return the generated userId
-        firstListingFree: false // You can set this to the default value here
+        username: name,
+        userType: 'user', // Default userType
+        userId: identityNumber, // Return the identity number (or userId)
+        firstListingFree: false // Default value
       },
       { status: 201 }
     );

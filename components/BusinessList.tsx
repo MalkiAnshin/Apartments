@@ -1,153 +1,151 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import ContractModal from './ContractModal';
-import BusinessImages from './BusinessImages';
-import CitySelector from './CitySelector';
+import ContractModal from './ContractModal';  // לא השתנה
+import CitySelector from './CitySelector';   // לא השתנה
 
 const BusinessList: React.FC = () => {
-  const [businesses, setBusinesses] = useState<any[]>([]);
+  const [business, setBusiness] = useState<any[]>([]);
   const [selectedBusiness, setSelectedBusiness] = useState<any>(null);
   const [showModal, setShowModal] = useState<boolean>(false);
-  const [showDetails, setShowDetails] = useState<boolean>(false);
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
-
   const [error, setError] = useState<string | null>(null);
+
+  // const storedUser = localStorage.getItem('user');
+  // const userId = storedUser ? JSON.parse(storedUser).userId : null;
+
+
 
   const router = useRouter();
 
   useEffect(() => {
-    // console.log('Component mounted. Initial selected city:', selectedCity);
+    const fetchBusiness = async () => {
+      const query = new URLSearchParams();
+      if (selectedCity) query.append('city', selectedCity);
 
-    if (selectedCity) {
-      const fetchBusinesses = async () => {
-        // console.log('Fetching businesses for city:', selectedCity);
-        try {
-          const response = await fetch(`/api/business?city=${selectedCity}`);
-          // console.log('Response status:', response.status);
+      try {
+        const response = await fetch(`/api/business?${query.toString()}`);
+        if (!response.ok) throw new Error(`Failed to fetch data, status: ${response.status}`);
+        const data = await response.json();
+        setBusiness(data);
+        console.log(data);
+      } catch (err) {
+        console.error("Error fetching business:", err);
+        setError('Error fetching business');
+      }
+    };
 
-          if (!response.ok) {
-            const errorData = await response.json();
-            console.error('Error data:', errorData);
-            throw new Error(`Network response was not ok. Status: ${response.status}, Details: ${JSON.stringify(errorData)}`);
-          }
-
-          const data = await response.json();
-          // console.log('Fetched businesses data:', data);
-
-          if (Array.isArray(data)) {
-            setBusinesses(data);
-            // console.log('Businesses updated successfully:', data);
-          } else {
-            throw new Error('Unexpected data format');
-          }
-        } catch (err) {
-          console.error('Error fetching businesses:', err);
-          setError(`Error fetching businesses: ${err instanceof Error ? err.message : 'An unknown error occurred'}`);
-        }
-      };
-
-      fetchBusinesses();
-    } else {
-      // console.log('No city selected. Skipping fetch.');
-    }
+    if (selectedCity) fetchBusiness();
   }, [selectedCity]);
 
-
-
-
-
-
-
-  const checkContract = async (businessId: string) => {
-    const userId = JSON.parse(localStorage.getItem('user') || '{}').userId || null;
-    // console.log('Checking contract for businessId:', businessId, 'with userId:', userId);
+  const handleBusinessClick = (business: any) => {
+    const storedUser = localStorage.getItem('user');
+    const userId = storedUser ? JSON.parse(storedUser).userId : null;
 
     if (!userId) {
-      console.warn('User not logged in, redirecting to login');
+      router.push('/login');
+      return;
+    }
+
+    console.log("XXXXXXXXXXXXXXXX", business.property_id); // Debugging: הדפיסי את העסק
+    checkContract(business.property_id, "business"); // ודאי ש-property_id קיים ואינו undefined
+    setSelectedBusiness(business);
+  };
+
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedBusiness(null);
+  };
+
+  const checkContract = async (property_id: string, property_type: string) => {
+    const userId = JSON.parse(localStorage.getItem('user') || '{}').userId || null;
+
+    if (!userId) {
       router.push('/login');
       return;
     }
 
     try {
-      const response = await fetch(`/api/moreDetails`, {
+      const payload = { property_id, userId, property_type };
+
+      const response = await fetch(`/api/moreDetailsBusiness`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ businessId, userId }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
       });
 
-      // console.log('Check contract response status:', response.status);
-
       if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Error data from check contract:', errorData);
-        throw new Error(`Network response was not ok. Status: ${response.status}, Details: ${JSON.stringify(errorData)}`);
+        const errorDetails = await response.json();
+        console.error("Error response from server:", errorDetails);
+        throw new Error(`Network response was not ok: ${response.status}`);
       }
 
       const data = await response.json();
-      // console.log('Contract data received:', data);
-      setShowDetails(data.exists);
+      console.log("Received data: ", data);
+
+      if (data.exists) {
+        setSelectedBusiness(prev => ({
+          ...prev,
+          moreDetails: true,
+          additionalDetails: data.additionalDetails,
+        }));
+      } else {
+        setShowModal(true);
+      }
     } catch (err) {
-      console.error('Error checking contract:', err);
       setError(`Error checking contract: ${err instanceof Error ? err.message : 'An unknown error occurred'}`);
+      console.error("Error checking contract:", err);
     }
   };
-
-  const handleBusinessClick = (business: any) => {
-    // console.log('Business clicked:', business);
-    checkContract(business.property_id);
-    setSelectedBusiness(business);
-    setShowModal(true);
-    // console.log('Modal state updated to show for business:', business.property_id);
-  };
-
-  const handleCloseModal = () => {
-    // console.log('Closing modal for business:', selectedBusiness?.property_id);
-    setShowModal(false);
-    setSelectedBusiness(null);
-  };
-
   return (
-    <div className="text-white min-h-screen flex flex-col items-center p-6">
+    <div className="text-white min-h-screen flex flex-col items-center p-6 rtl">
       <div className="w-full max-w-4xl mx-auto">
-        <h1 className="text-2xl font-bold mb-6 text-gold text-center">מצא את העסק המתאים</h1>
+        <h1 className="text-2xl font-bold mb-6 text-gold text-center">מצא את העסק המתאימה</h1>
+
         <CitySelector onCitySelect={setSelectedCity} />
-        {selectedCity && <h2 className="text-2xl font-semibold mb-4 text-gold text-center">עסקים ב{selectedCity}</h2>}
-        {businesses.length > 0 ? (
-          <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {businesses.map(business => (
-              <li key={business.property_id} className="bg-gray-800 p-4 rounded-lg border border-gold cursor-pointer">
-                <p className="text-lg font-medium">שכונה/איזור: {business.neighborhood}</p>
-                <p className="text-md text-gold">מחיר: {business.price} ש"ח</p>
-                <p className="text-sm">חדרים: {business.rooms}</p>
-                <BusinessImages property_id={business.property_id} />
-                <button
-                  className="mt-4 bg-gold text-black px-6 py-2 rounded-md font-semibold"
-                  onClick={() => handleBusinessClick(business)}
-                >
-                  לפרטים נוספים
-                </button>
-                {showModal && selectedBusiness?.property_id === business.property_id && (
-                  <div className="relative z-50">
-                    {showDetails ? (
-                      <div className="text-gold text-center mt-4">
-                        <p className="text-lg font-medium">צור קשר עם המוכר: {business.contact_seller}</p>
-                        <p className="text-md text-gold">כתובת: {business.address}</p>
-                      </div>
-                    ) : (
-                      <ContractModal property_type="business" selectedProperty={selectedBusiness} onClose={handleCloseModal} />
+
+        {selectedCity && (
+          <>
+            <h2 className="text-2xl font-semibold mb-4 text-gold text-center">קרקעות ב{selectedCity}</h2>
+            {business.length > 0 ? (
+              <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {business.map((business_index, index) => (
+                  <li
+                    key={`${business_index.property_id}-${index}`}
+                    className="bg-gray-800 p-4 rounded-lg border border-gold cursor-pointer rtl"
+                  >
+                    <p className="text-lg font-medium">שכונה/איזור: {business_index.neighborhood}</p>
+                    <p className="text-md text-gold">מחיר: {business_index.price} ש"ח</p>
+                    <p className="text-sm">גודל: {business_index.size} מ"ר</p>
+                    <button
+                      className="mt-4 bg-gold text-black px-6 py-2 rounded-md font-semibold"
+                      onClick={() => handleBusinessClick(business_index)}
+                    >
+                      לפרטים נוספים
+                    </button>
+                    {showModal && selectedBusiness?.property_id === business_index.property_id && (
+                      <ContractModal
+                        selectedProperty={selectedBusiness}
+                        property_type="business"
+                        onClose={handleCloseModal}
+                      />
                     )}
-                  </div>
-                )}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          selectedCity && <p className="text-gray-400 text-center">No businesses found for this city.</p>
+                    {selectedBusiness?.property_id === business_index.property_id && !showModal && selectedBusiness?.moreDetails && (
+                      <div className="mt-4 text-gold">
+                        <p>כתובת: {business_index.address}</p>
+                        <p>פרטי יצירת קשר: {business_index.contact_info}</p>
+                      </div>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-center text-xl text-gray-400 mt-4">לא נמצאו בתי עסק מתאימים.</p>
+            )}
+          </>
         )}
-        {error && <p className="text-red-500 text-center">{error}</p>}
       </div>
+      {error && <div className="text-red-600 text-center mt-4">{error}</div>}
     </div>
   );
 };

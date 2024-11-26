@@ -1,26 +1,65 @@
 import { NextResponse } from 'next/server';
-import pool from '../../../lib/db'; // עדכן את הנתיב לקובץ db.ts שלך
+import pool from '../../../lib/db';
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
-  const city = url.searchParams.get('city');
+  const city = url.searchParams.get('city')?.trim();
+  const neighborhood = url.searchParams.get('neighborhood')?.trim();
+  const minPrice = url.searchParams.get('minPrice');
+  const maxPrice = url.searchParams.get('maxPrice');
+  const userType = url.searchParams.get('userType')?.trim();
 
   try {
     const client = await pool.connect();
+    console.log('Database client connected');
 
-    // אם יש פרמטר עיר, מחפשים אדמות בעיר הזו
-    const query = city ? 'SELECT * FROM lands WHERE city = $1' : 'SELECT * FROM lands';
-    const params = city ? [city] : [];
+    // Create basic query and parameter array
+    let query = 'SELECT * FROM lands WHERE 1=1';
+    const params: (string | number)[] = [];
+
+    // Add filters based on provided parameters
+    if (city) {
+      params.push(city);
+      query += ` AND city = $${params.length}`;
+    }
+
+    if (neighborhood) {
+      params.push(neighborhood);
+      query += ` AND neighborhood = $${params.length}`;
+    }
+
+    if (minPrice) {
+      params.push(Number(minPrice));
+      query += ` AND price >= $${params.length}`;
+    }
+
+    if (maxPrice) {
+      params.push(Number(maxPrice));
+      query += ` AND price <= $${params.length}`;
+    }
+
+    if (userType) {
+      params.push(userType);
+      query += ` AND user_type = $${params.length}`;
+    }
+
+    console.log('Final query:', query);
+    console.log('Query parameters:', params);
 
     const { rows } = await client.query(query, params);
     client.release();
 
-    return NextResponse.json(rows); // החזרת התוצאה
+    console.log('Fetched lands:', rows);
+
+    return NextResponse.json(rows);
   } catch (error) {
-    console.error('Error fetching lands:', error); // לוג של שגיאות
-    return NextResponse.json({
-      error: 'Error fetching lands',
-      message: error instanceof Error ? error.message : 'Unknown error'
-    }, { status: 500 });
+    console.error('Error fetching lands:', error);
+    return NextResponse.json(
+      {
+        error: 'Error fetching lands',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      },
+      { status: 500 }
+    );
   }
 }

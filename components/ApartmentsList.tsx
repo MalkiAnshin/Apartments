@@ -49,7 +49,6 @@ const ApartmentList: React.FC = () => {
         if (!response.ok) throw new Error(`Failed to fetch data, status: ${response.status}`);
         const data = await response.json();
         setApartments(data);
-        console.log(data);
 
       } catch (err) {
         console.error("Error fetching apartments:", err);
@@ -64,7 +63,7 @@ const ApartmentList: React.FC = () => {
     if (!userId) {
       router.push('/login');
     }
-    checkContract(apartment.property_id);
+    checkContract(apartment.property_id, "apartment");
     setSelectedApartment(apartment);
   };
 
@@ -73,7 +72,7 @@ const ApartmentList: React.FC = () => {
     setSelectedApartment(null);
   };
 
-  const checkContract = async (apartmentId: string) => {
+  const checkContract = async (apartmentId: string, propertyType: string) => {
     const userId = JSON.parse(localStorage.getItem('user') || '{}').userId || null;
     if (!userId) {
       router.push('/login');
@@ -81,17 +80,15 @@ const ApartmentList: React.FC = () => {
     }
 
     try {
-      const response = await fetch(`/api/moreDetails`, {
+      const response = await fetch(`/api/moreDetailsApartments`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ apartmentId, userId }),
+        body: JSON.stringify({ apartmentId, userId, propertyType }),
       });
 
       if (!response.ok) throw new Error(`Network response was not ok`);
 
       const data = await response.json();
-      console.log("Received data: ", data); // שים לב להדפיס את המידע במונחים של המפתחות
-
 
       if (data.exists) {
         // אם החוזה קיים, אפשר להציג את המידע המלא

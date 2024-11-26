@@ -19,7 +19,27 @@ const LoginPage = () => {
   const { setUser, setUserType, setUserId, setFirstListingFree } = useGlobalContext();
 
 
+
+
+  const isValidIsraeliId = (id: string) => {
+    const idNumber = id.padStart(9, '0'); // משלימים ל-9 ספרות
+    let sum = 0;
+
+    for (let i = 0; i < idNumber.length; i++) {
+      let num = parseInt(idNumber[i]) * (i % 2 === 0 ? 1 : 2);
+      sum += num > 9 ? num - 9 : num;
+    }
+
+    return sum % 10 === 0;
+  };
+
   const handleLogin = async () => {
+
+    if (!isValidIsraeliId(identityNumber)) {
+      setError('מספר הזהות אינו תקין');
+      return;
+    }
+
     if (password.length < 6) {
       setError('הסיסמא חייבת להיות לפחות 6 תווים');
       return;
@@ -67,11 +87,20 @@ const LoginPage = () => {
   };
 
   const handleRegister = async () => {
+
+    if (!isValidIsraeliId(identityNumber)) {
+      setError('מספר הזהות אינו תקין');
+      return;
+    }
+
+
+
+
     if (password.length < 6) {
       setError('הסיסמא חייבת להיות לפחות 6 תווים');
       return;
     }
-  
+
     try {
       const response = await fetch('/api/register', {
         method: 'POST',
@@ -80,15 +109,15 @@ const LoginPage = () => {
         },
         body: JSON.stringify({ identityNumber, name, email, password }),
       });
-  
+
       if (response.ok) {
         const result = await response.json();
         // console.log('Registration successful:', name); // Log on successful registration
-  
+
         // Update global state with user details
-        setUser(name); 
-        setUserType(result.userType as UserType); 
-  
+        setUser(name);
+        setUserType(result.userType as UserType);
+
         // Update global state with userId and firstListingFree
         const userDetails = {
           username: result.username,
@@ -96,13 +125,13 @@ const LoginPage = () => {
           userId: result.userId, // Add userId
           firstListingFree: result.firstListingFree // Add firstListingFree
         };
-  
+
         localStorage.setItem('user', JSON.stringify(userDetails));
         // console.log("User saved to localStorage:", userDetails);
-  
+
         setUserId(result.userId); // Set userId in global state
         setFirstListingFree(result.firstListingFree); // Set firstListingFree in global state
-  
+
         router.push(result.userType === 'admin' ? '/admin/dashboard' : '/');
       } else {
         const result = await response.json();
@@ -114,7 +143,7 @@ const LoginPage = () => {
       setError('שגיאה בשרת, נסה שנית מאוחר יותר');
     }
   };
-  
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-dark-black text-white">
       <div className="bg-black p-8 rounded-lg shadow-lg w-full max-w-sm">
@@ -160,7 +189,7 @@ const LoginPage = () => {
             />
           )}
 
-<div className="relative mb-6">
+          <div className="relative mb-6">
             <input
               type={showPassword ? 'text' : 'password'}
               value={password}
