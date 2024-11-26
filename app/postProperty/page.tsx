@@ -129,6 +129,7 @@ const AddPropertyForm: React.FC = () => {
       if (response.ok) {
         setMessage(`Property added successfully! Property ID: ${data.propertyId}`);
         resetForm();
+        alert('טופס נשלח בהצלחה')
         router.push('/');
         const userDetails = localStorage.getItem('user');
         if (userDetails) {
@@ -344,6 +345,7 @@ const AddPropertyForm: React.FC = () => {
             id="images"
             multiple
             onChange={handleFileChange}
+            accept="image/*"
             className="bg-black bg-opacity-70 text-white p-3 rounded-md w-full focus:outline-none focus:ring focus:ring-gold-300"
           />
         </div>

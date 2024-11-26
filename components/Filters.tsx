@@ -7,7 +7,7 @@ interface FiltersProps {
 
 const Filters: React.FC<FiltersProps> = ({ onPriceChange, onRoomsChange }) => {
   const [minPrice, setMinPrice] = useState(0);
-  const [maxPrice, setMaxPrice] = useState(6000000);
+  const [maxPrice, setMaxPrice] = useState(600000000);
 
   const handleMinPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
@@ -36,7 +36,7 @@ const Filters: React.FC<FiltersProps> = ({ onPriceChange, onRoomsChange }) => {
               type="number"
               id="minPrice"
               min="0"
-              max="6000000"
+              max="600000000"
               step="50000"
               value={minPrice}
               onChange={handleMinPriceChange}
@@ -50,7 +50,7 @@ const Filters: React.FC<FiltersProps> = ({ onPriceChange, onRoomsChange }) => {
               type="number"
               id="maxPrice"
               min="0"
-              max="6000000"
+              max="600000000"
               step="50000"
               value={maxPrice}
               onChange={handleMaxPriceChange}
