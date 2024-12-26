@@ -56,6 +56,16 @@ const HomePage: React.FC = () => {
         <PropertyTypeSelector onSelect={setSelectedType} />
         <div className="mt-6">
           {renderComponent()}
+
+        </div>
+        <div>
+
+
+
+
+
+
+          
         </div>
       </div>
 

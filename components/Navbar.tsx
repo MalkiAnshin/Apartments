@@ -1,3 +1,5 @@
+// components/Navbar.tsx
+
 'use client';
 
 import Link from 'next/link';
@@ -5,23 +7,47 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import UserGreeting from '../components/UserGreeting';
+import AdminLinksContent from './AdminLinksContent';
 
 const Navbar: React.FC = () => {
   const pathname = usePathname();
-  const [role, setRole] = useState<string | null>(null);
+  const [userID, setUserID] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [showAdminLinks, setShowAdminLinks] = useState<boolean>(false);
 
   useEffect(() => {
-    // Retrieve user role from localStorage
-    const storedRole = localStorage.getItem('userRole');
-    setRole(storedRole);
+    // Retrieve userID from localStorage
+    const storedUser = localStorage.getItem('user');
+    const userId = storedUser ? JSON.parse(storedUser).userId : null;
+    setUserID(userId);
   }, []);
 
+  const isSpecialUser = userID === '322385543';
+
+  // Links for everyone
+  const commonLinks = [
+    { href: "/", label: "דף הבית" },
+    { href: "/login", label: "התחברות" },
+    { href: "/contactForm", label: "צור קשר" },
+    { href: "/personalManagement", label: "ניהול מודעות" },
+    { href: "/about", label: "אודות" },
+    { href: "/postProperty", label: "פרסום נכס", special: true },
+  ];
+
+  // Links only for the special user with descriptions
+  const specialLinks = [
+    { href: "/adminInterface/ShowMessages", label: "הצג הודעות", description: "צפה בהודעות שנשלחו למנהל." },
+    { href: "/adminInterface/ShowSoldProperties", label: "ניהול מודעות מנהל", description: "נהל מודעות שנמכרו." },
+    { href: "/adminInterface/ShowUsers", label: "הצגת משתמשים", description: "צפה במשתמשים הרשומים במערכת." },
+    { href: "/adminInterface/ShowApartments", label: "הצגת דירות", description: "צפה ברשימת הדירות המפורסמות." },
+  ];
+
   return (
-    <nav className="bg-luxury-gold text-white p-4">
-      <div className="container mx-auto flex justify-between items-center">
+    <nav className="bg-luxury-gold text-white shadow-md">
+      <div className="container mx-auto flex justify-between items-center p-4">
+        {/* Logo and Greeting */}
         <div className="flex items-center space-x-4">
-          <Link href="/" className="text-xl font-bold">
+          <Link href="/" className="flex items-center space-x-2">
             <Image 
               src="/logo.png" 
               alt="Logo"
@@ -30,63 +56,58 @@ const Navbar: React.FC = () => {
               priority
             />
           </Link>
-          <UserGreeting /> {/* מיקום של UserGreeting בצד שמאל של הלוגו */}
+          <UserGreeting />
         </div>
+
+        {/* Hamburger Menu */}
         <button 
-          className="block lg:hidden text-2xl" 
+          className="block lg:hidden text-2xl focus:outline-none focus:ring-2 focus:ring-yellow-500"
           onClick={() => setIsOpen(!isOpen)}
         >
           {isOpen ? '✖' : '☰'}
         </button>
-        <div className={`flex flex-col lg:flex-row lg:items-center ${isOpen ? 'block' : 'hidden'} lg:flex lg:space-x-6`}>
-          <Link href="/" className={`hover:text-zinc-950 ${pathname === '/' ? 'font-bold' : ''}`}>
-            דף הבית
-          </Link>
-          <Link href="/login" className={`hover:text-zinc-950 ${pathname === '/login' ? 'font-bold' : ''}`}>
-            התחברות
-          </Link>
-          <Link href="/contactForm" className={`hover:text-zinc-950 ${pathname === '/contactForm' ? 'font-bold' : ''}`}>
-            צור קשר
-          </Link>
-          <Link href="/adminInterface/ShowMessages" className={`hover:text-zinc-950 ${pathname === '/adminInterface/ShowMessages' ? 'font-bold' : ''}`}>
-             הצג הודעות
-          </Link>
 
+        {/* Links */}
+        <div className={`lg:flex flex-col lg:flex-row lg:items-center space-y-2 lg:space-y-0 lg:space-x-4 ${isOpen ? 'flex' : 'hidden'} w-full lg:w-auto mt-4 lg:mt-0`}>
+          {/* Common links */}
+          {commonLinks.map((link, index) => (
+            <Link
+              key={index}
+              href={link.href}
+              className={`
+                relative inline-block px-6 py-2 text-center 
+                rounded-lg 
+                bg-opacity-10 transition-all 
+                ${pathname === link.href ? 'bg-white text-black font-bold' : 'hover:bg-yellow-50 hover:text-yellow-500'}
+                border-2 border-yellow-200
+                w-max
+              `}
+            >
+              {link.label}
+            </Link>
+          ))}
 
-          <Link href="/about" className={`hover:text-zinc-950 ${pathname === '/about' ? 'font-bold' : ''}`}>
-            אודות
-          </Link>
-          <Link href="/adminInterface/ShowUsers" className={`hover:text-zinc-950 ${pathname === '/adminInterface/ShowUsers' ? 'font-bold' : ''}`}>
-            הצגת משתמשים
-          </Link>
-          <Link href="/adminInterface/ShowApartments" className={`hover:text-zinc-950 ${pathname === '/adminInterface/ShowApartments' ? 'font-bold' : ''}`}>
-             הצגת דירות
-          </Link>
-
-          <Link 
-            href="/postProperty" 
-            className={`
-              bg-black text-luxury-gold 
-              border-2 border-white rounded-lg px-6 py-3 
-              font-bold shadow-lg transition duration-300
-              ${pathname === '/postProperty' ? 'bg-white text-black' : 'hover:bg-gray-800 hover:text-yellow-400'}
-            `}
-          >
-            פרסום נכס
-          </Link>
-
-          {role === 'admin' && (
-            <>
-              <Link href="/admin/dashboard" className={`hover:text-zinc-950 ${pathname === '/admin/dashboard' ? 'font-bold' : ''}`}>
-                לוח בקרה למנהל
-              </Link>
-              <Link href="/admin/users" className={`hover:text-zinc-950 ${pathname === '/admin/users' ? 'font-bold' : ''}`}>
-                ניהול משתמשים
-              </Link>
-            </>
+          {/* Special button for admin */}
+          {isSpecialUser && (
+            <button
+              onClick={() => setShowAdminLinks(!showAdminLinks)}
+              className={`
+                relative inline-block px-6 py-2 text-center 
+                rounded-lg 
+                bg-opacity-10 transition-all 
+                border-2 border-yellow-200
+                w-max
+                ${showAdminLinks ? 'bg-white text-black font-bold' : 'hover:bg-yellow-50 hover:text-yellow-500'}
+              `}
+            >
+              ניהול כללי
+            </button>
           )}
         </div>
       </div>
+
+      {/* Render AdminLinksContent when "ניהול כללי" is clicked */}
+      {isSpecialUser && showAdminLinks && <AdminLinksContent specialLinks={specialLinks} pathname={pathname} />}
     </nav>
   );
 };

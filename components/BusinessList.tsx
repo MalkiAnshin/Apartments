@@ -42,6 +42,8 @@ const BusinessList: React.FC = () => {
     const userId = storedUser ? JSON.parse(storedUser).userId : null;
 
     if (!userId) {
+      localStorage.setItem("redirectAfterLogin", window.location.pathname);
+
       router.push('/login');
       return;
     }
@@ -61,6 +63,8 @@ const BusinessList: React.FC = () => {
     const userId = JSON.parse(localStorage.getItem('user') || '{}').userId || null;
 
     if (!userId) {
+      localStorage.setItem("redirectAfterLogin", window.location.pathname);
+
       router.push('/login');
       return;
     }

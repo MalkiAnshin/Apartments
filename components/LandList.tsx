@@ -39,6 +39,8 @@ const LandList: React.FC = () => {
 
   const handleLandClick = (land: any) => {
     if (!userId) {
+      localStorage.setItem("redirectAfterLogin", window.location.pathname);
+
       router.push('/login');
     }
     checkContract(land.property_id, "land");
@@ -53,6 +55,8 @@ const LandList: React.FC = () => {
   const checkContract = async (landId: string, propertyType: string) => {
     const userId = JSON.parse(localStorage.getItem('user') || '{}').userId || null;
     if (!userId) {
+      localStorage.setItem("redirectAfterLogin", window.location.pathname);
+
       router.push('/login');
       return;
     }

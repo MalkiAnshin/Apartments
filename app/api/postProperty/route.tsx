@@ -5,42 +5,40 @@ import pool from '../../../lib/db'; // Update the path to your database file
 
 export async function POST(request: Request) {
   try {
-    // console.log('--- Starting POST request to add property ---');
-
     const formData = await request.formData();
 
     // Read apartment details from the request and trim unnecessary spaces
-    const city = (formData.get('city') as string).trim().replace(/\s+/g, ' '); // Trim city
-    const neighborhood = (formData.get('neighborhood') as string).trim().replace(/\s+/g, ' '); // Trim neighborhood
-    const price = (formData.get('price') as string).trim(); // Trim price
-    const rooms = (formData.get('rooms') as string).trim(); // Trim rooms
-    const propertyType = (formData.get('propertyType') as string).trim(); // Get property type
-    const images = formData.getAll('images'); // Array of files
-    const imageNames = images.map((_, index: number) => `${index + 1}.jpg`); // Create names for images (1.jpg, 2.jpg, etc.)
-    const userId = (formData.get('userId') as string).trim(); // Add userId
-    // Additional property fields
+    const city = (formData.get('city') as string | null)?.trim().replace(/\s+/g, ' ') || '';
+    const neighborhood = (formData.get('neighborhood') as string | null)?.trim().replace(/\s+/g, ' ') || '';
+    const price = (formData.get('price') as string | null)?.trim() || '';
+    const rooms = (formData.get('rooms') as string | null)?.trim() || '';
+    const propertyType = (formData.get('propertyType') as string | null)?.trim() || '';
+    const images = formData.getAll('images');
+    const imageNames = images.map((_, index: number) => `${index + 1}.jpg`);
+    const userId = (formData.get('userId') as string | null)?.trim() || '';
     const hasBalcony = formData.get('hasBalcony') === 'true';
-    const floor = parseInt((formData.get('floor') as string).trim(), 10);
-    const contactSeller = (formData.get('contactSeller') as string).trim();
-    const address = (formData.get('address') as string).trim();
+    const floor = parseInt((formData.get('floor') as string)?.trim() || '0', 10);
+    const contactSeller = (formData.get('contactSeller') as string | null)?.trim() || '';
+    const address = (formData.get('address') as string | null)?.trim() || '';
     const elevator = formData.get('elevator') === 'true';
     const warehouse = formData.get('warehouse') === 'true';
     const parking = formData.get('parking') === 'true';
-
-    // Log parsed values for debugging
-    // console.log({
-    //   city, neighborhood, price, rooms, propertyType, userId, hasBalcony, floor,
-    //   contactSeller, address, elevator, warehouse, parking
-    // });
-
-    // Save the property in the database based on its type
+    const isBuilt = formData.get('isBuilt') === 'true';
+    const buildableArea = parseInt((formData.get('buildableArea') as string)?.trim() || '0', 10);
+    
+    // For Business property type
+    const businessType = (formData.get('businessType') as string | null)?.trim() || '';
+    const monthlyYield = (formData.get('monthlyYield') as string | null)?.trim() || '';
+    
+    // For Land property type
+    const size = (formData.get('size') as string | null)?.trim() || '';
+        // Save the property in the database based on its type
     const client = await pool.connect();
+
     let query, values;
+    const imageArray = `{${imageNames.join(',')}}`;  // PostgreSQL array literal for image paths
 
-    // Format imageNames as a PostgreSQL array literal
-    const imageArray = `{${imageNames.join(',')}}`;
-
-    // Query construction based on property type
+    // Construct the query based on property type
     if (propertyType === 'Apartment') {
       query = `
         INSERT INTO apartments (city, neighborhood, price, rooms, image_paths, user_id, has_balcony, floor, contact_seller, address, elevator, warehouse, parking)
@@ -49,55 +47,48 @@ export async function POST(request: Request) {
       values = [city, neighborhood, price, rooms, imageArray, userId, hasBalcony, floor, contactSeller, address, elevator, warehouse, parking];
     } else if (propertyType === 'Project') {
       query = `
-        INSERT INTO projects (city, neighborhood, price, rooms, image_paths)
-        VALUES ($1, $2, $3, $4, $5)
+        INSERT INTO projects (city, neighborhood, price, rooms, image_paths, is_built)
+        VALUES ($1, $2, $3, $4, $5, $6)
         RETURNING property_id`;
-      values = [city, neighborhood, price, rooms, imageArray];
+      values = [city, neighborhood, price, rooms, imageArray, isBuilt];
     } else if (propertyType === 'Land') {
       query = `
-        INSERT INTO lands (city, neighborhood, price, rooms, image_paths)
-        VALUES ($1, $2, $3, $4, $5)
+        INSERT INTO lands (city, neighborhood, price, size, buildable_area, user_id, address, contact_info)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
         RETURNING property_id`;
-      values = [city, neighborhood, price, rooms, imageArray];
+      values = [city, neighborhood, price, size, buildableArea, userId, address, contactSeller];
     } else if (propertyType === 'Business') {
       query = `
-        INSERT INTO business (city, neighborhood, price, rooms, image_paths)
-        VALUES ($1, $2, $3, $4, $5)
+        INSERT INTO business (city, neighborhood, price, size, business_type, monthly_yield, user_id, address, contact_info, image_paths)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
         RETURNING property_id`;
-      values = [city, neighborhood, price, rooms, imageArray];
+      values = [city, neighborhood, price, size, businessType, monthlyYield, userId, address, contactSeller, imageArray];
     } else {
       throw new Error('Invalid property type');
     }
 
     // Insert into the database
-    // console.log('Executing query to insert property into the database');
     const result = await client.query(query, values);
     const propertyId = result.rows[0].property_id;
-    // console.log(`Property inserted with ID: ${propertyId}`);
 
-    // ** Update the user's first_listing_free to TRUE **
+    // Update the user's first_listing_free flag
     const updateQuery = `
       UPDATE users
       SET first_listing_free = TRUE
-      WHERE identity_number = $1
-    `;
+      WHERE identity_number = $1`;
     await client.query(updateQuery, [userId]);
-
-    // console.log(`User ${userId}'s first_listing_free has been updated to TRUE`);
 
     client.release();
 
-    // Create a directory for the property under public/pictures/<property_id>
+    // Create a directory for the property images
     const propertyDir = path.join(process.cwd(), 'public', 'pictures', propertyType, propertyId.toString());
-    // console.log(`Creating directory for property images at: ${propertyDir}`);
     await fs.mkdir(propertyDir, { recursive: true });
 
-    // Save the images in the directory with numeric names (1.jpg, 2.jpg, etc.)
+    // Save the images in the directory
     for (let i = 0; i < images.length; i++) {
       const imageFile = images[i] as File;
       const imageBuffer = Buffer.from(await imageFile.arrayBuffer());
       const filePath = path.join(propertyDir, `${i + 1}.jpg`);
-      // console.log(`Saving image to: ${filePath}`);
       await fs.writeFile(filePath, imageBuffer);
     }
 

@@ -61,6 +61,7 @@ const ApartmentList: React.FC = () => {
 
   const handleApartmentClick = (apartment: any) => {
     if (!userId) {
+      localStorage.setItem("redirectAfterLogin", window.location.pathname);
       router.push('/login');
     }
     checkContract(apartment.property_id, "apartment");
@@ -75,6 +76,7 @@ const ApartmentList: React.FC = () => {
   const checkContract = async (apartmentId: string, propertyType: string) => {
     const userId = JSON.parse(localStorage.getItem('user') || '{}').userId || null;
     if (!userId) {
+      localStorage.setItem("redirectAfterLogin", window.location.pathname);
       router.push('/login');
       return;
     }

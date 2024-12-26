@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import SignaturePad from 'react-signature-canvas';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import { log } from 'console';
 
 const ContractModal: React.FC<{ selectedProperty: any; property_type: string; onClose: () => void }> = ({ selectedProperty, property_type, onClose }) => {
   const [signature, setSignature] = useState<string | null>(null);
@@ -10,6 +11,8 @@ const ContractModal: React.FC<{ selectedProperty: any; property_type: string; on
   const [notes, setNotes] = useState<string>('');
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null); // state for image preview
+  const [idNum, setIdNum] = useState<string>('');
+  
   const property_id = selectedProperty.property_id;
 
   const signaturePadRef = useRef<SignaturePad>(null);
@@ -44,9 +47,16 @@ const ContractModal: React.FC<{ selectedProperty: any; property_type: string; on
   };
 
   const handleCaptureAndSave = async () => {
-    if (!signature || !name || !signed_date || !property_type || !property_id || !notes || !image) {
+    if (! idNum || !signature || !name || !signed_date || !property_type || !property_id || !notes || !image) {
       alert('אנא מלא את כל השדות.');
       return;
+    }
+    if(idNum!=userId) {
+      console.log(`idNum: ${idNum} userId: ${userId}`);
+      alert('מספר זהות לא נכון!')
+      document.querySelector<HTMLInputElement>('input[value="' + idNum + '"]')?.focus(); // החזרת המוקד לשדה
+      return; // עצור את ההליך
+  
     }
 
     if (formRef.current) {
@@ -64,6 +74,7 @@ const ContractModal: React.FC<{ selectedProperty: any; property_type: string; on
 
         // Append form data and PDF file to be sent to the server
         const formData = new FormData();
+        formData.append('idNum', idNum);
         formData.append('signature', signature);
         formData.append('name', name);
         formData.append('signed_date', signed_date);
@@ -120,6 +131,11 @@ const ContractModal: React.FC<{ selectedProperty: any; property_type: string; on
           <label className="block text-sm font-medium mb-2">שם מלא</label>
           <input type="text" value={name} onChange={(e) => setName(e.target.value)} className="w-full px-3 py-2 border rounded" />
         </div>
+        <div className="my-4">
+          <label className="block text-sm font-medium mb-2">מספר זהות</label>
+          <input type="text" value={idNum} onChange={(e) => setIdNum(e.target.value)} className="w-full px-3 py-2 border rounded" />
+        </div>
+
         <label className="block mb-1">תאריך:</label>
         <input
           type="date"

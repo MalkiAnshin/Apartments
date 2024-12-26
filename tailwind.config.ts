@@ -12,8 +12,10 @@ const config: Config = {
         gold: '#D4AF37', // גוון זהב יוקרתי
         white: '#f8fafc',
         black: '#000000', // צבע שחור
-        'luxury-gold': '#a69359',
+        'luxury-gold': '#a69359', // זהב כהה
         darkGray: '#333333', // אפור כהה לשימוש בריחופים
+        'hover-gold': '#C49A29', // צבע זהב כהה יותר למעבר
+        'hover-red': '#C24D47', // אדום כהה למעבר על כפתורים
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",

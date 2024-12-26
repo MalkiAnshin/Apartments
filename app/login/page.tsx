@@ -131,8 +131,10 @@ const LoginPage = () => {
 
         setUserId(result.userId); // Set userId in global state
         setFirstListingFree(result.firstListingFree); // Set firstListingFree in global state
-
-        router.push(result.userType === 'admin' ? '/admin/dashboard' : '/');
+        const redirectUrl = localStorage.getItem("redirectAfterLogin") || "/"; // ברירת מחדל: דף הבית
+        router.push(redirectUrl);
+    
+        // router.push(result.userType === 'admin' ? '/admin/dashboard' : '/');
       } else {
         const result = await response.json();
         console.error('Error during registration:', result.message);
