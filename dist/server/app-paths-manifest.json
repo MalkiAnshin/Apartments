@@ -1,6 +1,8 @@
 {
-  "/api/AdminInterface/ShowApartments/route": "app/api/AdminInterface/ShowApartments/route.js",
-  "/api/AdminInterface/contracts/route": "app/api/AdminInterface/contracts/route.js",
+  "/page": "app/page.js",
   "/adminInterface/ShowApartments/page": "app/adminInterface/ShowApartments/page.js",
-  "/page": "app/page.js"
+  "/api/apartments/route": "app/api/apartments/route.js",
+  "/api/apartmentsPictures/route": "app/api/apartmentsPictures/route.js",
+  "/api/AdminInterface/DeleteApartment/route": "app/api/AdminInterface/DeleteApartment/route.js",
+  "/api/AdminInterface/ShowApartments/route": "app/api/AdminInterface/ShowApartments/route.js"
 }

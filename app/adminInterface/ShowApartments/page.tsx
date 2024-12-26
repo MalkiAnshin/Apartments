@@ -29,6 +29,28 @@ const ShowApartments: React.FC = () => {
     }
   };
 
+  // פונקציה למחיקת דירה
+  const deleteApartment = async (propertyId: string) => {
+    if (!window.confirm('האם אתה בטוח שברצונך למחוק דירה זו?')) {
+      return;
+    }
+    try {
+      const response = await fetch(`/api/AdminInterface/DeleteApartment?property_id=${propertyId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('מחיקה נכשלה');
+      }
+      alert('הדירה נמחקה בהצלחה');
+      // ריענון הרשימה
+      setApartments(apartments.filter((apartment) => apartment.property_id !== propertyId));
+    } catch (err) {
+      setError('Error deleting apartment: ' + (err instanceof Error ? err.message : 'Unknown error'));
+      console.error(err);
+    }
+  };
+
+
   const fetchContracts = async (propertyId: string) => {
     try {
       setSelectedProperty(propertyId); // Highlight the selected property
@@ -119,6 +141,13 @@ const ShowApartments: React.FC = () => {
                   <td className="p-4">{apartment.city}</td>
                   <td className="p-4">{apartment.price}</td>
                   <td className="p-4">{apartment.rooms}</td>
+                  <button
+                    onClick={() => deleteApartment(apartment.property_id)}
+                    className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700"
+                  >
+                    מחק דירה
+                  </button>
+
                   <td className="p-4">
                     <button
                       onClick={() => fetchContracts(apartment.property_id)}
@@ -154,9 +183,9 @@ const ShowApartments: React.FC = () => {
                       <th className="p-4">מזהה חוזה</th>
                       <th className="p-4">מזהה נכס</th>
                       <th className="p-4">סוג נכס</th>
-
                       <th className="p-4 text-center">תאריך</th>
                       <th className="p-4">מזהה משתמש</th>
+
 
                     </tr>
                   </thead>
@@ -187,6 +216,10 @@ const ShowApartments: React.FC = () => {
                           >
                             הצגת צילום ת.ז.
                           </button>
+
+
+
+
                         </td>
                       </tr>
                     ))}
