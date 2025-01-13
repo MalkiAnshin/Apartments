@@ -11,14 +11,10 @@ const ApartmentForm = () => {
   const router = useRouter();
 
   useEffect(() => {
-    console.log("Checking for user data in localStorage...");
     const storedUser = localStorage.getItem('user');
     const user = storedUser ? JSON.parse(storedUser) : null;
     if (user && user.userId) {
-      console.log("User found:", user);
       setUserId(user.userId);
-    } else {
-      console.log("No user found in localStorage.");
     }
   }, []);
 

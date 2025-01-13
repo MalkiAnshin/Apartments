@@ -14,26 +14,38 @@ const AddPropertyForm: React.FC = () => {
   const router = useRouter();
   const { user, userId, firstListingFree, setFirstListingFree } = useGlobalContext();
 
-  useEffect(() => {
+
+  const checkIsUserLogin = () => {
     const storedUser = localStorage.getItem('user');
     const userId = storedUser ? JSON.parse(storedUser).userId : null;
     if (!user) {
       localStorage.setItem("redirectAfterLogin", window.location.pathname);
       alert("משתמש לא מחובר נא לבצע התחברות");
       router.push('/login');
-
-    } else if (userId === 322385543) {
-      console.log("nnnnnnnnn");
+    }
+    if (userId === 322385543) {
+      console.log("משתמש מנהל");
       // משתמש עם userId מסוים נשאר בקומפוננטה
       return;
-  
-    } else if (firstListingFree === true) {
-      console.log("klllll");
 
+    }
+
+  }
+
+  const isUserPostFreeProperty = () => {
+    if (firstListingFree === true) {
+      console.log("משתמש זה ביצע פרסום נכס");
       router.push('/payment');
     }
+
+  }
+
+  useEffect(() => {
+
+    checkIsUserLogin();
+    isUserPostFreeProperty()
   }, []);
-  
+
 
 
   const handlePropertyTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -58,7 +70,7 @@ const AddPropertyForm: React.FC = () => {
   return (
     <div dir="rtl" className="bg-black bg-opacity-30 text-white p-8 rounded-lg shadow-xl max-w-lg mx-auto">
       <h2 className="text-3xl font-bold mb-6 text-center text-gold-300">פרסום נכס</h2>
-      
+
       {/* Property Type Selection */}
       <div>
         <label htmlFor="propertyType" className="block text-sm font-medium mb-2 text-gold-300">סוג נכס</label>

@@ -12,6 +12,9 @@ const ApartmentList: React.FC = () => {
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [filters, setFilters] = useState<{ minPrice?: number; maxPrice?: number; rooms?: string }>({});
   const [error, setError] = useState<string | null>(null);
+  const [isContractChecked, setIsContractChecked] = useState(false); // מצב לבדיקת החוזה
+  const [isLoading, setIsLoading] = useState(false); // מצב להמתנה עד שהחוזה ייבדק
+
 
   const storedUser = localStorage.getItem('user');
   const userId = storedUser ? JSON.parse(storedUser).userId : null;
@@ -64,6 +67,8 @@ const ApartmentList: React.FC = () => {
       localStorage.setItem("redirectAfterLogin", window.location.pathname);
       router.push('/login');
     }
+    setIsLoading(true); // מתחילים את ההמתנה
+
     checkContract(apartment.property_id, "apartment");
     setSelectedApartment(apartment);
   };
@@ -103,8 +108,13 @@ const ApartmentList: React.FC = () => {
         // If contract doesn't exist (false), show the modal
         setShowModal(true);
       }
+      setIsContractChecked(true);
+      setIsLoading(false); // סיימנו את ההמתנה
+
     } catch (err) {
       setError(`Error checking contract: ${err instanceof Error ? err.message : 'An unknown error occurred'}`);
+      setIsLoading(false);
+
     }
   };
 
@@ -138,9 +148,19 @@ const ApartmentList: React.FC = () => {
                     <button
                       className="mt-4 bg-gold text-black px-6 py-2 rounded-md font-semibold"
                       onClick={() => handleApartmentClick(apartment)}
+                      disabled={isLoading} // Disable the button while checking
                     >
-                      לפרטים נוספים
+                      {isLoading ? "בודק..." : "פרטים נוספים"}
                     </button>
+
+                    {/* Only show additional details if contract has been checked */}
+                    {isContractChecked && selectedApartment?.property_id === apartment.property_id && !showModal && (
+                      <div className="mt-4 text-gold">
+                        <p>כתובת: {apartment.address}</p>
+                        <p>פרטי יצירת קשר: {apartment.contact_seller}</p>
+                        {/* Add more fields as needed */}
+                      </div>
+                    )}
                     {showModal && selectedApartment?.property_id === apartment.property_id && (
                       <ContractModal
                         selectedProperty={selectedApartment}
@@ -148,14 +168,7 @@ const ApartmentList: React.FC = () => {
                         onClose={handleCloseModal}
                       />
                     )}
-                    {selectedApartment?.property_id === apartment.property_id && !showModal && (
-                      <div className="mt-4 text-gold">
-                        {/* Show additional apartment details when contract exists */}
-                        <p>כתובת: {apartment.address}</p>
-                        <p>פרטי יצירת קשר: {apartment.contact_seller}</p>
-                        {/* Add more fields as needed */}
-                      </div>
-                    )}
+
                   </li>
                 ))}
               </ul>
