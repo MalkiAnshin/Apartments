@@ -66,6 +66,12 @@ const PersonalManagement = () => {
   const handleDeleteClick = (propertyId: number) => {
     setSelectedPropertyId(propertyId);
 
+    // בודק אם כל השדות מולאו לפני שמוחקים את הנכס
+    if (!formData.soldTo || !formData.soldDate || !formData.soldPrice) {
+      alert('אנא מלא את כל השדות לפני מחיקת הנכס.');
+      return;
+    }
+
     // בקשת DELETE למחיקת הנכס
     fetch(`/api/personalManagement?propertyId=${propertyId}`, {
       method: 'DELETE',
@@ -138,17 +144,17 @@ const PersonalManagement = () => {
 
   if (loading) {
     console.log('Loading data...');
-    return <p className="text-center text-lg">טוען נתונים...</p>;
+    return <p className="text-center text-lg text-gold animate-pulse">טוען נתונים...</p>;
   }
 
   if (error) {
     console.log(`Error occurred: ${error}`);
-    return <p className="text-center text-lg text-red-600">{error}</p>;
+    return <p className="text-center text-lg text-red-500 bg-red-100 p-3 rounded-lg shadow-md">{error}</p>;
   }
 
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-4xl font-semibold text-center text-gold mb-8">ניהול נכסים</h1>
+    <div className="container mx-auto p-6 bg-white/20 backdrop-blur-lg rounded-xl shadow-2xl border border-gold">
+      <h1 className="text-5xl font-bold text-center text-gold mb-8 drop-shadow-lg">ניהול נכסים</h1>
       {properties.length === 0 ? (
         <p className="text-center text-lg text-darkGray">לא נמצאו נכסים.</p>
       ) : (
@@ -156,14 +162,14 @@ const PersonalManagement = () => {
           {properties.map((property) => (
             <li
               key={property.property_id}
-              className="p-6 border border-gold rounded-lg shadow-xl bg-white hover:bg-gold-100 transition-all"
-              onClick={() => handlePropertySelect(property)}  // בחר נכס בעת לחיצה
+              className="p-6 border border-gold rounded-xl shadow-lg bg-white/30 backdrop-blur-md hover:bg-gold/20 transition-all cursor-pointer"
+              onClick={() => handlePropertySelect(property)}
             >
               <p className="text-2xl text-gold font-semibold">כתובת: {property.address}</p>
-              <p className="text-lg text-darkGray">סוג נכס: {property.property_type}</p>
-              <p className="text-lg text-darkGray">מחיר: {property.price} ₪</p>
+              <p className="text-lg text-gray-800">סוג נכס: {property.property_type}</p>
+              <p className="text-lg text-gray-800">מחיר: {property.price} ₪</p>
               <button
-                className="mt-4 px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all"
+                className="mt-4 px-6 py-3 bg-red-500/80 text-white rounded-lg hover:bg-red-700 transition-all shadow-md"
                 onClick={() => handleDeleteClick(property.property_id)}
               >
                 מחק
@@ -174,44 +180,44 @@ const PersonalManagement = () => {
       )}
 
       {selectedPropertyId && (
-        <form onSubmit={handleFormSubmit} className="space-y-4 mt-8">
-          <h2 className="text-xl text-center font-semibold">פרטי מכירה</h2>
+        <form onSubmit={handleFormSubmit} className="space-y-4 mt-8 bg-white/30 backdrop-blur-md p-6 rounded-xl shadow-lg border border-gold">
+          <h2 className="text-2xl text-center font-semibold text-gray-900">פרטי מכירה</h2>
           <div>
-            <label htmlFor="soldTo" className="block">נמכר ל:</label>
+            <label htmlFor="soldTo" className="block text-gray-900">נמכר ל:</label>
             <input
               id="soldTo"
               type="text"
               value={formData.soldTo}
               onChange={(e) => setFormData({ ...formData, soldTo: e.target.value })}
-              className="w-full p-3 border border-gray-300 rounded-lg"
+              className="w-full p-3 border border-gray-300 rounded-lg bg-white/40 backdrop-blur-lg shadow-inner focus:outline-none focus:ring-2 focus:ring-gold"
               required
             />
           </div>
           <div>
-            <label htmlFor="soldDate" className="block">תאריך מכירה:</label>
+            <label htmlFor="soldDate" className="block text-gray-900">תאריך מכירה:</label>
             <input
               id="soldDate"
               type="date"
               value={formData.soldDate}
               onChange={(e) => setFormData({ ...formData, soldDate: e.target.value })}
-              className="w-full p-3 border border-gray-300 rounded-lg"
+              className="w-full p-3 border border-gray-300 rounded-lg bg-white/40 backdrop-blur-lg shadow-inner focus:outline-none focus:ring-2 focus:ring-gold"
               required
             />
           </div>
           <div>
-            <label htmlFor="soldPrice" className="block">מחיר מכירה:</label>
+            <label htmlFor="soldPrice" className="block text-gray-900">מחיר מכירה:</label>
             <input
               id="soldPrice"
               type="number"
               value={formData.soldPrice}
               onChange={(e) => setFormData({ ...formData, soldPrice: e.target.value })}
-              className="w-full p-3 border border-gray-300 rounded-lg"
+              className="w-full p-3 border border-gray-300 rounded-lg bg-white/40 backdrop-blur-lg shadow-inner focus:outline-none focus:ring-2 focus:ring-gold"
               required
             />
           </div>
           <button
             type="submit"
-            className="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition-all"
+            className="w-full bg-yellow-500 text-white py-3 rounded-lg hover:bg-yellow-800 transition-all shadow-md"
           >
             שמור נתוני מכירה
           </button>

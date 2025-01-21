@@ -7,6 +7,7 @@ const ApartmentForm = () => {
   const [cities, setCities] = useState<string[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
   const [formErrors, setFormErrors] = useState<string[]>([]); // State to hold errors
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false); // למנוע לחיצות מרובות
 
   const router = useRouter();
 
@@ -80,7 +81,9 @@ const ApartmentForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+    if (isSubmitting) return; // אם כבר שולחים, לא מאפשרים לחיצה נוספת
+
+    setIsSubmitting(true); // משנים ל-true לפני שליחת הבקשה
 
     console.log("Form submission started...");
     const formData = new FormData();
@@ -103,13 +106,11 @@ const ApartmentForm = () => {
     images.forEach((image) => {
       formData.append('images', image);
     });
-      // Log formData content
-  console.log("Form data to be sent to the server:");
-  formData.forEach((value, key) => {
-    console.log(`${key}:`, value);
-  });
-
-
+    // Log formData content
+    console.log("Form data to be sent to the server:");
+    formData.forEach((value, key) => {
+      console.log(`${key}:`, value);
+    });
 
     if (validateForm(formData)) {
       console.log("Submitting form data to the server...");
@@ -123,17 +124,15 @@ const ApartmentForm = () => {
         console.log("Form submitted successfully:", result);
         alert('נכס נקלט בהצלחה!');
         router.push('/');
-
       } else {
         console.error("Error submitting form:", result.error);
         alert('Error: ' + result.error);
       }
     }
 
+    setIsSubmitting(false); // להחזיר ל-false לאחר סיום השליחה
   };
 
-
-  
   return (
     <form onSubmit={handleSubmit} className="bg-transparent p-6 rounded-lg shadow-lg max-w-lg mx-auto">
       <h2 className="text-3xl font-bold text-center text-gold-500 mb-6">פרסום דירה</h2>
@@ -162,67 +161,68 @@ const ApartmentForm = () => {
               ))}
             </ul>
           )}
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-xl text-white">איזור/שכונה</label>
+          <input type="text" name="neighborhood" required className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-xl text-white">מחיר</label>
+          <input type="number" name="price" required className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-xl text-white">מספר חדרים</label>
+          <input type="number" name="rooms" required className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-xl text-white">קומה</label>
+          <input type="number" name="floor" required className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-xl text-white">דרכי יצירת קשר עם המוכר</label>
+          <input type="text" name="contactSeller" required className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-xl text-white">כתובת</label>
+          <input type="text" name="address" required className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-xl text-white">יש מרפסת?</label>
+          <input type="checkbox" name="hasBalcony" className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-xl text-white">יש מעלית?</label>
+          <input type="checkbox" name="elevator" className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-xl text-white">יש מחסן?</label>
+          <input type="checkbox" name="warehouse" className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-xl text-white">יש חניה</label>
+          <input type="checkbox" name="parking" className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-xl text-white">תמונות הנכס</label>
+          <input type="file" multiple onChange={(e) => setImages(Array.from(e.target.files || []))} className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
+        </div>
+
+        <button type="submit" className="bg-gold-500 text-black py-2 px-4 rounded-lg w-full hover:bg-gold-600" disabled={isSubmitting}>
+          שלח
+        </button>
       </div>
-
-      <div className="flex flex-col">
-        <label className="text-xl text-white">איזור/שכונה</label>
-        <input type="text" name="neighborhood" required className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
-      </div>
-
-      <div className="flex flex-col">
-        <label className="text-xl text-white">מחיר</label>
-        <input type="number" name="price" required className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
-      </div>
-
-      <div className="flex flex-col">
-        <label className="text-xl text-white">מספר חדרים</label>
-        <input type="number" name="rooms" required className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
-      </div>
-
-
-      <div className="flex flex-col">
-        <label className="text-xl text-white">קומה</label>
-        <input type="number" name="floor" required className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
-      </div>
-
-      <div className="flex flex-col">
-        <label className="text-xl text-white">דרכי יצירת קשר עם המוכר</label>
-        <input type="text" name="contactSeller" required className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
-      </div>
-
-      <div className="flex flex-col">
-        <label className="text-xl text-white">כתובת</label>
-        <input type="text" name="address" required className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
-      </div>
-
-      <div className="flex flex-col">
-        <label className="text-xl text-white">יש מרפסת?</label>
-        <input type="checkbox" name="hasBalcony" className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
-      </div>
-
-      <div className="flex flex-col">
-        <label className="text-xl text-white">יש מעלית?</label>
-        <input type="checkbox" name="elevator" className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
-      </div>
-
-      <div className="flex flex-col">
-        <label className="text-xl text-white">יש מחסן?</label>
-        <input type="checkbox" name="warehouse" className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
-      </div>
-
-      <div className="flex flex-col">
-        <label className="text-xl text-white">יש חניה</label>
-        <input type="checkbox" name="parking" className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
-      </div>
-
-      <div className="flex flex-col">
-        <label className="text-xl text-white">תמונות הנכס</label>
-        <input type="file" multiple onChange={(e) => setImages(Array.from(e.target.files || []))} className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
-      </div>
-
-      <button type="submit" className="bg-gold-500 text-black py-2 px-4 rounded-lg w-full hover:bg-gold-600">שלח</button>
-    </div>
-    </form >
+    </form>
   );
 };
 

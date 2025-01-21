@@ -58,7 +58,7 @@ const RandomApartmentsCarousel: React.FC = () => {
 
     return (
         <div className="mt-8 mb-16">
-            <h2 className="text-center text-3xl font-extrabold mb-6 text-gray-800 tracking-wide">
+            <h2 className="text-center text-3xl font-extrabold mb-6 text-yellow-700 tracking-wide">
                 דירות למכירה באתר
             </h2>
             <Slider {...settings}>
@@ -73,7 +73,7 @@ const RandomApartmentsCarousel: React.FC = () => {
                                 <p className="text-lg font-semibold text-gray-800">{`חדרים: ${apartment.rooms}`}</p>
                                 <p className="text-sm text-gray-600">{`שכונת ${apartment.neighborhood}`}</p>
                                 <p className="text-sm text-gray-600">{`עיר: ${apartment.city}`}</p>
-                                <p className="text-xl font-bold text-green-700 mt-3">{`₪${apartment.price.toLocaleString()}`}</p>
+                                <p className="text-xl font-bold text-yellow-700 mt-3">{`₪${apartment.price.toLocaleString()}`}</p>
                             </div>
                         </div>
                     </div>

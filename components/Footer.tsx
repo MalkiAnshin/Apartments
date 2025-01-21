@@ -16,6 +16,8 @@ const Footer: React.FC<FooterProps> = ({ className }) => {
             className="hover:text-zinc-950"
           >
             ❤️ בניית אתרים במגע אישי ומקצועי
+            <br />
+            malki148148@gmail.com
           </a>
         </div>
       </div>

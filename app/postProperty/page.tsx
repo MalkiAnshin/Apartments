@@ -10,7 +10,7 @@ import BusinessForm from '../../components/FormsPostProperty/BusinessForm';
 
 const AddPropertyForm: React.FC = () => {
   const [propertyType, setPropertyType] = useState<string>('Apartment');
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  // const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
   const { user, userId, firstListingFree, setFirstListingFree } = useGlobalContext();
 
@@ -27,9 +27,7 @@ const AddPropertyForm: React.FC = () => {
       console.log("משתמש מנהל");
       // משתמש עם userId מסוים נשאר בקומפוננטה
       return;
-
     }
-
   }
 
   const isUserPostFreeProperty = () => {
