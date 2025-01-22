@@ -1,7 +1,7 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import pool from '../../../../../../lib/db';
 
-export async function GET(req: Request, { params }: { params: { identityNumber: string } }) {
+export async function GET(req: NextRequest, { params }: { params: { identityNumber: string } }) {
   const { identityNumber } = params;
 
   console.log(`Received GET request for identityNumber: ${identityNumber}`); // לוג קבלת הבקשה עם מזהה הזהות
@@ -17,10 +17,10 @@ export async function GET(req: Request, { params }: { params: { identityNumber: 
       return NextResponse.json({ error: 'משתמש לא נמצא' }, { status: 404 });
     }
 
-    console.log(`User found: ${user.rows[0].NAME}, identity number: ${identityNumber}`); // לוג אם נמצא משתמש
+    console.log(`User found: ${user.rows[0].username}, identity number: ${identityNumber}`); // לוג אם נמצא משתמש
     return NextResponse.json({
       name: user.rows[0].username,
-      identityNumber: user.rows[0].IDENTITY_NUMBER,
+      identityNumber: user.rows[0].identity_number,
     });
   } catch (err) {
     console.error('Error during GET request:', err); // לוג במקרה של שגיאה בשרת
@@ -28,13 +28,13 @@ export async function GET(req: Request, { params }: { params: { identityNumber: 
   }
 }
 
-export async function PATCH(req: Request, { params }: { params: { identityNumber: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: { identityNumber: string } }) {
   const { identityNumber } = params;
 
   console.log("Received PATCH request for identityNumber:", identityNumber); // לוג קבלת הבקשה עם מזהה הזהות
 
   try {
-    const updateQuery = `UPDATE USERS SET first_listing_free = FALSE WHERE IDENTITY_NUMBER = $1`;
+    const updateQuery = `UPDATE USERS SET first_listing_free = FALSE WHERE identity_number = $1`;
     console.log("Executing UPDATE query:", updateQuery, "with identityNumber:", identityNumber); // לוג של השאילתא לעדכון
 
     const result = await pool.query(updateQuery, [identityNumber]); // השתמש ב-pool.query במקום pool()
