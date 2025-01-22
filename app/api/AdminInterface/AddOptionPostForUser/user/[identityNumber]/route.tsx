@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic';
 
 // פונקציית GET
 export async function GET(req: NextRequest, { params }: { params: { identityNumber: string } }) {
-  const { identityNumber } = params; // ניגש ישירות לפרמטרים שהגיעו מה-URL
+  const { identityNumber } = params; // גישה נכונה לפרמטר דרך params
 
   console.log(`Received GET request for identityNumber: ${identityNumber}`); // לוג קבלת הבקשה עם מזהה הזהות
 
@@ -32,7 +32,7 @@ export async function GET(req: NextRequest, { params }: { params: { identityNumb
 
 // פונקציית PATCH
 export async function PATCH(req: NextRequest, { params }: { params: { identityNumber: string } }) {
-  const { identityNumber } = params; // ניגש ישירות לפרמטרים שהגיעו מה-URL
+  const { identityNumber } = params; // גישה נכונה לפרמטר דרך params
 
   console.log("Received PATCH request for identityNumber:", identityNumber); // לוג קבלת הבקשה עם מזהה הזהות
 
