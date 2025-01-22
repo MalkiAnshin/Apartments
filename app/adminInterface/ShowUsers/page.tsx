@@ -45,6 +45,7 @@ const ShowUsers: React.FC = () => {
   const fetchApartments = async (identity_number: string) => {
     try {
       const response = await fetch(`/api/AdminInterface/users/${identity_number}/apartments`);
+
       if (!response.ok) {
         throw new Error('שגיאה בזמן קבלת הדירות');
       }

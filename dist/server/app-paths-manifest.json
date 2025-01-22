@@ -1,5 +1,7 @@
 {
   "/page": "app/page.js",
-  "/api/random-apartments/route": "app/api/random-apartments/route.js",
-  "/api/apartmentsPictures/route": "app/api/apartmentsPictures/route.js"
+  "/adminInterface/ShowUsers/page": "app/adminInterface/ShowUsers/page.js",
+  "/api/AdminInterface/ShowUsers/route": "app/api/AdminInterface/ShowUsers/route.js",
+  "/api/AdminInterface/users/[identity_number]/apartments/route": "app/api/AdminInterface/users/[identity_number]/apartments/route.js",
+  "/api/AdminInterface/users/[identity_number]/contracts/route": "app/api/AdminInterface/users/[identity_number]/contracts/route.js"
 }
