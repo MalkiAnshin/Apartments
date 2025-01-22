@@ -3,8 +3,9 @@ import pool from '../../../../../../lib/db';
 
 export const dynamic = 'force-dynamic';
 
+// פונקציית GET
 export async function GET(req: NextRequest, { params }: { params: { identityNumber: string } }) {
-  const { identityNumber } = params; // ניגש ישירות ל-params
+  const { identityNumber } = params; // ניגש ישירות לפרמטרים שהגיעו מה-URL
 
   console.log(`Received GET request for identityNumber: ${identityNumber}`); // לוג קבלת הבקשה עם מזהה הזהות
 
@@ -19,7 +20,6 @@ export async function GET(req: NextRequest, { params }: { params: { identityNumb
       return NextResponse.json({ error: 'משתמש לא נמצא' }, { status: 404 });
     }
 
-    console.log(`User found: ${user.rows[0].username}, identity number: ${identityNumber}`); // לוג אם נמצא משתמש
     return NextResponse.json({
       name: user.rows[0].username,
       identityNumber: user.rows[0].identity_number,
@@ -30,8 +30,9 @@ export async function GET(req: NextRequest, { params }: { params: { identityNumb
   }
 }
 
+// פונקציית PATCH
 export async function PATCH(req: NextRequest, { params }: { params: { identityNumber: string } }) {
-  const { identityNumber } = params; // ניגש ישירות ל-params
+  const { identityNumber } = params; // ניגש ישירות לפרמטרים שהגיעו מה-URL
 
   console.log("Received PATCH request for identityNumber:", identityNumber); // לוג קבלת הבקשה עם מזהה הזהות
 
