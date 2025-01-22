@@ -1,7 +1,4 @@
 {
-  "/api/apartmentsPictures/route": "app/api/apartmentsPictures/route.js",
   "/page": "app/page.js",
-  "/api/random-apartments/route": "app/api/random-apartments/route.js",
-  "/adminInterface/AddOptionPostForUser/page": "app/adminInterface/AddOptionPostForUser/page.js",
-  "/api/AdminInterface/AddOptionPostForUser/user/[identityNumber]/route": "app/api/AdminInterface/AddOptionPostForUser/user/[identityNumber]/route.js"
+  "/adminInterface/AddOptionPostForUser/page": "app/adminInterface/AddOptionPostForUser/page.js"
 }
