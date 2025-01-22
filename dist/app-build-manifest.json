@@ -1,109 +1,21 @@
 {
   "pages": {
-    "/_not-found/page": [
-      "static/chunks/webpack-db25590c566d1e44.js",
-      "static/chunks/fd9d1056-14acb22f2f4a4090.js",
-      "static/chunks/117-61df89c0c2ff203d.js",
-      "static/chunks/main-app-ec07cd907843b704.js",
-      "static/chunks/app/_not-found/page-1f9c7890e116648e.js"
+    "/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/page.css",
+      "static/chunks/app/page.js"
     ],
     "/layout": [
-      "static/chunks/webpack-db25590c566d1e44.js",
-      "static/chunks/fd9d1056-14acb22f2f4a4090.js",
-      "static/chunks/117-61df89c0c2ff203d.js",
-      "static/chunks/main-app-ec07cd907843b704.js",
-      "static/css/9cdb3687c0888f4d.css",
-      "static/chunks/b536a0f1-60628ee1cf2d36b9.js",
-      "static/chunks/423-6260ee03a38f005d.js",
-      "static/chunks/app/layout-c505c9c0ee8d5e76.js"
-    ],
-    "/about/page": [
-      "static/chunks/webpack-db25590c566d1e44.js",
-      "static/chunks/fd9d1056-14acb22f2f4a4090.js",
-      "static/chunks/117-61df89c0c2ff203d.js",
-      "static/chunks/main-app-ec07cd907843b704.js",
-      "static/chunks/app/about/page-46e55fc706366733.js"
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/layout.css",
+      "static/chunks/app/layout.js"
     ],
     "/adminInterface/AddOptionPostForUser/page": [
-      "static/chunks/webpack-db25590c566d1e44.js",
-      "static/chunks/fd9d1056-14acb22f2f4a4090.js",
-      "static/chunks/117-61df89c0c2ff203d.js",
-      "static/chunks/main-app-ec07cd907843b704.js",
-      "static/chunks/app/adminInterface/AddOptionPostForUser/page-59e53ae8e73d5a2f.js"
-    ],
-    "/adminInterface/ShowApartments/page": [
-      "static/chunks/webpack-db25590c566d1e44.js",
-      "static/chunks/fd9d1056-14acb22f2f4a4090.js",
-      "static/chunks/117-61df89c0c2ff203d.js",
-      "static/chunks/main-app-ec07cd907843b704.js",
-      "static/chunks/app/adminInterface/ShowApartments/page-94d2f00dc51b7714.js"
-    ],
-    "/adminInterface/ShowSoldProperties/page": [
-      "static/chunks/webpack-db25590c566d1e44.js",
-      "static/chunks/fd9d1056-14acb22f2f4a4090.js",
-      "static/chunks/117-61df89c0c2ff203d.js",
-      "static/chunks/main-app-ec07cd907843b704.js",
-      "static/chunks/app/adminInterface/ShowSoldProperties/page-96a6c3cc301348d1.js"
-    ],
-    "/adminInterface/ShowMessages/page": [
-      "static/chunks/webpack-db25590c566d1e44.js",
-      "static/chunks/fd9d1056-14acb22f2f4a4090.js",
-      "static/chunks/117-61df89c0c2ff203d.js",
-      "static/chunks/main-app-ec07cd907843b704.js",
-      "static/chunks/app/adminInterface/ShowMessages/page-fbcf13ada8c26be5.js"
-    ],
-    "/adminInterface/ShowUsers/page": [
-      "static/chunks/webpack-db25590c566d1e44.js",
-      "static/chunks/fd9d1056-14acb22f2f4a4090.js",
-      "static/chunks/117-61df89c0c2ff203d.js",
-      "static/chunks/main-app-ec07cd907843b704.js",
-      "static/chunks/app/adminInterface/ShowUsers/page-724398cb8a2fee33.js"
-    ],
-    "/contactForm/page": [
-      "static/chunks/webpack-db25590c566d1e44.js",
-      "static/chunks/fd9d1056-14acb22f2f4a4090.js",
-      "static/chunks/117-61df89c0c2ff203d.js",
-      "static/chunks/main-app-ec07cd907843b704.js",
-      "static/chunks/app/contactForm/page-2ff69435f379a1aa.js"
-    ],
-    "/login/page": [
-      "static/chunks/webpack-db25590c566d1e44.js",
-      "static/chunks/fd9d1056-14acb22f2f4a4090.js",
-      "static/chunks/117-61df89c0c2ff203d.js",
-      "static/chunks/main-app-ec07cd907843b704.js",
-      "static/chunks/app/login/page-4466951eccb8152a.js"
-    ],
-    "/page": [
-      "static/chunks/webpack-db25590c566d1e44.js",
-      "static/chunks/fd9d1056-14acb22f2f4a4090.js",
-      "static/chunks/117-61df89c0c2ff203d.js",
-      "static/chunks/main-app-ec07cd907843b704.js",
-      "static/css/3a24c022f69a36a9.css",
-      "static/chunks/164f4fb6-1cd4dcee910fd773.js",
-      "static/chunks/ad2866b8-1b5280da7a09469f.js",
-      "static/chunks/808-9b75bbee7e612649.js",
-      "static/chunks/app/page-dca65824f4801f0d.js"
-    ],
-    "/payment/page": [
-      "static/chunks/webpack-db25590c566d1e44.js",
-      "static/chunks/fd9d1056-14acb22f2f4a4090.js",
-      "static/chunks/117-61df89c0c2ff203d.js",
-      "static/chunks/main-app-ec07cd907843b704.js",
-      "static/chunks/app/payment/page-fd4b0f927ea50846.js"
-    ],
-    "/postProperty/page": [
-      "static/chunks/webpack-db25590c566d1e44.js",
-      "static/chunks/fd9d1056-14acb22f2f4a4090.js",
-      "static/chunks/117-61df89c0c2ff203d.js",
-      "static/chunks/main-app-ec07cd907843b704.js",
-      "static/chunks/app/postProperty/page-f7427e1480b8d0ad.js"
-    ],
-    "/personalManagement/page": [
-      "static/chunks/webpack-db25590c566d1e44.js",
-      "static/chunks/fd9d1056-14acb22f2f4a4090.js",
-      "static/chunks/117-61df89c0c2ff203d.js",
-      "static/chunks/main-app-ec07cd907843b704.js",
-      "static/chunks/app/personalManagement/page-d836cf9a755723c6.js"
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/adminInterface/AddOptionPostForUser/page.js"
     ]
   }
 }

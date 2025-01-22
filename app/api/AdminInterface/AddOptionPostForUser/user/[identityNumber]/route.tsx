@@ -2,7 +2,7 @@ import { NextResponse, NextRequest } from 'next/server';
 import pool from '../../../../../../lib/db';
 
 export async function GET(req: NextRequest, { params }: { params: { identityNumber: string } }) {
-  const { identityNumber } = params;
+  const { identityNumber } = params; // ניגש ישירות ל-params
 
   console.log(`Received GET request for identityNumber: ${identityNumber}`); // לוג קבלת הבקשה עם מזהה הזהות
 
@@ -29,7 +29,7 @@ export async function GET(req: NextRequest, { params }: { params: { identityNumb
 }
 
 export async function PATCH(req: NextRequest, { params }: { params: { identityNumber: string } }) {
-  const { identityNumber } = params;
+  const { identityNumber } = params; // ניגש ישירות ל-params
 
   console.log("Received PATCH request for identityNumber:", identityNumber); // לוג קבלת הבקשה עם מזהה הזהות
 
