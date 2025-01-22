@@ -2,8 +2,8 @@ import { NextResponse } from 'next/server';
 import pool from '../../../../../../lib/db'; // נתיב מותאם לקובץ ה-DB
 export const dynamic = 'force-dynamic';
 
-export async function GET(request: Request, { params }: { params: { identity_number: string } }) {
-  const { identity_number } = params;
+export async function GET(request: Request, context: { params: { identity_number: string } }) {
+  const { identity_number } = context.params;
 
   try {
     const client = await pool.connect();
