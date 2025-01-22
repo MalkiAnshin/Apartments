@@ -1,0 +1,5 @@
+{
+  "/api/random-apartments/route": "app/api/random-apartments/route.js",
+  "/api/apartmentsPictures/route": "app/api/apartmentsPictures/route.js",
+  "/page": "app/page.js"
+}
