@@ -57,8 +57,8 @@ const RandomApartmentsCarousel: React.FC = () => {
     }
 
     return (
-        <div className="mt-8 mb-16">
-            <h2 className="text-center text-3xl font-extrabold mb-6 text-yellow-700 tracking-wide">
+        <div className="pt-16 mb-16">
+            <h2 className="text-center text-3xl font-extrabold mb-6 text-gray-50 tracking-wide">
                 דירות למכירה באתר
             </h2>
             <Slider {...settings}>
