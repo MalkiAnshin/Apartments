@@ -39,7 +39,7 @@ const Navbar: React.FC = () => {
     { href: "/adminInterface/ShowMessages", label: "הצג הודעות", description: "צפה בהודעות שנשלחו למנהל." },
     { href: "/adminInterface/ShowSoldProperties", label: "ניהול מודעות מנהל", description: "נהל מודעות שנמכרו." },
     { href: "/adminInterface/ShowUsers", label: "הצגת משתמשים", description: "צפה במשתמשים הרשומים במערכת." },
-    { href: "/adminInterface/ShowApartments", label: "הצגת דירות", description: "צפה ברשימת הדירות המפורסמות." },
+    { href: "/adminInterface/PropertySelector", label: "הצגת נכסים", description: "צפה ברשימת הנכסים המפורסמים." },
     { href: "/adminInterface/AddOptionPostForUser", label: "הוספת אפשרות פרסום", description: "הוספת אפשרות פרסום נכס למשתמש ששילם." },
 
   ];

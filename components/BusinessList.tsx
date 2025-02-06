@@ -27,7 +27,6 @@ const BusinessList: React.FC = () => {
         if (!response.ok) throw new Error(`Failed to fetch data, status: ${response.status}`);
         const data = await response.json();
         setBusiness(data);
-        console.log(data);
       } catch (err) {
         console.error("Error fetching business:", err);
         setError('Error fetching business');
@@ -48,7 +47,6 @@ const BusinessList: React.FC = () => {
       return;
     }
 
-    console.log("XXXXXXXXXXXXXXXX", business.property_id); // Debugging: הדפיסי את העסק
     checkContract(business.property_id, "business"); // ודאי ש-property_id קיים ואינו undefined
     setSelectedBusiness(business);
   };
@@ -85,7 +83,6 @@ const BusinessList: React.FC = () => {
       }
 
       const data = await response.json();
-      console.log("Received data: ", data);
 
       if (data.exists) {
         setSelectedBusiness(prev => ({
@@ -104,13 +101,13 @@ const BusinessList: React.FC = () => {
   return (
     <div className="text-white min-h-screen flex flex-col items-center p-6 rtl">
       <div className="w-full max-w-4xl mx-auto">
-        <h1 className="text-2xl font-bold mb-6 text-gold text-center">מצא את העסק המתאימה</h1>
+        <h1 className="text-2xl font-bold mb-6 text-gold text-center">מצא את העסק המתאים</h1>
 
         <CitySelector onCitySelect={setSelectedCity} />
 
         {selectedCity && (
           <>
-            <h2 className="text-2xl font-semibold mb-4 text-gold text-center">קרקעות ב{selectedCity}</h2>
+            <h2 className="text-2xl font-semibold mb-4 text-gold text-center">בתי עסק ב{selectedCity}</h2>
             {business.length > 0 ? (
               <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {business.map((business_index, index) => (
@@ -121,6 +118,9 @@ const BusinessList: React.FC = () => {
                     <p className="text-lg font-medium">שכונה/איזור: {business_index.neighborhood}</p>
                     <p className="text-md text-gold">מחיר: {business_index.price} ש"ח</p>
                     <p className="text-sm">גודל: {business_index.size} מ"ר</p>
+                    <p className="text-sm">סוג נכס: {business_index.business_type}</p>
+                    <p className="text-sm">תשואה חודשית: {business_index.monthly_yield} ש"ח</p>
+
                     <button
                       className="mt-4 bg-gold text-black px-6 py-2 rounded-md font-semibold"
                       onClick={() => handleBusinessClick(business_index)}

@@ -1,7 +1,10 @@
 {
-  "/page": "app/page.js",
-  "/adminInterface/ShowUsers/page": "app/adminInterface/ShowUsers/page.js",
-  "/api/AdminInterface/ShowUsers/route": "app/api/AdminInterface/ShowUsers/route.js",
-  "/api/AdminInterface/users/[identity_number]/apartments/route": "app/api/AdminInterface/users/[identity_number]/apartments/route.js",
-  "/api/AdminInterface/users/[identity_number]/contracts/route": "app/api/AdminInterface/users/[identity_number]/contracts/route.js"
+  "/adminInterface/PropertySelector/page": "app/adminInterface/PropertySelector/page.js",
+  "/adminInterface/ShowAsset/ShowBusiness/page": "app/adminInterface/ShowAsset/ShowBusiness/page.js",
+  "/adminInterface/ShowAsset/ShowLands/page": "app/adminInterface/ShowAsset/ShowLands/page.js",
+  "/adminInterface/ShowAsset/ShowProjects/page": "app/adminInterface/ShowAsset/ShowProjects/page.js",
+  "/api/AdminInterface/DeletedAsset/DeleteBusiness/route": "app/api/AdminInterface/DeletedAsset/DeleteBusiness/route.js",
+  "/adminInterface/ShowAsset/ShowApartments/page": "app/adminInterface/ShowAsset/ShowApartments/page.js",
+  "/api/AdminInterface/ShowAsset/ShowApartments/route": "app/api/AdminInterface/ShowAsset/ShowApartments/route.js",
+  "/api/AdminInterface/DeletedAsset/DeleteApartment/route": "app/api/AdminInterface/DeletedAsset/DeleteApartment/route.js"
 }

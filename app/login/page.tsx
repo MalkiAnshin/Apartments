@@ -76,6 +76,12 @@ const LoginPage = () => {
         setUserId(result.userId); // Set userId in global state
         setFirstListingFree(result.firstListingFree); // Set firstListingFree in global state
         router.push(result.userType === 'admin' ? '/admin/dashboard' : '/');
+
+
+
+        const redirectUrl = localStorage.getItem("redirectAfterLogin") || "/"; // ברירת מחדל: דף הבית
+        router.push(redirectUrl); // הפנה לדף המטרה
+
       } else {
         console.error('Error during login:', result.message);
         setError(result.message || 'התרחשה שגיאה');
@@ -133,7 +139,7 @@ const LoginPage = () => {
         setFirstListingFree(result.firstListingFree); // Set firstListingFree in global state
         const redirectUrl = localStorage.getItem("redirectAfterLogin") || "/"; // ברירת מחדל: דף הבית
         router.push(redirectUrl);
-    
+
         // router.push(result.userType === 'admin' ? '/admin/dashboard' : '/');
       } else {
         const result = await response.json();

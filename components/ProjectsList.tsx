@@ -1,173 +1,157 @@
 import React, { useEffect, useState } from 'react';
-import ContractModal from './ContractModal'; // Import the ContractModal component
+import { useRouter } from 'next/navigation';
+import ContractModal from './ContractModal';  // לא השתנה
+import CitySelector from './CitySelector';   // לא השתנה
 
-const ProjectsList: React.FC = () => {
-  const [cities, setCities] = useState<string[]>([]);
-  const [filteredCities, setFilteredCities] = useState<string[]>([]);
-  const [selectedCity, setSelectedCity] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const [projects, setProjects] = useState<any[]>([]);
-  const [selectedProject, setSelectedProject] = useState<any>(null);
+const BusinessList: React.FC = () => {
+  const [business, setBusiness] = useState<any[]>([]);
+  const [selectedBusiness, setSelectedBusiness] = useState<any>(null);
   const [showModal, setShowModal] = useState<boolean>(false);
+  const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // const storedUser = localStorage.getItem('user');
+  // const userId = storedUser ? JSON.parse(storedUser).userId : null;
+
+
+
+  const router = useRouter();
+
   useEffect(() => {
-    const fetchCities = async () => {
+    const fetchBusiness = async () => {
+      const query = new URLSearchParams();
+      if (selectedCity) query.append('city', selectedCity);
+
       try {
-        const response = await fetch('https://data.gov.il/api/3/action/datastore_search?resource_id=d4901968-dad3-4845-a9b0-a57d027f11ab');
-        if (!response.ok) throw new Error('Network response was not ok');
+        const response = await fetch(`/api/business?${query.toString()}`);
+        if (!response.ok) throw new Error(`Failed to fetch data, status: ${response.status}`);
         const data = await response.json();
-        if (data.success && data.result && data.result.records) {
-          const cityList: string[] = data.result.records
-            .map((record: any) => record['שם_ישוב'])
-            .filter((city: string) => city !== '');
-          setCities(cityList);
-        } else {
-          throw new Error('Unexpected data format');
-        }
+        setBusiness(data);
       } catch (err) {
-        if (err instanceof Error) {
-          setError('Error fetching cities: ' + err.message);
-        } else {
-          setError('An unknown error occurred');
-        }
-        console.error('Error fetching cities:', err);
+        console.error("Error fetching business:", err);
+        setError('Error fetching business');
       }
     };
 
-    fetchCities();
-  }, []);
-
-  useEffect(() => {
-    setFilteredCities(cities.filter((city: string) => city.toLowerCase().includes(searchTerm.toLowerCase())));
-  }, [searchTerm, cities]);
-
-  useEffect(() => {
-    console.log("use effect selectedCity", selectedCity);
-    if (selectedCity) {
-      const fetchProjects = async () => {
-        try {
-          console.log(`Fetching projects for city: ${selectedCity}`); // Log before API call
-          const response = await fetch(`/api/projects?city=${selectedCity}`);
-          console.log(`Response status: ${response.status}`); // Log response status
-
-          if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(`Network response was not ok. Status: ${response.status}, Details: ${JSON.stringify(errorData)}`);
-          }
-          const data = await response.json();
-          console.log('Fetched projects:', data); // Log fetched data
-
-          if (Array.isArray(data)) {
-            setProjects(data);
-            console.log('Updated projects state:', data); // Log updated state
-          } else {
-            throw new Error('Unexpected data format');
-          }
-        } catch (err) {
-          if (err instanceof Error) {
-            setError('Error fetching projects: ' + err.message);
-          } else {
-            setError('An unknown error occurred');
-          }
-          console.error('Error fetching projects:', err);
-        }
-      };
-
-      fetchProjects();
-    }
+    if (selectedCity) fetchBusiness();
   }, [selectedCity]);
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
-    const str = event.target.value.toLowerCase();
-    setFilteredCities(cities.filter((city: string) => city.toLowerCase().includes(str)));
+  const handleBusinessClick = (business: any) => {
+    const storedUser = localStorage.getItem('user');
+    const userId = storedUser ? JSON.parse(storedUser).userId : null;
+
+    if (!userId) {
+      localStorage.setItem("redirectAfterLogin", window.location.pathname);
+
+      router.push('/login');
+      return;
+    }
+
+    checkContract(business.property_id, "business"); // ודאי ש-property_id קיים ואינו undefined
+    setSelectedBusiness(business);
   };
 
-  const handleCitySelect = (city: string) => {
-    console.log('Selected city before update:', selectedCity); // Log before state update
-    setSelectedCity(city);
-    console.log('Selected city after update:', city); // Log after state update
-    setSearchTerm('');
-    console.log('Search term after update:', ''); // Log search term update
-  };
-
-  const handleProjectClick = (project: any) => {
-    setSelectedProject(project);
-    setShowModal(true);
-  };
 
   const handleCloseModal = () => {
-    console.log('Closing modal. Selected project:', selectedProject); // Log selected project before closing modal
     setShowModal(false);
-    console.log('Modal state after closing:', showModal); // Log modal state after closing
-    setSelectedProject(null);
+    setSelectedBusiness(null);
   };
 
-  console.log(projects); // Log projects state
+  const checkContract = async (property_id: string, property_type: string) => {
+    const userId = JSON.parse(localStorage.getItem('user') || '{}').userId || null;
 
+    if (!userId) {
+      localStorage.setItem("redirectAfterLogin", window.location.pathname);
+
+      router.push('/login');
+      return;
+    }
+
+    try {
+      const payload = { property_id, userId, property_type };
+
+      const response = await fetch(`/api/moreDetailsBusiness`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorDetails = await response.json();
+        console.error("Error response from server:", errorDetails);
+        throw new Error(`Network response was not ok: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data.exists) {
+        setSelectedBusiness(prev => ({
+          ...prev,
+          moreDetails: true,
+          additionalDetails: data.additionalDetails,
+        }));
+      } else {
+        setShowModal(true);
+      }
+    } catch (err) {
+      setError(`Error checking contract: ${err instanceof Error ? err.message : 'An unknown error occurred'}`);
+      console.error("Error checking contract:", err);
+    }
+  };
   return (
-    <div className="bg-black text-white min-h-screen flex flex-col items-center p-6">
+    <div className="text-white min-h-screen flex flex-col items-center p-6 rtl">
       <div className="w-full max-w-4xl mx-auto">
-        <h1 className="text-2xl font-bold mb-6 text-gold text-center">מצא את הפרויקט המתאים</h1>
-        {error && <div className="text-red-600 mb-4 text-center">Error: {error}</div>}
-        <div className="mb-4">
-          <label htmlFor="city-search" className="block text-lg font-semibold mb-2 text-center">בחר עיר:</label>
-          <input
-            id="city-search"
-            type="text"
-            placeholder="...הקלד שם העיר"
-            value={searchTerm}
-            onChange={handleSearchChange}
-            className="bg-gray-800 text-white border border-gold rounded-md px-4 py-2 w-full"
-          />
-          {searchTerm && (
-            <ul className="mt-2 bg-gray-800 border border-gold rounded-md">
-              {filteredCities.map((city: string, index: number) => (
-                <li
-                  key={index}
-                  onClick={() => handleCitySelect(city)}
-                  className="px-4 py-2 cursor-pointer hover:bg-gray-700"
-                >
-                  {city}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-        {selectedCity && (
-          <h2 className="text-2xl font-semibold mb-4 text-gold text-center">
-            פרויקטים ב{selectedCity}
-          </h2>
-        )}
-        {projects.length > 0 ? (
-          <ul className="space-y-4">
-            {projects.map((project, index) => (
-              <li
-                key={project.property_id}
-                className="bg-gray-800 p-4 rounded-lg border border-gold cursor-pointer"
-                onClick={() => handleProjectClick(project)}
-              >
-                <p className="text-lg font-medium">שכונה/איזור: {project.neighborhood}</p>
-                <p className="text-md text-gold">מחיר: {project.price} ש"ח</p>
-                <p className="text-sm">חדרים: {project.rooms}</p>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          selectedCity && <p className="text-gray-400 text-center">No projects found for this city.</p>
-        )}
+        <h1 className="text-2xl font-bold mb-6 text-gold text-center">מצא את העסק המתאימה</h1>
 
-        {showModal && selectedProject && (
-          <ContractModal
-            selectedProperty={selectedProject}
-            property_type={selectedProject.property_type}  // הוספת הפרופס החסר
-            onClose={handleCloseModal}
-          />
+        <CitySelector onCitySelect={setSelectedCity} />
+
+        {selectedCity && (
+          <>
+            <h2 className="text-2xl font-semibold mb-4 text-gold text-center">קרקעות ב{selectedCity}</h2>
+            {business.length > 0 ? (
+              <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {business.map((business_index, index) => (
+                  <li
+                    key={`${business_index.property_id}-${index}`}
+                    className="bg-gray-800 p-4 rounded-lg border border-gold cursor-pointer rtl"
+                  >
+                    <p className="text-lg font-medium">שכונה/איזור: {business_index.neighborhood}</p>
+                    <p className="text-md text-gold">מחיר: {business_index.price} ש"ח</p>
+                    <p className="text-sm">גודל: {business_index.size} מ"ר</p>
+                    <p className="text-sm">סוג נכס: {business_index.business_type}</p>
+                    <p className="text-sm">תשואה חודשית: {business_index.monthly_yield} ש"ח</p>
+
+                    <button
+                      className="mt-4 bg-gold text-black px-6 py-2 rounded-md font-semibold"
+                      onClick={() => handleBusinessClick(business_index)}
+                    >
+                      לפרטים נוספים
+                    </button>
+                    {showModal && selectedBusiness?.property_id === business_index.property_id && (
+                      <ContractModal
+                        selectedProperty={selectedBusiness}
+                        property_type="business"
+                        onClose={handleCloseModal}
+                      />
+                    )}
+                    {selectedBusiness?.property_id === business_index.property_id && !showModal && selectedBusiness?.moreDetails && (
+                      <div className="mt-4 text-gold">
+                        <p>כתובת: {business_index.address}</p>
+                        <p>פרטי יצירת קשר: {business_index.contact_info}</p>
+                      </div>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-center text-xl text-gray-400 mt-4">לא נמצאו בתי עסק מתאימים.</p>
+            )}
+          </>
         )}
       </div>
+      {error && <div className="text-red-600 text-center mt-4">{error}</div>}
     </div>
   );
 };
 
-export default ProjectsList;
+export default BusinessList;

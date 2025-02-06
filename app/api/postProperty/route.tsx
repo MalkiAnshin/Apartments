@@ -5,7 +5,10 @@ import pool from '../../../lib/db'; // Update the path to your database file
 
 export async function POST(request: Request) {
   try {
+
     const formData = await request.formData();
+    
+    const formDataObject = Object.fromEntries(formData.entries());
 
     // Read apartment details from the request and trim unnecessary spaces
     const city = (formData.get('city') as string | null)?.trim().replace(/\s+/g, ' ') || '';
@@ -24,15 +27,16 @@ export async function POST(request: Request) {
     const warehouse = formData.get('warehouse') === 'true';
     const parking = formData.get('parking') === 'true';
     const isBuilt = formData.get('isBuilt') === 'true';
-    const buildableArea = parseInt((formData.get('buildableArea') as string)?.trim() || '0', 10);
-    
+    const buildableArea = formData.get('buildable_area') === 'true';
+
     // For Business property type
-    const businessType = (formData.get('businessType') as string | null)?.trim() || '';
-    const monthlyYield = (formData.get('monthlyYield') as string | null)?.trim() || '';
-    
+    const businessType = (formData.get('business_type') as string | null)?.trim() || '';
+    const monthlyYield = (formData.get('monthly_yield') as string | null)?.trim() || '';
+
     // For Land property type
     const size = (formData.get('size') as string | null)?.trim() || '';
-        // Save the property in the database based on its type
+
+    // Save the property in the database based on its type
     const client = await pool.connect();
 
     let query, values;
@@ -59,11 +63,12 @@ export async function POST(request: Request) {
       values = [city, neighborhood, price, size, buildableArea, userId, address, contactSeller];
     } else if (propertyType === 'Business') {
       query = `
-        INSERT INTO business (city, neighborhood, price, size, business_type, monthly_yield, user_id, address, contact_info, image_paths)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        INSERT INTO business (city, neighborhood, price, size, business_type, monthly_yield, user_id, address, contact_info)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
         RETURNING property_id`;
-      values = [city, neighborhood, price, size, businessType, monthlyYield, userId, address, contactSeller, imageArray];
-    } else {
+      values = [city, neighborhood, price || null, size || null, businessType || null, monthlyYield || null, userId || null, address || null, contactSeller || null];
+    }
+    else {
       throw new Error('Invalid property type');
     }
 

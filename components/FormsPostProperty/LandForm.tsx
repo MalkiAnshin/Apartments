@@ -6,6 +6,7 @@ const ApartmentForm = () => {
   const [cities, setCities] = useState<string[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
   const [formErrors, setFormErrors] = useState<string[]>([]); // State to hold errors
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false); // למנוע לחיצות מרובות
 
   const router = useRouter();
 
@@ -61,7 +62,7 @@ const ApartmentForm = () => {
   const validateForm = (formData: FormData) => {
     const errors: string[] = [];
     console.log("Validating form data...");
-    
+
     if (!formData.get('city')) errors.push('העיר היא שדה חובה');
     if (!formData.get('neighborhood')) errors.push('השכונה היא שדה חובה');
     if (!formData.get('price')) errors.push('המחיר הוא שדה חובה');
@@ -83,10 +84,12 @@ const ApartmentForm = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    console.log(5555555555555555);
-    
+
     e.preventDefault();
-  
+    if (isSubmitting) return; // אם כבר שולחים, לא מאפשרים לחיצה נוספת
+
+    setIsSubmitting(true); // משנים ל-true לפני שליחת הבקשה
+
 
     console.log("Form submission started...");
     const formData = new FormData();
@@ -101,12 +104,13 @@ const ApartmentForm = () => {
     formData.append('address', (target.address as HTMLInputElement).value);
     formData.append('size', (target.size as HTMLInputElement).value);
     formData.append('buildable_area', (target.buildable_area as HTMLInputElement).checked ? 'true' : 'false');
-        
-      // Log formData content
-  console.log("Form data to be sent to the server:");
-  formData.forEach((value, key) => {
-    console.log(`${key}:`, value);
-  });
+
+
+    // Log formData content
+    console.log("Form data to be sent to the server:");
+    formData.forEach((value, key) => {
+      console.log(`${key}:`, value);
+    });
 
 
 
@@ -128,11 +132,13 @@ const ApartmentForm = () => {
         alert('Error: ' + result.error);
       }
     }
+    setIsSubmitting(false); // להחזיר ל-false לאחר סיום השליחה
+
 
   };
 
 
-  
+
   return (
     <form onSubmit={handleSubmit} className="bg-transparent p-6 rounded-lg shadow-lg max-w-lg mx-auto">
       <h2 className="text-3xl font-bold text-center text-gold-500 mb-6">פרסום קרקע</h2>
@@ -161,44 +167,49 @@ const ApartmentForm = () => {
               ))}
             </ul>
           )}
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-xl text-white">איזור/שכונה</label>
+          <input type="text" name="neighborhood" required className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-xl text-white">מחיר</label>
+          <input type="number" name="price" required className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
+        </div>
+
+
+        <div className="flex flex-col">
+          <label className="text-xl text-white">דרכי יצירת קשר עם המוכר</label>
+          <input type="text" name="contactSeller" required className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-xl text-white">כתובת</label>
+          <input type="text" name="address" required className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-xl text-white">גודל במ"ר</label>
+          <input type="number" name="size" required className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-xl text-white">האם הקרקע בשטח בנוי?</label>
+          <input
+            type="checkbox"
+            name="buildable_area"
+            onChange={(e) => e.target.setAttribute("value", e.target.checked ? "true" : "false")}
+            className="p-2 rounded border-2 border-gold-500 bg-transparent text-white"
+          />
+        </div>
+
+
+
+
+        <button type="submit" className="bg-gold-500 text-black py-2 px-4 rounded-lg w-full hover:bg-gold-600" disabled={isSubmitting}>שלח</button>
       </div>
-
-      <div className="flex flex-col">
-        <label className="text-xl text-white">איזור/שכונה</label>
-        <input type="text" name="neighborhood" required className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
-      </div>
-
-      <div className="flex flex-col">
-        <label className="text-xl text-white">מחיר</label>
-        <input type="number" name="price" required className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
-      </div>
-
-
-      <div className="flex flex-col">
-        <label className="text-xl text-white">דרכי יצירת קשר עם המוכר</label>
-        <input type="text" name="contactSeller" required className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
-      </div>
-
-      <div className="flex flex-col">
-        <label className="text-xl text-white">כתובת</label>
-        <input type="text" name="address" required className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
-      </div>
-
-      <div className="flex flex-col">
-        <label className="text-xl text-white">גודל במ"ר</label>
-        <input type="number" name="size" required className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
-      </div>
-
-      <div className="flex flex-col">
-        <label className="text-xl text-white">האם הקרע בשטח בנוי?</label>
-        <input type="checkbox" name="buildable_area" required className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
-      </div>
-
-
-
-
-      <button type="submit" className="bg-gold-500 text-black py-2 px-4 rounded-lg w-full hover:bg-gold-600">שלח</button>
-    </div>
     </form >
   );
 };

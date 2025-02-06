@@ -15,36 +15,37 @@ const AddPropertyForm: React.FC = () => {
   const { user, userId, firstListingFree, setFirstListingFree } = useGlobalContext();
 
 
+  // פונקציה לבדיקת אם המשתמש מחובר ולטפל במעבר דפים
   const checkIsUserLogin = () => {
     const storedUser = localStorage.getItem('user');
-    const userId = storedUser ? JSON.parse(storedUser).userId : null;
-    if (!user) {
+    const parsedUser = storedUser ? JSON.parse(storedUser) : null;
+    const storedUserId = parsedUser ? parsedUser.userId : null;
+
+    // אם המשתמש לא מחובר, הפנה לדף התחברות
+    if (!user || !storedUserId) {
       localStorage.setItem("redirectAfterLogin", window.location.pathname);
       alert("משתמש לא מחובר נא לבצע התחברות");
       router.push('/login');
-    }
-    if (userId === 322385543) {
-      console.log("משתמש מנהל");
-      // משתמש עם userId מסוים נשאר בקומפוננטה
       return;
     }
   }
 
-  const isUserPostFreeProperty = () => {
-    if (firstListingFree === true) {
+  const checkFirstListingFree = () => {
+    // אם המשתמש ביצע כבר פרסום ו-firstListingFree שווה ל-true, הפנה לדף התשלום
+    if (firstListingFree) {
       console.log("משתמש זה ביצע פרסום נכס");
       router.push('/payment');
     }
-
   }
 
   useEffect(() => {
 
-    checkIsUserLogin();
-    isUserPostFreeProperty()
+    checkIsUserLogin()
+    
+    if (userId != 322385543) {
+      checkFirstListingFree()
+    }
   }, []);
-
-
 
   const handlePropertyTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setPropertyType(e.target.value);

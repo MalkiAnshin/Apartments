@@ -12,10 +12,30 @@
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
     ],
-    "/adminInterface/ShowUsers/page": [
+    "/adminInterface/PropertySelector/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/adminInterface/ShowUsers/page.js"
+      "static/chunks/app/adminInterface/PropertySelector/page.js"
+    ],
+    "/adminInterface/ShowAsset/ShowBusiness/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/adminInterface/ShowAsset/ShowBusiness/page.js"
+    ],
+    "/adminInterface/ShowAsset/ShowLands/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/adminInterface/ShowAsset/ShowLands/page.js"
+    ],
+    "/adminInterface/ShowAsset/ShowProjects/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/adminInterface/ShowAsset/ShowProjects/page.js"
+    ],
+    "/adminInterface/ShowAsset/ShowApartments/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/adminInterface/ShowAsset/ShowApartments/page.js"
     ]
   }
 }

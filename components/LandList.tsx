@@ -65,7 +65,7 @@ const LandList: React.FC = () => {
       const response = await fetch(`/api/moreDetailsLands`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ landId, userId, propertyType  }),
+        body: JSON.stringify({ landId, userId, propertyType }),
       });
 
       if (!response.ok) throw new Error(`Network response was not ok`);
@@ -108,6 +108,10 @@ const LandList: React.FC = () => {
                     <p className="text-lg font-medium">שכונה/איזור: {land.neighborhood}</p>
                     <p className="text-md text-gold">מחיר: {land.price} ש"ח</p>
                     <p className="text-sm">גודל: {land.size} מ"ר</p>
+                    <p className="text-sm">
+                      {land.buildable_area ? "השטח בנוי" : "השטח אינו בנוי"}
+                    </p>
+
                     <button
                       className="mt-4 bg-gold text-black px-6 py-2 rounded-md font-semibold"
                       onClick={() => handleLandClick(land)}

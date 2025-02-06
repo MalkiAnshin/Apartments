@@ -1,23 +1,21 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-const ApartmentForm = () => {
+const BusinessForm = () => {
+  const [images, setImages] = useState<File[]>([]);
   const [selectedCity, setSelectedCity] = useState<string>('');
   const [cities, setCities] = useState<string[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
   const [formErrors, setFormErrors] = useState<string[]>([]); // State to hold errors
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false); // למנוע לחיצות מרובות
 
   const router = useRouter();
 
   useEffect(() => {
-    console.log("Checking for user data in localStorage...");
     const storedUser = localStorage.getItem('user');
     const user = storedUser ? JSON.parse(storedUser) : null;
     if (user && user.userId) {
-      console.log("User found:", user);
       setUserId(user.userId);
-    } else {
-      console.log("No user found in localStorage.");
     }
   }, []);
 
@@ -65,12 +63,11 @@ const ApartmentForm = () => {
     if (!formData.get('city')) errors.push('העיר היא שדה חובה');
     if (!formData.get('neighborhood')) errors.push('השכונה היא שדה חובה');
     if (!formData.get('price')) errors.push('המחיר הוא שדה חובה');
+    if (!formData.get('size')) errors.push('הגודל הוא שדה חובה');
+    if (!formData.get('business_type')) errors.push('הסוג הוא שדה חובה');
+    if (!formData.get('monthly_yield')) errors.push('שדה חובה');
     if (!formData.get('contactSeller')) errors.push('דרכי יצירת קשר עם המוכר הם שדה חובה');
     if (!formData.get('address')) errors.push('הכתובת היא שדה חובה');
-    if (!formData.get('size')) errors.push('הגודל הוא שדה חובה');
-    if (!formData.get('buildable_area')) errors.push('האם בנוי או לא הינו שדה חובה');
-
-
 
     if (errors.length > 0) {
       console.log("Form validation failed:", errors);
@@ -83,10 +80,10 @@ const ApartmentForm = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    console.log(5555555555555555);
-    
     e.preventDefault();
-  
+    if (isSubmitting) return; // אם כבר שולחים, לא מאפשרים לחיצה נוספת
+
+    setIsSubmitting(true); // משנים ל-true לפני שליחת הבקשה
 
     console.log("Form submission started...");
     const formData = new FormData();
@@ -95,20 +92,19 @@ const ApartmentForm = () => {
     formData.append('city', (target.city as HTMLInputElement).value);
     formData.append('neighborhood', (target.neighborhood as HTMLInputElement).value);
     formData.append('price', (target.price as HTMLInputElement).value);
-    formData.append('propertyType', 'Land');
+    formData.append('size', (target.size as HTMLInputElement).value);
+    formData.append('business_type', (target.business_type as HTMLInputElement).value);
+    formData.append('monthly_yield', (target.monthly_yield as HTMLInputElement).value);
+    formData.append('propertyType', 'Business');
     formData.append('userId', userId || '');  // Use userId from localStorage
     formData.append('contactSeller', (target.contactSeller as HTMLInputElement).value);
     formData.append('address', (target.address as HTMLInputElement).value);
-    formData.append('size', (target.size as HTMLInputElement).value);
-    formData.append('buildable_area', (target.buildable_area as HTMLInputElement).checked ? 'true' : 'false');
-        
-      // Log formData content
-  console.log("Form data to be sent to the server:");
-  formData.forEach((value, key) => {
-    console.log(`${key}:`, value);
-  });
-
-
+    
+    // Log formData content
+    // console.log("Form data to be sent to the server:");
+    // formData.forEach((value, key) => {
+    //   console.log(`${key}:`, value);
+    // });
 
     if (validateForm(formData)) {
       console.log("Submitting form data to the server...");
@@ -122,20 +118,18 @@ const ApartmentForm = () => {
         console.log("Form submitted successfully:", result);
         alert('נכס נקלט בהצלחה!');
         router.push('/');
-
       } else {
         console.error("Error submitting form:", result.error);
         alert('Error: ' + result.error);
       }
     }
 
+    setIsSubmitting(false); // להחזיר ל-false לאחר סיום השליחה
   };
 
-
-  
   return (
     <form onSubmit={handleSubmit} className="bg-transparent p-6 rounded-lg shadow-lg max-w-lg mx-auto">
-      <h2 className="text-3xl font-bold text-center text-gold-500 mb-6">פרסום קרקע</h2>
+      <h2 className="text-3xl font-bold text-center text-gold-500 mb-6">פרסום בית עסק</h2>
 
       <div className="space-y-4">
         <div className="flex flex-col relative">
@@ -161,46 +155,55 @@ const ApartmentForm = () => {
               ))}
             </ul>
           )}
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-xl text-white">איזור/שכונה</label>
+          <input type="text" name="neighborhood" required className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-xl text-white">מחיר</label>
+          <input type="number" name="price" required className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-xl text-white">מ"ר</label>
+          <input type="number" name="size" required className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-xl text-white">סוג הנכס</label>
+          <input type="text" name="business_type" required className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-xl text-white">תשואה חודשית</label>
+          <input type="number" name="monthly_yield" required className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
+        </div>
+
+
+
+        <div className="flex flex-col">
+          <label className="text-xl text-white">דרכי יצירת קשר עם המוכר</label>
+          <input type="text" name="contactSeller" required className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-xl text-white">כתובת</label>
+          <input type="text" name="address" required className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
+        </div>
+
+
+
+
+
+        <button type="submit" className="bg-gold-500 text-black py-2 px-4 rounded-lg w-full hover:bg-gold-600" disabled={isSubmitting}>
+          שלח
+        </button>
       </div>
-
-      <div className="flex flex-col">
-        <label className="text-xl text-white">איזור/שכונה</label>
-        <input type="text" name="neighborhood" required className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
-      </div>
-
-      <div className="flex flex-col">
-        <label className="text-xl text-white">מחיר</label>
-        <input type="number" name="price" required className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
-      </div>
-
-
-      <div className="flex flex-col">
-        <label className="text-xl text-white">דרכי יצירת קשר עם המוכר</label>
-        <input type="text" name="contactSeller" required className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
-      </div>
-
-      <div className="flex flex-col">
-        <label className="text-xl text-white">כתובת</label>
-        <input type="text" name="address" required className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
-      </div>
-
-      <div className="flex flex-col">
-        <label className="text-xl text-white">גודל במ"ר</label>
-        <input type="number" name="size" required className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
-      </div>
-
-      <div className="flex flex-col">
-        <label className="text-xl text-white">האם הקרקע בשטח בנוי?</label>
-        <input type="checkbox" name="buildable_area" required className="p-2 rounded border-2 border-gold-500 bg-transparent text-white" />
-      </div>
-
-
-
-
-      <button type="submit" className="bg-gold-500 text-black py-2 px-4 rounded-lg w-full hover:bg-gold-600">שלח</button>
-    </div>
-    </form >
+    </form>
   );
 };
 
-export default ApartmentForm;
+export default BusinessForm;
