@@ -43,13 +43,10 @@ export async function GET(request: Request) {
       query += ` AND price <= $${params.length}`;
     }
 
-    console.log('Final query:', query);
-    console.log('Query parameters:', params);
 
     const { rows } = await client.query(query, params);
     client.release();
 
-    console.log('Fetched apartments:', rows);
 
     return NextResponse.json(rows);
   } catch (error) {

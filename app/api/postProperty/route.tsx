@@ -7,7 +7,9 @@ export async function POST(request: Request) {
   try {
 
     const formData = await request.formData();
-    
+    console.log('Form data received:', Object.fromEntries(formData.entries()));
+
+
     const formDataObject = Object.fromEntries(formData.entries());
 
     // Read apartment details from the request and trim unnecessary spaces
@@ -50,11 +52,21 @@ export async function POST(request: Request) {
         RETURNING property_id`;
       values = [city, neighborhood, price, rooms, imageArray, userId, hasBalcony, floor, contactSeller, address, elevator, warehouse, parking];
     } else if (propertyType === 'Project') {
+      console.log('Processing project property');
+
       query = `
-        INSERT INTO projects (city, neighborhood, price, rooms, image_paths, is_built)
-        VALUES ($1, $2, $3, $4, $5, $6)
+        INSERT INTO projects (city, neighborhood, price, rooms, image_paths, user_id, has_balcony, floor, contact_seller, address, elevator, warehouse, parking, isBuilt)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
         RETURNING property_id`;
-      values = [city, neighborhood, price, rooms, imageArray, isBuilt];
+      values = [city, neighborhood, price, rooms, imageArray, userId, hasBalcony, floor, contactSeller, address, elevator, warehouse, parking, isBuilt];
+      console.log("Executing query for propertyType:", propertyType);
+      console.log("Query:", query);
+      console.log("Values:", values);
+
+      const result = await client.query(query, values);
+
+      console.log("Query result:", result.rows);
+
     } else if (propertyType === 'Land') {
       query = `
         INSERT INTO lands (city, neighborhood, price, size, buildable_area, user_id, address, contact_info)

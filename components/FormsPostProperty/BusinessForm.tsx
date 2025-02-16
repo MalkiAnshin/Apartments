@@ -116,7 +116,7 @@ const BusinessForm = () => {
       const result = await response.json();
       if (response.ok) {
         console.log("Form submitted successfully:", result);
-        alert('נכס נקלט בהצלחה!');
+        alert('✅ נכס נקלט בהצלחה!');
         router.push('/');
       } else {
         console.error("Error submitting form:", result.error);
