@@ -125,6 +125,15 @@ const ApartmentForm = () => {
       if (response.ok) {
         console.log("Form submitted successfully:", result);
         alert('✅ נכס נקלט בהצלחה!');
+
+
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+          const user = JSON.parse(storedUser);
+          user.remainingListings = user.remainingListings - 1;
+          localStorage.setItem('user', JSON.stringify(user));  // עדכון ה-user עם הערך החדש
+        }
+
         router.push('/');
 
       } else {

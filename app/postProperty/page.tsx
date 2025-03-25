@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { useState, useEffect } from 'react';
 import { useGlobalContext } from '../context/GlobalContext';
@@ -10,43 +10,35 @@ import BusinessForm from '../../components/FormsPostProperty/BusinessForm';
 
 const AddPropertyForm: React.FC = () => {
   const [propertyType, setPropertyType] = useState<string>('Apartment');
-  // const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
-  const { user, userId, firstListingFree, setFirstListingFree } = useGlobalContext();
-
-
-  // פונקציה לבדיקת אם המשתמש מחובר ולטפל במעבר דפים
-  const checkIsUserLogin = () => {
-    const storedUser = localStorage.getItem('user');
-    const parsedUser = storedUser ? JSON.parse(storedUser) : null;
-    const storedUserId = parsedUser ? parsedUser.userId : null;
-
-    // אם המשתמש לא מחובר, הפנה לדף התחברות
-    if (!user || !storedUserId) {
-      localStorage.setItem("redirectAfterLogin", window.location.pathname);
-      alert("משתמש לא מחובר נא לבצע התחברות");
-      router.push('/login');
-      return;
-    }
-  }
-
-  const checkFirstListingFree = () => {
-    // אם המשתמש ביצע כבר פרסום ו-firstListingFree שווה ל-true, הפנה לדף התשלום
-    if (firstListingFree) {
-      console.log("משתמש זה ביצע פרסום נכס");
-      router.push('/payment');
-    }
-  }
+  const { user } = useGlobalContext();
+  const [canPost, setCanPost] = useState<boolean>(false);
 
   useEffect(() => {
+    const checkUserStatus = () => {
+      const storedUser = localStorage.getItem('user');
+      const parsedUser = storedUser ? JSON.parse(storedUser) : null;
 
-    checkIsUserLogin()
-    
-    if (userId != 322385543) {
-      checkFirstListingFree()
-    }
-  }, []);
+      if (!parsedUser || !parsedUser.userId) {
+        localStorage.setItem('redirectAfterLogin', window.location.pathname);
+        alert('משתמש לא מחובר, נא לבצע התחברות');
+        router.push('/login');
+        return;
+      }
 
+      // שימו לב לשינוי כאן - בדיקה מדויקת יותר של יתרת הפרסומים
+      const remainingListings = parsedUser.remainingListings || 0;
+      if (remainingListings <= 0) {
+        alert('אין יתרת פרסומים, מעביר לדף תשלום...');
+        router.push('/payment');
+        return; // הוספת return כאן למנוע המשך ביצוע
+      }
+
+      setCanPost(true);
+    };
+
+    checkUserStatus();
+  }, [router]);
   const handlePropertyTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setPropertyType(e.target.value);
   };
@@ -66,11 +58,13 @@ const AddPropertyForm: React.FC = () => {
     }
   };
 
+  if (!canPost) return null; // או Spinner אם תרצי
+
   return (
     <div dir="rtl" className="bg-black bg-opacity-30 text-white p-8 rounded-lg shadow-xl max-w-lg mx-auto">
       <h2 className="text-3xl font-bold mb-6 text-center text-gold-300">פרסום נכס</h2>
 
-      {/* Property Type Selection */}
+      {/* סוג נכס */}
       <div>
         <label htmlFor="propertyType" className="block text-sm font-medium mb-2 text-gold-300">סוג נכס</label>
         <select
@@ -86,10 +80,10 @@ const AddPropertyForm: React.FC = () => {
         </select>
       </div>
 
-      {/* Render Form based on selected property type */}
+      {/* הצגת הטופס המתאים */}
       {renderForm()}
     </div>
   );
-}
+};
 
 export default AddPropertyForm;

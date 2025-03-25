@@ -7,7 +7,6 @@ import LandList from '../components/LandList';
 import BusinessList from '../components/BusinessList';
 import ProjectsList from '../components/ProjectsList';
 import { GlobalProvider, useGlobalContext } from '../app/context/GlobalContext';
-
 import RandomApartmentsCarousel from '../components/random-apartments';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -16,7 +15,7 @@ const HomePage: React.FC = () => {
   const [selectedType, setSelectedType] = useState<string | null>(null);
 
   // Global context hook
-  const { setUser, setUserType, setUserId, setFirstListingFree } = useGlobalContext();
+  const { setUser, setUserType, setUserId, setRemainingListings } = useGlobalContext();
 
   useEffect(() => {
     // Load user data from local storage
@@ -26,7 +25,7 @@ const HomePage: React.FC = () => {
       setUser(parsedUser.username);
       setUserType(parsedUser.userType);
       setUserId(parsedUser.userId);
-      setFirstListingFree(parsedUser.firstListingFree);
+      setRemainingListings(parsedUser.remainingListings);
     }
   }, []);
 

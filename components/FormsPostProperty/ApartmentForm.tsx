@@ -82,13 +82,13 @@ const ApartmentForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isSubmitting) return; // אם כבר שולחים, לא מאפשרים לחיצה נוספת
-
+  
     setIsSubmitting(true); // משנים ל-true לפני שליחת הבקשה
-
+  
     console.log("Form submission started...");
     const formData = new FormData();
     const target = e.target as HTMLFormElement;
-
+  
     formData.append('city', (target.city as HTMLInputElement).value);
     formData.append('neighborhood', (target.neighborhood as HTMLInputElement).value);
     formData.append('price', (target.price as HTMLInputElement).value);
@@ -106,33 +106,42 @@ const ApartmentForm = () => {
     images.forEach((image) => {
       formData.append('images', image);
     });
+  
     // Log formData content
     console.log("Form data to be sent to the server:");
     formData.forEach((value, key) => {
       console.log(`${key}:`, value);
     });
-
+  
     if (validateForm(formData)) {
       console.log("Submitting form data to the server...");
       const response = await fetch('/api/postProperty', {
         method: 'POST',
         body: formData,
       });
-
+  
       const result = await response.json();
       if (response.ok) {
         console.log("Form submitted successfully:", result);
         alert('✅ נכס נקלט בהצלחה!');
+  
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+          const user = JSON.parse(storedUser);
+          user.remainingListings = user.remainingListings - 1;
+          localStorage.setItem('user', JSON.stringify(user));  // עדכון ה-user עם הערך החדש
+        }
+  
         router.push('/');
       } else {
         console.error("Error submitting form:", result.error);
         alert('Error: ' + result.error);
       }
     }
-
+  
     setIsSubmitting(false); // להחזיר ל-false לאחר סיום השליחה
   };
-
+    
   return (
     <form onSubmit={handleSubmit} className="bg-transparent p-6 rounded-lg shadow-lg max-w-lg mx-auto">
       <h2 className="text-3xl font-bold text-center text-gold-500 mb-6">פרסום דירה</h2>

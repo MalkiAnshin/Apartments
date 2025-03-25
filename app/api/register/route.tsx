@@ -35,7 +35,7 @@ export async function POST(req) {
         username: name,
         userType: 'user', // Default userType
         userId: identityNumber, // Return the identity number (or userId)
-        firstListingFree: false // Default value
+        remainingListings: 1 // Default value
       },
       { status: 201 }
     );

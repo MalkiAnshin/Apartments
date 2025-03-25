@@ -16,8 +16,8 @@ interface GlobalContextType {
   userId: number | null; // Change to number
   setUserId: (user: number | null) => void;
 
-  firstListingFree: boolean | null; // Allow null
-  setFirstListingFree: (user: boolean | null) => void;
+  remainingListings: number | null; // Allow null
+  setRemainingListings: (user: number | null) => void;
 }
 
 
@@ -29,11 +29,11 @@ export const GlobalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [user, setUser] = useState<string | null>(null);
   const [userType, setUserType] = useState<UserType>(null);
   const [userId, setUserId] = useState<number | null>(null);
-  const [firstListingFree, setFirstListingFree] = useState<boolean>(null);
+  const [remainingListings, setRemainingListings] = useState<number>(null);
 
 
   return (
-    <GlobalContext.Provider value={{ user, setUser, userType, setUserType, userId, setUserId, firstListingFree, setFirstListingFree }}>
+    <GlobalContext.Provider value={{ user, setUser, userType, setUserType, userId, setUserId, remainingListings, setRemainingListings }}>
       {children}
     </GlobalContext.Provider>
   );

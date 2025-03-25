@@ -88,10 +88,10 @@ export async function POST(request: Request) {
     const result = await client.query(query, values);
     const propertyId = result.rows[0].property_id;
 
-    // Update the user's first_listing_free flag
+    // Update the user's remaining_listings flag
     const updateQuery = `
       UPDATE users
-      SET first_listing_free = TRUE
+  SET remaining_listings = remaining_listings - 1
       WHERE identity_number = $1`;
     await client.query(updateQuery, [userId]);
 

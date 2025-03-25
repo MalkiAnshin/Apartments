@@ -59,7 +59,7 @@ const ProjectForm = () => {
   const validateForm = (formData: FormData) => {
     const errors: string[] = [];
     console.log("Validating form data...");
-    
+
     if (!formData.get('city')) errors.push('העיר היא שדה חובה');
     if (!formData.get('neighborhood')) errors.push('השכונה היא שדה חובה');
     if (!formData.get('price')) errors.push('המחיר הוא שדה חובה');
@@ -105,7 +105,7 @@ const ProjectForm = () => {
     formData.append('isBuilt', (target.isBuilt as HTMLInputElement).checked ? 'true' : 'false');
     formData.append('warehouse', (target.warehouse as HTMLInputElement).checked ? 'true' : 'false');
     formData.append('parking', (target.parking as HTMLInputElement).checked ? 'true' : 'false');
-    
+
     images.forEach((image) => {
       formData.append('images', image);
     });
@@ -117,36 +117,46 @@ const ProjectForm = () => {
 
     if (validateForm(formData)) {
 
-          // ✅ לוג מפורט של כל הנתונים שנשלחים
-    console.log("📤 שליחת נתונים לשרת:");
-    formData.forEach((value, key) => {
-      console.log(`👉 ${key}:`, value);
-    });
-
-    try {
-      const response = await fetch('/api/postProperty', {
-        method: 'POST',
-        body: formData,
+      // ✅ לוג מפורט של כל הנתונים שנשלחים
+      console.log("📤 שליחת נתונים לשרת:");
+      formData.forEach((value, key) => {
+        console.log(`👉 ${key}:`, value);
       });
 
-      console.log("📩 תשובה שהתקבלה מהשרת:", response);
-      
-      const result = await response.json();
-      console.log("📩 JSON שהתקבל מהשרת:", result);
+      try {
+        const response = await fetch('/api/postProperty', {
+          method: 'POST',
+          body: formData,
+        });
 
-      if (response.ok) {
-        console.log("🎉 נכס נשמר בהצלחה:", result);
-        alert('✅ נכס נקלט בהצלחה!');
-        router.push('/');
-      } else {
-        console.error("❌ שגיאה בשליחה לשרת:", result.error);
-        alert('❌ שגיאה: ' + result.error);
+        console.log("📩 תשובה שהתקבלה מהשרת:", response);
+
+        const result = await response.json();
+        console.log("📩 JSON שהתקבל מהשרת:", result);
+
+        if (response.ok) {
+          console.log("🎉 נכס נשמר בהצלחה:", result);
+          alert('✅ נכס נקלט בהצלחה!');
+
+
+          const storedUser = localStorage.getItem('user');
+          if (storedUser) {
+            const user = JSON.parse(storedUser);
+            user.remainingListings = user.remainingListings - 1;
+            localStorage.setItem('user', JSON.stringify(user));  // עדכון ה-user עם הערך החדש
+          }
+
+
+          router.push('/');
+        } else {
+          console.error("❌ שגיאה בשליחה לשרת:", result.error);
+          alert('❌ שגיאה: ' + result.error);
+        }
+      } catch (error) {
+        console.error("🔥 שגיאה כללית בשליחה:", error);
+        alert('⚠️ שגיאה לא צפויה, בדוק את הקונסולה.');
       }
-    } catch (error) {
-      console.error("🔥 שגיאה כללית בשליחה:", error);
-      alert('⚠️ שגיאה לא צפויה, בדוק את הקונסולה.');
     }
-  }
     setIsSubmitting(false); // להחזיר ל-false לאחר סיום השליחה
   };
 

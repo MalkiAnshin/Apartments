@@ -59,7 +59,7 @@ const BusinessForm = () => {
   const validateForm = (formData: FormData) => {
     const errors: string[] = [];
     console.log("Validating form data...");
-    
+
     if (!formData.get('city')) errors.push('העיר היא שדה חובה');
     if (!formData.get('neighborhood')) errors.push('השכונה היא שדה חובה');
     if (!formData.get('price')) errors.push('המחיר הוא שדה חובה');
@@ -99,7 +99,7 @@ const BusinessForm = () => {
     formData.append('userId', userId || '');  // Use userId from localStorage
     formData.append('contactSeller', (target.contactSeller as HTMLInputElement).value);
     formData.append('address', (target.address as HTMLInputElement).value);
-    
+
     // Log formData content
     // console.log("Form data to be sent to the server:");
     // formData.forEach((value, key) => {
@@ -117,6 +117,15 @@ const BusinessForm = () => {
       if (response.ok) {
         console.log("Form submitted successfully:", result);
         alert('✅ נכס נקלט בהצלחה!');
+
+
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+          const user = JSON.parse(storedUser);
+          user.remainingListings = user.remainingListings-1;
+          localStorage.setItem('user', JSON.stringify(user));  // עדכון ה-user עם הערך החדש
+        }
+
         router.push('/');
       } else {
         console.error("Error submitting form:", result.error);

@@ -16,7 +16,7 @@ const LoginPage = () => {
   const router = useRouter();
 
   // Use global context
-  const { setUser, setUserType, setUserId, setFirstListingFree } = useGlobalContext();
+  const { setUser, setUserType, setUserId, setRemainingListings } = useGlobalContext();
 
 
 
@@ -61,12 +61,12 @@ const LoginPage = () => {
         // console.log('Login successful:', result.userType);
         setUser(result.username); // Update global state with username
 
-        // Update global state with userId and firstListingFree
+        // Update global state with userId and setRemainingListings
         const userDetails = {
           username: result.username,
           userType: result.userType,
           userId: result.userId, // Add userId
-          firstListingFree: result.firstListingFree // Add firstListingFree
+          remainingListings: result.remainingListings // Add remainingListings
         };
 
         localStorage.setItem('user', JSON.stringify(userDetails));
@@ -74,13 +74,16 @@ const LoginPage = () => {
 
         setUserType(result.userType);
         setUserId(result.userId); // Set userId in global state
-        setFirstListingFree(result.firstListingFree); // Set firstListingFree in global state
+        setRemainingListings(result.remainingListings); // Set remainingListings in global state
         router.push(result.userType === 'admin' ? '/admin/dashboard' : '/');
 
 
 
-        const redirectUrl = localStorage.getItem("redirectAfterLogin") || "/"; // ברירת מחדל: דף הבית
-        router.push(redirectUrl); // הפנה לדף המטרה
+        const redirectUrl = localStorage.getItem('lastVisitedPage') || '/';
+        router.push(redirectUrl);
+
+
+
 
       } else {
         console.error('Error during login:', result.message);
@@ -124,21 +127,24 @@ const LoginPage = () => {
         setUser(name);
         setUserType(result.userType as UserType);
 
-        // Update global state with userId and firstListingFree
+        // Update global state with userId and remainingListings
         const userDetails = {
           username: result.username,
           userType: result.userType,
           userId: result.userId, // Add userId
-          firstListingFree: result.firstListingFree // Add firstListingFree
+          remainingListings: result.remainingListings // Add remainingListings
         };
 
         localStorage.setItem('user', JSON.stringify(userDetails));
         // console.log("User saved to localStorage:", userDetails);
 
         setUserId(result.userId); // Set userId in global state
-        setFirstListingFree(result.firstListingFree); // Set firstListingFree in global state
-        const redirectUrl = localStorage.getItem("redirectAfterLogin") || "/"; // ברירת מחדל: דף הבית
+        setRemainingListings(result.remainingListings); // Set remainingListings in global state
+        const redirectUrl = localStorage.getItem('lastVisitedPage') || '/';
         router.push(redirectUrl);
+
+
+
 
         // router.push(result.userType === 'admin' ? '/admin/dashboard' : '/');
       } else {

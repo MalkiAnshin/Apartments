@@ -34,7 +34,7 @@ export async function POST(request: Request) {
     const imageNames = images.map((_, index) => `${index + 1}.jpg`);
 
     // Validate required fields
-    if (!propertyType || !city || !neighborhood || isNaN(price) || isNaN(rooms) || isNaN(floor) || !hasBalcony || !userId || !address || !contactSeller ) {
+    if (!propertyType || !city || !neighborhood || isNaN(price) || isNaN(rooms) || isNaN(floor) || !hasBalcony || !userId || !address || !contactSeller) {
       console.log('Missing required fields:', {
         propertyType,
         city,
@@ -84,15 +84,16 @@ export async function POST(request: Request) {
       await fs.writeFile(filePath, imageBuffer);
     }
 
-    // Update FIRST_LISTING_FREE for the user
-    const updateResult = await client.query(`UPDATE users SET first_listing_free = TRUE WHERE user_id = $1`, [userId]);
+    const updateResult = await client.query(
+      `UPDATE users SET  = remaining_listings - 1 WHERE user_id = $1`,
+      [userId]
+    );
 
     if (updateResult.rowCount > 0) {
-      console.log(`User ID ${userId} first_listing_free updated to TRUE.`);
+      console.log(`User ID ${userId} remaining_listings decreased.`);
     } else {
-      console.log(`No user found with ID ${userId}. No update was made.`);
+      console.log(`No user found with ID ${userId} or no listings remaining.`);
     }
-
     return NextResponse.json({ message: 'Property added successfully!', propertyId });
   } catch (error) {
     console.error('Error saving property:', error);

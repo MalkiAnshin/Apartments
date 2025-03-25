@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import pool from '../../../lib/db';
 import path from 'path';
 
-export const dynamic = 'force-dynamic'
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
   try {
@@ -31,8 +31,7 @@ export async function GET(request: Request) {
     });
 
     return NextResponse.json({ images });
-  } catch (error) {
-    console.error('Error fetching apartment images:', error);
+  } catch {
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

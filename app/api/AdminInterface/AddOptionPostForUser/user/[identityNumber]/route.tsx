@@ -33,24 +33,30 @@ export async function GET(req: NextRequest, { params }: { params: { identityNumb
 // פונקציית PATCH
 export async function PATCH(req: NextRequest, { params }: { params: { identityNumber: string } }) {
   const { identityNumber } = params; // גישה נכונה לפרמטר דרך params
+  const { incrementValue } = await req.json(); // קבלת הערך החדש שמגיע מהלקוח (נניח 7)
 
   console.log("Received PATCH request for identityNumber:", identityNumber); // לוג קבלת הבקשה עם מזהה הזהות
+  console.log("Received incrementValue:", incrementValue); // לוג של הערך שמגיע מהלקוח (נניח 7)
 
   try {
-    const updateQuery = `UPDATE USERS SET first_listing_free = FALSE WHERE identity_number = $1`;
-    console.log("Executing UPDATE query:", updateQuery, "with identityNumber:", identityNumber); // לוג של השאילתא לעדכון
+    const updateQuery = `
+      UPDATE USERS 
+      SET remaining_listings = remaining_listings + $1 
+      WHERE identity_number = $2
+    `;
+    console.log("Executing UPDATE query:", updateQuery, "with identityNumber:", identityNumber, "and incrementValue:", incrementValue);
 
-    const result = await pool.query(updateQuery, [identityNumber]); // השתמש ב-pool.query במקום pool()
+    const result = await pool.query(updateQuery, [incrementValue, identityNumber]); // חיבור הערך הקיים עם הערך החדש
 
     if (result.rowCount === 0) {
-      console.log(`Failed to update user for identityNumber: ${identityNumber}. No rows affected.`); // לוג אם לא עדכנו שום משתמש
+      console.log(`Failed to update user for identityNumber: ${identityNumber}. No rows affected.`);
       return NextResponse.json({ error: 'לא ניתן לעדכן את המשתמש' }, { status: 400 });
     }
 
-    console.log(`User updated successfully for identityNumber: ${identityNumber}. Rows affected: ${result.rowCount}`); // לוג אם העדכון הצליח
+    console.log(`User updated successfully for identityNumber: ${identityNumber}. Rows affected: ${result.rowCount}`);
     return NextResponse.json({ message: 'הערך שונה בהצלחה' });
   } catch (err) {
-    console.error("Error during PATCH request:", err); // לוג במקרה של שגיאה בשרת
+    console.error("Error during PATCH request:", err);
     return NextResponse.json({ error: 'שגיאה בשרת' }, { status: 500 });
   }
 }

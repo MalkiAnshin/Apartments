@@ -18,13 +18,13 @@ export async function POST(req) {
       return NextResponse.json({ message: 'סיסמה לא תקינה' }, { status: 401 });
     }
 
-    // Return user details including user_id and first_listing_free
+    // Return user details including user_id and remaining_listings
     return NextResponse.json({
       message: 'התחברות מוצלחת',
       userType: user.role,
       username: user.username,
       userId: user.identity_number, // Add user ID
-      firstListingFree: user.first_listing_free // Add first_listing_free
+      remainingListings: user.remaining_listings // Add remaining_listings
     }, { status: 200 });
   } catch (error) {
     console.error('שגיאה במהלך ההתחברות:', error);

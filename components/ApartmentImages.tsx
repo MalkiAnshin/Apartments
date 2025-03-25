@@ -24,7 +24,7 @@ const ApartmentImages: React.FC<ApartmentImagesProps> = ({ property_id }) => {
         setImages(data.images || []); // ודא ש-setImages מקבל מערך גם אם images הוא null
       } catch (err: any) {
         setError(`Error fetching images: ${err.message}`);
-        console.error('Error fetching images:', err);
+        // console.error('Error fetching images:', err);
       }
     };
   
