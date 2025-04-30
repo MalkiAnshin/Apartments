@@ -213,6 +213,7 @@ const ShowUsers: React.FC = () => {
         <table className="min-w-full bg-transparent border border-gold rounded-lg overflow-hidden shadow-lg">
           <thead>
             <tr className="border-b border-gold text-gold text-left">
+              <th className="p-4">מזהה נכס</th>
               <th className="p-4">עיר</th>
               <th className="p-4">שכונה</th>
               <th className="p-4">מחיר</th>
@@ -229,6 +230,7 @@ const ShowUsers: React.FC = () => {
           <tbody>
             {apartments.map((apartment, index) => (
               <tr key={index} className="border-b border-gold hover:bg-gold/10 transition">
+                <td className="p-4">{apartment.property_id}</td>
                 <td className="p-4">{apartment.city}</td>
                 <td className="p-4">{apartment.neighborhood}</td>
                 <td className="p-4">{apartment.price}</td>

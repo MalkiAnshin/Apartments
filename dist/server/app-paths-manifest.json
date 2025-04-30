@@ -1,13 +1,4 @@
 {
-  "/_not-found/page": "app/_not-found/page.js",
   "/page": "app/page.js",
-  "/postProperty/page": "app/postProperty/page.js",
-  "/payment/page": "app/payment/page.js",
-  "/login/page": "app/login/page.js",
-  "/api/apartments/route": "app/api/apartments/route.js",
-  "/api/apartmentsPictures/route": "app/api/apartmentsPictures/route.js",
-  "/api/login/route": "app/api/login/route.js",
-  "/adminInterface/AddOptionPostForUser/page": "app/adminInterface/AddOptionPostForUser/page.js",
-  "/api/AdminInterface/AddOptionPostForUser/user/[identityNumber]/route": "app/api/AdminInterface/AddOptionPostForUser/user/[identityNumber]/route.js",
-  "/api/postProperty/route": "app/api/postProperty/route.js"
+  "/adminInterface/AddOptionPostForUser/page": "app/adminInterface/AddOptionPostForUser/page.js"
 }

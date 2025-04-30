@@ -3,20 +3,15 @@ import pool from '../../../../../../lib/db';
 
 export const dynamic = 'force-dynamic';
 
-// פונקציית GET
 export async function GET(req: NextRequest, { params }: { params: { identityNumber: string } }) {
-  const { identityNumber } = params; // גישה נכונה לפרמטר דרך params
+  const { identityNumber } = params; 
 
-  console.log(`Received GET request for identityNumber: ${identityNumber}`); // לוג קבלת הבקשה עם מזהה הזהות
 
   try {
     const userQuery = `SELECT * FROM USERS WHERE identity_number = $1`;
-    console.log(`Executing query: ${userQuery} with parameters: [${identityNumber}]`); // לוג השאילתא שנשלחת למסד נתונים
-
-    const user = await pool.query(userQuery, [identityNumber]); // השתמש ב-pool.query במקום pool()
+    const user = await pool.query(userQuery, [identityNumber]); 
 
     if (user.rows.length === 0) {
-      console.log(`No user found with identity number: ${identityNumber}`); // לוג במקרה שאין תוצאה
       return NextResponse.json({ error: 'משתמש לא נמצא' }, { status: 404 });
     }
 
@@ -30,13 +25,12 @@ export async function GET(req: NextRequest, { params }: { params: { identityNumb
   }
 }
 
-// פונקציית PATCH
 export async function PATCH(req: NextRequest, { params }: { params: { identityNumber: string } }) {
-  const { identityNumber } = params; // גישה נכונה לפרמטר דרך params
-  const { incrementValue } = await req.json(); // קבלת הערך החדש שמגיע מהלקוח (נניח 7)
+  const { identityNumber } = params; 
+  const { incrementValue } = await req.json(); 
 
-  console.log("Received PATCH request for identityNumber:", identityNumber); // לוג קבלת הבקשה עם מזהה הזהות
-  console.log("Received incrementValue:", incrementValue); // לוג של הערך שמגיע מהלקוח (נניח 7)
+  console.log("Received PATCH request for identityNumber:", identityNumber); 
+  console.log("Received incrementValue:", incrementValue); 
 
   try {
     const updateQuery = `
@@ -46,7 +40,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { identityNu
     `;
     console.log("Executing UPDATE query:", updateQuery, "with identityNumber:", identityNumber, "and incrementValue:", incrementValue);
 
-    const result = await pool.query(updateQuery, [incrementValue, identityNumber]); // חיבור הערך הקיים עם הערך החדש
+    const result = await pool.query(updateQuery, [incrementValue, identityNumber]); 
 
     if (result.rowCount === 0) {
       console.log(`Failed to update user for identityNumber: ${identityNumber}. No rows affected.`);

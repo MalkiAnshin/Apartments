@@ -7,26 +7,26 @@ const ContactForm: React.FC = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
-  // const [userId, setUserId] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const router = useRouter(); // הוספת router לשימוש בניתוב
 
-  // useEffect(() => {
-  //   // Fetch user ID from localStorage
-  //   const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
-  //   setUserId(storedUser.userId || null);
-  // }, []);
+  useEffect(() => {
+    // Fetch user ID from localStorage
+    const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+    setUserId(storedUser.userId || null);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // if (!userId) {
-    //   setStatus('error');
-    //   console.error('User ID not found');
-    //   return;
-    // }
+    if (!userId) {
+      setStatus('error');
+      console.error('User ID not found');
+      return;
+    }
 
-    const formData = { username, email, message };
+    const formData = { username, email, message, userId };
 
     try {
       const response = await fetch('/api/contactForm', {
@@ -54,7 +54,7 @@ const ContactForm: React.FC = () => {
     <div className="max-w-md mx-auto p-6 bg-gray-800 rounded-lg text-white mt-8">
       <h2 className="text-2xl font-bold mb-4 text-center text-gold">צור קשר</h2>
       <p className="text-center text-gray-300 mb-6">
-        אם ברצונך ליצור קשר ישיר, שלח מייל ל: <a href="mailto:admin@example.com" className="text-gold hover:underline">admin@example.com</a>
+        אם ברצונך ליצור קשר ישיר, שלח מייל ל: <a href="mailto:admin@example.com" className="text-gold hover:underline">sh0504167870@gmail.com</a>
       </p>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>

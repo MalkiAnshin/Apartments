@@ -77,7 +77,7 @@ const UserSearchForm = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-black bg-opacity-50">
+    <div className="flex justify-center items-center min-h-screen bg-black bg-opacity-50"  dir="rtl">
       <div className="bg-black text-white p-6 rounded-lg shadow-lg w-full max-w-lg">
         <h2 className="text-2xl font-semibold text-center text-gold mb-6">חיפוש משתמש</h2>
         <input
@@ -100,6 +100,8 @@ const UserSearchForm = () => {
         {userData && (
           <div className="mt-6 text-center">
             <p className="text-xl mb-4">שם המשתמש: {userData.name}</p>
+            <p className="text-xl mb-4">יתרת פרסומים נוכחית: {userData.name}</p>
+
             <p className="mb-4">האם אתה בטוח רוצה לאפשר למשתמש זה אפשרות פרסום?</p>
             <input
               type="number"

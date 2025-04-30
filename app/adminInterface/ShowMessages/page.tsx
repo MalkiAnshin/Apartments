@@ -70,6 +70,7 @@ const ShowMessages: React.FC = () => {
                             <tbody>
                                 {messages.map((message) => (
                                     <tr key={message.contact_id || 'default-key'} className="border-b border-gold">
+
                                         <td className="p-4 text-xs md:text-sm">{message.user_id}</td>
                                         <td className="p-4 text-xs md:text-sm">{message.username}</td>
                                         <td className="p-4 text-xs md:text-sm">{message.email}</td>

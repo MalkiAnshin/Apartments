@@ -4,15 +4,15 @@ import pool from '../../../lib/db';
 
 export async function POST(request: Request) {
   try {
-    const { username, email, message } = await request.json();
+    const { username, email, message, userId } = await request.json();
 
-    if ( !username || !email || !message) {
+    if ( !username || !email || !message || !userId) {
       return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
     }
 
     await pool.query(
-      'INSERT INTO contactMessages ( username, email, message_body) VALUES ($1, $2, $3 )',
-      [ username, email, message]
+      'INSERT INTO contactMessages ( username, email, message_body, user_id) VALUES ($1, $2, $3, $4 )',
+      [ username, email, message, userId]
     );
 
     return NextResponse.json({ success: true }, { status: 200 });
