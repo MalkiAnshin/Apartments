@@ -26,7 +26,7 @@ jobs:
         username: ${{ secrets.SERVER_USER }}
         password: ${{ secrets.SERVER_PASSWORD }}
         script: |
-          cd /path/to/project
+          cd /Apartments
           git pull origin main
           npm install
           npm run build
