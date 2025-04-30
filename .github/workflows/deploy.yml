@@ -17,25 +17,26 @@ jobs:
         run: |
           npm install
           npm run build
-          - name: Deploy to server via SSH
-          uses: appleboy/ssh-action@v0.1.6
-          with:
-            host: ${{ secrets.SERVER_HOST }}
-            port: ${{ secrets.SERVER_PORT }}
-            username: ${{ secrets.SERVER_USER }}
-            password: ${{ secrets.SERVER_PASSWORD }}
-            script: |
-              rm -rf ~/Apartments
-              git clone https://github.com/MalkiAnshin/Apartments.git ~/Apartments
-              cd ~/Apartments
-        
-              echo "DB_USER=${{ secrets.DB_USER }}" >> .env
-              echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
-              echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
-              echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
-              echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
-        
-              npm install
-              npm run build
-              npm run start
-        
+
+      - name: Deploy to server via SSH
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          port: ${{ secrets.SERVER_PORT }}
+          username: ${{ secrets.SERVER_USER }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          script: |
+            rm -rf ~/Apartments
+            git clone https://github.com/MalkiAnshin/Apartments.git ~/Apartments
+            cd ~/Apartments
+
+            echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+            echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+            echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+            echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
+
+            npm install
+            npm run build
+            pm2 delete all || true
+            pm2 start npm --name "apartments-app" -- run start
