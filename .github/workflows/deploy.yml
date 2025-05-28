@@ -29,21 +29,9 @@ jobs:
           # משתנה עזר
           APP_DIR=~/Apartments
 
-          # שמירת תיקיית public אם קיימת
-          if [ -d "$APP_DIR/public" ]; then
-            echo "שומר את תיקיית public"
-            mv $APP_DIR/public /tmp/public_backup
-          fi
-
           # הורדת הקוד החדש לתיקייה זמנית
           rm -rf /tmp/apartments_new
           git clone https://github.com/MalkiAnshin/Apartments.git /tmp/apartments_new
-
-          # שחזור תיקיית public אם קיימת
-          if [ -d "/tmp/public_backup" ]; then
-            echo "משחזר את תיקיית public"
-            mv /tmp/public_backup /tmp/apartments_new/public
-          fi
 
           # מחליף את הגרסה הישנה בחדשה
           rm -rf $APP_DIR
