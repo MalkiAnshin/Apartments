@@ -67,3 +67,7 @@ pnpm-lock.yaml
 # Playwright test results
 /test-results/
 /playwright-report/
+
+# הגנה על קבצים שהמשתמשים מעלים
+/public/uploads/*
+!/public/uploads/.gitkeep

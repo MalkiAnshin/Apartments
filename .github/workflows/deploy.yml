@@ -10,33 +10,57 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Install dependencies
-        run: |
+    - name: Install dependencies and build locally (optional)
+      run: |
+        npm install
+        npm run build
+
+    - name: Deploy to server via SSH
+      uses: appleboy/ssh-action@v0.1.6
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        port: ${{ secrets.SERVER_PORT }}
+        username: ${{ secrets.SERVER_USER }}
+        password: ${{ secrets.SERVER_PASSWORD }}
+        script: |
+          # משתנה עזר
+          APP_DIR=~/Apartments
+
+          # שמירת תיקיית public אם קיימת
+          if [ -d "$APP_DIR/public" ]; then
+            echo "שומר את תיקיית public"
+            mv $APP_DIR/public /tmp/public_backup
+          fi
+
+          # הורדת הקוד החדש לתיקייה זמנית
+          rm -rf /tmp/apartments_new
+          git clone https://github.com/MalkiAnshin/Apartments.git /tmp/apartments_new
+
+          # שחזור תיקיית public אם קיימת
+          if [ -d "/tmp/public_backup" ]; then
+            echo "משחזר את תיקיית public"
+            mv /tmp/public_backup /tmp/apartments_new/public
+          fi
+
+          # מחליף את הגרסה הישנה בחדשה
+          rm -rf $APP_DIR
+          mv /tmp/apartments_new $APP_DIR
+          cd $APP_DIR
+
+          # יצירת קובץ .env עם משתנים מהסודות
+          echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
+
+          # התקנת תלויות ובנייה
           npm install
           npm run build
 
-      - name: Deploy to server via SSH
-        uses: appleboy/ssh-action@v0.1.6
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          port: ${{ secrets.SERVER_PORT }}
-          username: ${{ secrets.SERVER_USER }}
-          password: ${{ secrets.SERVER_PASSWORD }}
-          script: |
-            rm -rf ~/Apartments
-            git clone https://github.com/MalkiAnshin/Apartments.git ~/Apartments
-            cd ~/Apartments
-
-            echo "DB_USER=${{ secrets.DB_USER }}" >> .env
-            echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
-            echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
-            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
-            echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
-
-            npm install
-            npm run build
-            pm2 delete all || true
-            pm2 start npm --name "apartments-app" -- run start
+          # הפעלה מחדש של האפליקציה
+          pm2 delete all || true
+          pm2 start npm --name "apartments-app" -- run start
