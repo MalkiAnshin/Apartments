@@ -26,29 +26,29 @@ jobs:
         username: ${{ secrets.SERVER_USER }}
         password: ${{ secrets.SERVER_PASSWORD }}
         script: |
-          # משתנה עזר
-          APP_DIR=~/Apartments
+         APP_DIR=~/Apartments
 
-          # שמירת תיקיית public אם קיימת
-          if [ -d "$APP_DIR/public" ]; then
-            echo "שומר את תיקיית public"
-            mv $APP_DIR/public /tmp/public_backup
-          fi
+         # שמירת תיקיית public
+         if [ -d "$APP_DIR/public" ]; then
+         echo "שומר את תיקיית public"
+         cp -r $APP_DIR/public /tmp/public_backup
+         fi
 
-          # הורדת הקוד החדש לתיקייה זמנית
-          rm -rf /tmp/apartments_new
-          git clone https://github.com/MalkiAnshin/Apartments.git /tmp/apartments_new
+         # הורדת הקוד החדש
+         rm -rf /tmp/apartments_new
+         git clone https://github.com/MalkiAnshin/Apartments.git /tmp/apartments_new
 
-          # שחזור תיקיית public אם קיימת
-          if [ -d "/tmp/public_backup" ]; then
-            echo "משחזר את תיקיית public"
-            mv /tmp/public_backup /tmp/apartments_new/public
-          fi
+         # מחיקת הקבצים הקיימים *למעט public*
+         find $APP_DIR -mindepth 1 -maxdepth 1 ! -name public -exec rm -rf {} \;
 
-          # מחליף את הגרסה הישנה בחדשה
-          rm -rf $APP_DIR
-          mv /tmp/apartments_new $APP_DIR
-          cd $APP_DIR
+         # העתקת הקבצים החדשים למיקום הקיים
+         cp -r /tmp/apartments_new/* $APP_DIR/
+
+         # שחזור public
+         if [ -d "/tmp/public_backup" ]; then
+         echo "משחזר את תיקיית public"
+         cp -r /tmp/public_backup/* $APP_DIR/public/
+         fi
 
           # יצירת קובץ .env עם משתנים מהסודות
           echo "DB_USER=${{ secrets.DB_USER }}" >> .env
