@@ -27,7 +27,7 @@ jobs:
         password: ${{ secrets.SERVER_PASSWORD }}
         script: |
           # משתנה עזר
-          APP_DIR=~/Apartments
+          APP_DIR=~/project/Apartments
 
           # הורדת הקוד החדש לתיקייה זמנית
           rm -rf /tmp/apartments_new

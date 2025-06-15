@@ -1,4 +1,7 @@
 {
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/apartments/route": "app/api/apartments/route.js",
   "/page": "app/page.js",
-  "/adminInterface/AddOptionPostForUser/page": "app/adminInterface/AddOptionPostForUser/page.js"
+  "/api/apartmentsPictures/route": "app/api/apartmentsPictures/route.js",
+  "/postProperty/page": "app/postProperty/page.js"
 }

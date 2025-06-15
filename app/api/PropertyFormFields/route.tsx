@@ -73,7 +73,7 @@ export async function POST(request: Request) {
     console.log('Inserted property ID:', propertyId);
 
     // Create a directory for the property under public/pictures/<property_id>
-    const propertyDir = path.join(process.cwd(), 'public', 'pictures', propertyType, propertyId.toString());
+    const propertyDir = path.join(process.cwd(), '..', 'uploads', 'pictures', propertyType, propertyId.toString());
     await fs.mkdir(propertyDir, { recursive: true });
 
     // Save the images in the directory with numeric names (1.jpg, 2.jpg, etc.)
