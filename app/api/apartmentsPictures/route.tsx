@@ -26,9 +26,12 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'No image paths available for the given ID' }, { status: 404 });
     }
 
+
+
     const images = imagePaths.map((imageName: string) => {
-      return `/pictures/Apartment/${id}/${imageName}`;
-    });
+      return path.join(`/pictures/Apartment/${id}`, imageName);
+    })
+
 
     return NextResponse.json({ images });
   } catch {
