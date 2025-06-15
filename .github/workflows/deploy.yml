@@ -29,13 +29,18 @@ jobs:
           # משתנה עזר
           APP_DIR=~/project/Apartments
 
-          # הורדת הקוד החדש לתיקייה זמנית
-          rm -rf /tmp/apartments_new
-          git clone https://github.com/MalkiAnshin/Apartments.git /tmp/apartments_new
+          # גיבוי public
+          cp -a $APP_DIR/public /tmp/public_backup
 
-          # מחליף את הגרסה הישנה בחדשה
+          # מחיקת הגרסה הישנה
           rm -rf $APP_DIR
-          mv /tmp/apartments_new $APP_DIR
+
+          # משיכת קוד חדש
+          git clone https://github.com/MalkiAnshin/Apartments.git $APP_DIR
+
+          # החזרת public
+          cp -a /tmp/public_backup/* $APP_DIR/public/
+
           cd $APP_DIR
 
           # יצירת קובץ .env עם משתנים מהסודות
