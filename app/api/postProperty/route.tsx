@@ -97,7 +97,10 @@ export async function POST(request: Request) {
 
     client.release();
 
-    const propertyDir = path.join(process.cwd(), '..', 'uploads', 'pictures', propertyType, propertyId.toString());
+
+
+        // Create a directory for the property images
+    const propertyDir = path.join(process.cwd(), 'public', 'pictures', propertyType, propertyId.toString());
     await fs.mkdir(propertyDir, { recursive: true });
 
     // שמירת התמונות בתיקייה המוחלטת

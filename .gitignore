@@ -69,5 +69,5 @@ pnpm-lock.yaml
 /playwright-report/
 
 # הגנה על קבצים שהמשתמשים מעלים
-/public/uploads/*
-!/public/uploads/.gitkeep
+/public/*
+!/public/.gitkeep

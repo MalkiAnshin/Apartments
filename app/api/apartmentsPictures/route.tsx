@@ -27,7 +27,7 @@ export async function GET(request: Request) {
     }
 
     const images = imagePaths.map((imageName: string) => {
-      return `/home/schloss/project/uploads/pictures/Apartment/${id}/${imageName}`;
+      return `/pictures/Apartment/${id}/${imageName}`;
     });
 
     return NextResponse.json({ images });
