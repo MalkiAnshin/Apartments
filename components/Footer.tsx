@@ -9,7 +9,7 @@ const Footer: React.FC<FooterProps> = ({ className }) => {
   return (
     <footer className={`bg-luxury-gold text-white py-4 mt-auto ${className}`}>
       <div className="container mx-auto text-center">
-        <p>&copy; {new Date().getFullYear()} Malki Anshin Digital</p>
+        <p>&copy; {new Date().getFullYear()} Malki Anshin</p>
         <div className="space-x-4">
           <a 
             href="mailto:MALKI148148@gmail.com" 
