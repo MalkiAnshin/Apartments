@@ -47,6 +47,6 @@ jobs:
           npm install
           npm run build
 
-          # הפעלה מחדש של האפליקציה עם pm2 בתיקיית העבודה הנכונה
+          # הפעלה מחדש של האפליקציה עם תיקון למיקום של --cwd
           pm2 delete apartments-app || true
-          pm2 start npm --name "apartments-app" -- start --cwd $APP_DIR
+          pm2 start npm --name "apartments-app" --cwd $APP_DIR -- start
