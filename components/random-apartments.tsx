@@ -35,34 +35,34 @@ const RandomApartmentsCarousel: React.FC = () => {
     fetchApartments();
   }, []);
 
-const handleApartmentClick = async (apartment: any) => {
-  if (!userId) {
-    localStorage.setItem('redirectAfterLogin', window.location.pathname);
-    router.push('/login');
-    return;
-  }
-
-  try {
-    const response = await fetch('/api/moreDetailsApartments', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ apartmentId: apartment.property_id, userId, propertyType: 'apartment' }),
-    });
-
-    if (!response.ok) throw new Error('Network response was not ok');
-    
-    const data = await response.json();
-
-    if (data.exists) {
-      alert(`החוזה עבור דירה זו כבר חתום.\nכתובת: ${apartment.address}\nפרטי יצירת קשר: ${apartment.contact_seller}`);
-    } else {
-      setSelectedApartment(apartment);
+  const handleApartmentClick = async (apartment: any) => {
+    if (!userId) {
+      localStorage.setItem('redirectAfterLogin', window.location.pathname);
+      router.push('/login');
+      return;
     }
-  } catch (error) {
-    console.error('Error checking contract:', error);
-    setError('שגיאה בבדיקת החוזה. נסה שוב מאוחר יותר.');
-  }
-};
+
+    try {
+      const response = await fetch('/api/moreDetailsApartments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ apartmentId: apartment.property_id, userId, propertyType: 'apartment' }),
+      });
+
+      if (!response.ok) throw new Error('Network response was not ok');
+
+      const data = await response.json();
+
+      if (data.exists) {
+        alert(`החוזה עבור דירה זו כבר חתום.\nכתובת: ${apartment.address}\nפרטי יצירת קשר: ${apartment.contact_seller}`);
+      } else {
+        setSelectedApartment(apartment);
+      }
+    } catch (error) {
+      console.error('Error checking contract:', error);
+      setError('שגיאה בבדיקת החוזה. נסה שוב מאוחר יותר.');
+    }
+  };
 
   const handleCloseModal = () => {
     setSelectedApartment(null);
@@ -94,7 +94,9 @@ const handleApartmentClick = async (apartment: any) => {
             <div key={apartment.property_id} className="p-4 relative">
               <div className="bg-gray-800 p-4 rounded-lg border border-gold">
                 <p className="text-lg font-medium">שכונה: {apartment.neighborhood}</p>
-                <p className="text-md text-gold">מחיר: {apartment.price} ש"ח</p>
+                <p className="text-md text-gold">
+                  מחיר: {Number(apartment.price).toLocaleString('he-IL', { maximumFractionDigits: 0 })} ש"ח
+                </p>
                 <p className="text-sm">חדרים: {apartment.rooms}</p>
                 <ApartmentImages property_id={apartment.property_id} />
 

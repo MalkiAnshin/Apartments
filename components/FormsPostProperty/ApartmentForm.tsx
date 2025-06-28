@@ -82,13 +82,18 @@ const ApartmentForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isSubmitting) return; // אם כבר שולחים, לא מאפשרים לחיצה נוספת
-  
+
     setIsSubmitting(true); // משנים ל-true לפני שליחת הבקשה
-  
+
     console.log("Form submission started...");
+    console.log("Images state before submit:", images);
+    images.forEach((image, idx) => {
+      console.log(`Image #${idx + 1}: name=${image.name}, size=${image.size} bytes, type=${image.type}`);
+    });
+
     const formData = new FormData();
     const target = e.target as HTMLFormElement;
-  
+
     formData.append('city', (target.city as HTMLInputElement).value);
     formData.append('neighborhood', (target.neighborhood as HTMLInputElement).value);
     formData.append('price', (target.price as HTMLInputElement).value);
@@ -102,43 +107,52 @@ const ApartmentForm = () => {
     formData.append('elevator', (target.elevator as HTMLInputElement).checked ? 'true' : 'false');
     formData.append('warehouse', (target.warehouse as HTMLInputElement).checked ? 'true' : 'false');
     formData.append('parking', (target.parking as HTMLInputElement).checked ? 'true' : 'false');
-    
-    images.forEach((image) => {
+
+    images.forEach((image, idx) => {
+      console.log(`Appending image #${idx + 1} to formData:`, image.name);
       formData.append('images', image);
     });
-  
-    // Log formData content
-    console.log("Form data to be sent to the server:");
+
+    // לוג כל תוכן ה-FormData לפני השליחה
+    console.log("FormData content before sending:");
     formData.forEach((value, key) => {
-      console.log(`${key}:`, value);
+      if (key === 'images') {
+        if (value instanceof File) {
+          console.log(`Key: ${key}, File name: ${value.name}, size: ${value.size}`);
+        } else {
+          console.log(`Key: ${key}, Value:`, value);
+        }
+      } else {
+        console.log(`Key: ${key}, Value:`, value);
+      }
     });
-  
+
     if (validateForm(formData)) {
       console.log("Submitting form data to the server...");
       const response = await fetch('/api/postProperty', {
         method: 'POST',
         body: formData,
       });
-  
+
       const result = await response.json();
       if (response.ok) {
         console.log("Form submitted successfully:", result);
         alert('✅ נכס נקלט בהצלחה!');
-  
+
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
           const user = JSON.parse(storedUser);
           user.remainingListings = user.remainingListings - 1;
           localStorage.setItem('user', JSON.stringify(user));  // עדכון ה-user עם הערך החדש
         }
-  
+
         router.push('/');
       } else {
         console.error("Error submitting form:", result.error);
         alert('Error: ' + result.error);
       }
     }
-  
+
     setIsSubmitting(false); // להחזיר ל-false לאחר סיום השליחה
   };
     

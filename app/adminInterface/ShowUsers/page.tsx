@@ -98,7 +98,7 @@ const ShowUsers: React.FC = () => {
           רשימת משתמשים
         </h1>
         {error && <div className="text-red-600 mb-4 text-center">שגיאה: {error}</div>}
-  
+
         {/* טבלת המשתמשים */}
         {users.length > 0 ? (
           <div className="overflow-x-auto">
@@ -146,7 +146,7 @@ const ShowUsers: React.FC = () => {
         ) : (
           <p className="text-gray-400 text-center">...טוען</p>
         )}
-  
+
         {/* Modal for Contracts */}
         {isContractsModalOpen && (
           <div className="fixed inset-0 bg-black/70 flex justify-center items-center z-50">
@@ -197,62 +197,64 @@ const ShowUsers: React.FC = () => {
             </div>
           </div>
         )}
-  
-{/* Modal for Apartments */}
-{isApartmentsModalOpen && (
-  <div className="fixed inset-0 bg-black/70 flex justify-center items-center z-50">
-    <div className="bg-black text-gold p-6 rounded-lg max-w-6xl w-full">
-      <h2 className="text-2xl font-bold mb-4">דירות</h2>
-      <button
-        onClick={() => setIsApartmentsModalOpen(false)} // סגירת המודל
-        className="text-red-500 mb-4 text-lg"
-      >
-        סגור
-      </button>
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-transparent border border-gold rounded-lg overflow-hidden shadow-lg">
-          <thead>
-            <tr className="border-b border-gold text-gold text-left">
-              <th className="p-4">מזהה נכס</th>
-              <th className="p-4">עיר</th>
-              <th className="p-4">שכונה</th>
-              <th className="p-4">מחיר</th>
-              <th className="p-4">חדרים</th>
-              <th className="p-4">כתובת</th>
-              <th className="p-4">קומה</th>
-              <th className="p-4">מרפסת</th>
-              <th className="p-4">מעלית</th>
-              <th className="p-4">מחסן</th>
-              <th className="p-4">חניה</th>
-              <th className="p-4">מוכר</th>
-            </tr>
-          </thead>
-          <tbody>
-            {apartments.map((apartment, index) => (
-              <tr key={index} className="border-b border-gold hover:bg-gold/10 transition">
-                <td className="p-4">{apartment.property_id}</td>
-                <td className="p-4">{apartment.city}</td>
-                <td className="p-4">{apartment.neighborhood}</td>
-                <td className="p-4">{apartment.price}</td>
-                <td className="p-4">{apartment.rooms}</td>
-                <td className="p-4">{apartment.address}</td>
-                <td className="p-4">{apartment.floor}</td>
-                <td className="p-4">{apartment.has_balcony ? "כן" : "לא"}</td>
-                <td className="p-4">{apartment.elevator ? "כן" : "לא"}</td>
-                <td className="p-4">{apartment.warehouse ? "כן" : "לא"}</td>
-                <td className="p-4">{apartment.parking ? "כן" : "לא"}</td>
-                <td className="p-4">{apartment.contact_seller}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-)}
+
+        {/* Modal for Apartments */}
+        {isApartmentsModalOpen && (
+          <div className="fixed inset-0 bg-black/70 flex justify-center items-center z-50">
+            <div className="bg-black text-gold p-6 rounded-lg max-w-6xl w-full">
+              <h2 className="text-2xl font-bold mb-4">דירות</h2>
+              <button
+                onClick={() => setIsApartmentsModalOpen(false)} // סגירת המודל
+                className="text-red-500 mb-4 text-lg"
+              >
+                סגור
+              </button>
+              <div className="overflow-x-auto">
+                <table className="min-w-full bg-transparent border border-gold rounded-lg overflow-hidden shadow-lg">
+                  <thead>
+                    <tr className="border-b border-gold text-gold text-left">
+                      <th className="p-4">מזהה נכס</th>
+                      <th className="p-4">עיר</th>
+                      <th className="p-4">שכונה</th>
+                      <th className="p-4">מחיר</th>
+                      <th className="p-4">חדרים</th>
+                      <th className="p-4">כתובת</th>
+                      <th className="p-4">קומה</th>
+                      <th className="p-4">מרפסת</th>
+                      <th className="p-4">מעלית</th>
+                      <th className="p-4">מחסן</th>
+                      <th className="p-4">חניה</th>
+                      <th className="p-4">מוכר</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {apartments.map((apartment, index) => (
+                      <tr key={index} className="border-b border-gold hover:bg-gold/10 transition">
+                        <td className="p-4">{apartment.property_id}</td>
+                        <td className="p-4">{apartment.city}</td>
+                        <td className="p-4">{apartment.neighborhood}</td>
+                        <td className="p-4">
+                          {Number(apartment.price).toLocaleString('he-IL', { maximumFractionDigits: 0 })}
+                        </td>
+                        <td className="p-4">{apartment.rooms}</td>
+                        <td className="p-4">{apartment.address}</td>
+                        <td className="p-4">{apartment.floor}</td>
+                        <td className="p-4">{apartment.has_balcony ? "כן" : "לא"}</td>
+                        <td className="p-4">{apartment.elevator ? "כן" : "לא"}</td>
+                        <td className="p-4">{apartment.warehouse ? "כן" : "לא"}</td>
+                        <td className="p-4">{apartment.parking ? "כן" : "לא"}</td>
+                        <td className="p-4">{apartment.contact_seller}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
-  };
+};
 
 export default ShowUsers;

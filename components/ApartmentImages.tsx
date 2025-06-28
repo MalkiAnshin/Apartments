@@ -10,29 +10,31 @@ const ApartmentImages: React.FC<ApartmentImagesProps> = ({ property_id }) => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    console.log('ApartmentImages useEffect running, property_id:', property_id);
     const fetchImages = async () => {
       try {
+        console.log('Fetching images from /api/apartmentsPictures with property_id:', property_id);
         const response = await fetch('/api/apartmentsPictures', {
           method: 'GET',
           headers: {
-            'property_id': property_id.toString(), // שולח את ה-ID בהדר
+            'property_id': property_id.toString(),
           },
         });
-              if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
-  
+        console.log('Fetch response status:', response.status, response.statusText);
+        if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
         const data = await response.json();
-        setImages(data.images || []); // ודא ש-setImages מקבל מערך גם אם images הוא null
+        console.log('Data received from API:', data);
+        setImages(data.images || []);
       } catch (err: any) {
         setError(`Error fetching images: ${err.message}`);
-        // console.error('Error fetching images:', err);
+        console.error('Error fetching images:', err);
       }
     };
-  
     if (property_id) {
       fetchImages();
     }
-  }, [property_id]); // הקשב רק לשינוי ב-property_id
-  
+  }, [property_id]);
+
   // מעבר לתמונה הבאה
   const handleNext = () => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
@@ -42,6 +44,11 @@ const ApartmentImages: React.FC<ApartmentImagesProps> = ({ property_id }) => {
   const handlePrev = () => {
     setCurrentIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
   };
+
+  // Add log for every image rendered
+  if (images.length > 0) {
+    console.log('Rendering image:', images[currentIndex]);
+  }
 
   if (error) {
     return <div>Error loading images: {error}</div>;

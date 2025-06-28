@@ -1,18 +1,15 @@
 import { NextResponse } from 'next/server';
 import { promises as fs } from 'fs';
 import path from 'path';
-import pool from '../../../lib/db'; // Update the path to your database file
+import pool from '../../../lib/db';
 
 export async function POST(request: Request) {
   try {
-
     const formData = await request.formData();
     console.log('Form data received:', Object.fromEntries(formData.entries()));
 
-
     const formDataObject = Object.fromEntries(formData.entries());
 
-    // Read apartment details from the request and trim unnecessary spaces
     const city = (formData.get('city') as string | null)?.trim().replace(/\s+/g, ' ') || '';
     const neighborhood = (formData.get('neighborhood') as string | null)?.trim().replace(/\s+/g, ' ') || '';
     const price = (formData.get('price') as string | null)?.trim() || '';
@@ -31,20 +28,15 @@ export async function POST(request: Request) {
     const isBuilt = formData.get('isBuilt') === 'true';
     const buildableArea = formData.get('buildable_area') === 'true';
 
-    // For Business property type
     const businessType = (formData.get('business_type') as string | null)?.trim() || '';
     const monthlyYield = (formData.get('monthly_yield') as string | null)?.trim() || '';
-
-    // For Land property type
     const size = (formData.get('size') as string | null)?.trim() || '';
 
-    // Save the property in the database based on its type
     const client = await pool.connect();
 
     let query, values;
-    const imageArray = `{${imageNames.join(',')}}`;  // PostgreSQL array literal for image paths
+    const imageArray = `{${imageNames.join(',')}}`;
 
-    // Construct the query based on property type
     if (propertyType === 'Apartment') {
       query = `
         INSERT INTO apartments (city, neighborhood, price, rooms, image_paths, user_id, has_balcony, floor, contact_seller, address, elevator, warehouse, parking)
@@ -52,21 +44,11 @@ export async function POST(request: Request) {
         RETURNING property_id`;
       values = [city, neighborhood, price, rooms, imageArray, userId, hasBalcony, floor, contactSeller, address, elevator, warehouse, parking];
     } else if (propertyType === 'Project') {
-      console.log('Processing project property');
-
       query = `
         INSERT INTO projects (city, neighborhood, price, rooms, image_paths, user_id, has_balcony, floor, contact_seller, address, elevator, warehouse, parking, isBuilt)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
         RETURNING property_id`;
       values = [city, neighborhood, price, rooms, imageArray, userId, hasBalcony, floor, contactSeller, address, elevator, warehouse, parking, isBuilt];
-      console.log("Executing query for propertyType:", propertyType);
-      console.log("Query:", query);
-      console.log("Values:", values);
-
-      const result = await client.query(query, values);
-
-      console.log("Query result:", result.rows);
-
     } else if (propertyType === 'Land') {
       query = `
         INSERT INTO lands (city, neighborhood, price, size, buildable_area, user_id, address, contact_info)
@@ -79,41 +61,62 @@ export async function POST(request: Request) {
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
         RETURNING property_id`;
       values = [city, neighborhood, price || null, size || null, businessType || null, monthlyYield || null, userId || null, address || null, contactSeller || null];
-    }
-    else {
+    } else {
       throw new Error('Invalid property type');
     }
 
-    // Insert into the database
     const result = await client.query(query, values);
     const propertyId = result.rows[0].property_id;
 
-    // Update the user's remaining_listings flag
-    const updateQuery = `
-      UPDATE users
-  SET remaining_listings = remaining_listings - 1
-      WHERE identity_number = $1`;
-    await client.query(updateQuery, [userId]);
+    await client.query(`UPDATE users SET remaining_listings = remaining_listings - 1 WHERE identity_number = $1`, [userId]);
 
     client.release();
 
+    // הדפסת הנתיב שבו הקוד רץ בפועל
+    console.log('📁 __dirname:', __dirname);
 
+    // שמירה יחסית למיקום האמיתי של הסקריפט
+    const relativeRoot = path.join(__dirname, '../../../../../../public/userfiles/pictures', propertyType, propertyId.toString());
+    console.log('📂 Saving images to relative path:', relativeRoot);
 
-        // Create a directory for the property images
-    const propertyDir = path.join(process.cwd(), 'public', 'pictures', propertyType, propertyId.toString());
-    await fs.mkdir(propertyDir, { recursive: true });
-
-    // שמירת התמונות בתיקייה המוחלטת
-    for (let i = 0; i < images.length; i++) {
-      const imageFile = images[i] as File;
-      const imageBuffer = Buffer.from(await imageFile.arrayBuffer());
-      const filePath = path.join(propertyDir, `${i + 1}.jpg`);
-      await fs.writeFile(filePath, imageBuffer);
+    console.log('--- IMAGE UPLOAD PROCESS START ---');
+    try {
+      await fs.mkdir(relativeRoot, { recursive: true });
+      const dirStat = await fs.stat(relativeRoot).then(() => true).catch(() => false);
+      console.log('Directory created:', dirStat);
+    } catch (mkdirErr) {
+      console.error('❌ Failed to create image directory:', mkdirErr);
+      throw mkdirErr;
     }
 
+    console.log('Number of images to save:', images.length);
+
+    for (let i = 0; i < images.length; i++) {
+      const imageFile = images[i] as File;
+      console.log(`→ Processing image #${i + 1}: ${imageFile.name}, ${imageFile.size} bytes`);
+
+      try {
+        const imageBuffer = Buffer.from(await imageFile.arrayBuffer());
+        console.log(`→ Buffer created, size: ${imageBuffer.length} bytes`);
+
+        const filePath = path.join(relativeRoot, `${i + 1}.jpg`);
+        console.log('→ Saving to:', filePath);
+
+        await fs.writeFile(filePath, imageBuffer);
+
+        const exists = await fs.stat(filePath).then(() => true).catch(() => false);
+        console.log(`✓ Image #${i + 1} saved?`, exists);
+      } catch (imgErr) {
+        console.error(`❌ Error saving image #${i + 1}:`, imgErr);
+      }
+    }
+
+    console.log('--- IMAGE UPLOAD PROCESS END ---');
+
     return NextResponse.json({ message: 'Property added successfully!', propertyId });
+
   } catch (error) {
-    console.error('Error saving property:', error);
+    console.error('❌ Error saving property:', error);
     return NextResponse.json({ error: 'Error saving property' }, { status: 500 });
   }
 }

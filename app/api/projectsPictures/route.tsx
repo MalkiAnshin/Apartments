@@ -7,8 +7,10 @@ export const dynamic = 'force-dynamic'
 export async function GET(request: Request) {
   try {
     const id = request.headers.get('property_id');
+    console.log('Received GET request for project images. property_id:', id);
 
     if (!id) {
+      console.warn('No property_id provided in headers');
       return NextResponse.json({ error: 'ID parameter is missing in headers' }, { status: 400 });
     }
 
@@ -18,16 +20,20 @@ export async function GET(request: Request) {
     );
 
     if (result.rows.length === 0) {
+      console.warn('No images found for the given ID:', id);
       return NextResponse.json({ error: 'No images found for the given ID' }, { status: 404 });
     }
 
     const imagePaths = result.rows[0].image_paths;
     if (!imagePaths || imagePaths.length === 0) {
+      console.warn('No image paths available for the given ID:', id);
       return NextResponse.json({ error: 'No image paths available for the given ID' }, { status: 404 });
     }
 
     const images = imagePaths.map((imageName: string) => {
-      return path.join(`/pictures/Project/${id}`, imageName); 
+      const fullPath = path.join(`/pictures/Project/${id}`, imageName);
+      console.log('Resolved image path:', fullPath);
+      return fullPath;
     });
 
     return NextResponse.json({ images });

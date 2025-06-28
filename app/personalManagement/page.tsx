@@ -167,8 +167,11 @@ const PersonalManagement = () => {
             >
               <p className="text-2xl text-gold font-semibold">כתובת: {property.address}</p>
               <p className="text-lg text-gray-800">סוג נכס: {property.property_type}</p>
-              <p className="text-lg text-gray-800">מחיר: {property.price} ₪</p>
-              <button
+// ...existing code...
+              <p className="text-lg text-gray-800">
+                מחיר: {Number(property.price).toLocaleString('he-IL', { maximumFractionDigits: 0 })} ₪
+              </p>
+// ...existing code...              <button
                 className="mt-4 px-6 py-3 bg-red-500/80 text-white rounded-lg hover:bg-red-700 transition-all shadow-md"
                 onClick={() => handleDeleteClick(property.property_id)}
               >

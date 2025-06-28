@@ -142,8 +142,11 @@ const ApartmentList: React.FC = () => {
                     className="bg-gray-800 p-4 rounded-lg border border-gold cursor-pointer rtl"
                   >
                     <p className="text-lg font-medium">שכונה/איזור: {apartment.neighborhood}</p>
-                    <p className="text-md text-gold">מחיר: {apartment.price} ש"ח</p>
-                    <p className="text-sm">חדרים: {apartment.rooms}</p>
+// ...existing code...
+                    <p className="text-lg text-gray-800">
+                      מחיר: {Number(apartment.price).toLocaleString('he-IL', { maximumFractionDigits: 0 })} ₪
+                    </p>
+// ...existing code...                    <p className="text-sm">חדרים: {apartment.rooms}</p>
                     <ApartmentImages property_id={apartment.property_id} />
                     <button
                       className="mt-4 bg-gold text-black px-6 py-2 rounded-md font-semibold"

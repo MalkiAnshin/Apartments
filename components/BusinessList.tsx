@@ -116,8 +116,9 @@ const BusinessList: React.FC = () => {
                     className="bg-gray-800 p-4 rounded-lg border border-gold cursor-pointer rtl"
                   >
                     <p className="text-lg font-medium">שכונה/איזור: {business_index.neighborhood}</p>
-                    <p className="text-md text-gold">מחיר: {business_index.price} ש"ח</p>
-                    <p className="text-sm">גודל: {business_index.size} מ"ר</p>
+                    <p className="text-md text-gold">
+                      מחיר: {Number(business_index.price).toLocaleString('he-IL', { maximumFractionDigits: 0 })} ש"ח
+                    </p>
                     <p className="text-sm">סוג נכס: {business_index.business_type}</p>
                     <p className="text-sm">תשואה חודשית: {business_index.monthly_yield} ש"ח</p>
 

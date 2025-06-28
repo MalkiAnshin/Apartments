@@ -106,7 +106,9 @@ const LandList: React.FC = () => {
                     className="bg-gray-800 p-4 rounded-lg border border-gold cursor-pointer rtl"
                   >
                     <p className="text-lg font-medium">שכונה/איזור: {land.neighborhood}</p>
-                    <p className="text-md text-gold">מחיר: {land.price} ש"ח</p>
+                    <p className="text-md text-gold">
+                      מחיר: {Number(land.price).toLocaleString('he-IL', { maximumFractionDigits: 0 })} ש"ח
+                    </p>
                     <p className="text-sm">גודל: {land.size} מ"ר</p>
                     <p className="text-sm">
                       {land.buildable_area ? "השטח בנוי" : "השטח אינו בנוי"}

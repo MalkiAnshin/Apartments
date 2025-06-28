@@ -139,7 +139,9 @@ const ShowProjects: React.FC = () => {
                 <tr key={project.property_id} className={`border-b border-gold ${selectedProperty === project.property_id ? 'bg-gold/10' : ''}`}>
                   <td className="p-4">{project.property_id}</td>
                   <td className="p-4">{project.city}</td>
-                  <td className="p-4">{project.price}</td>
+                  <td className="p-4">
+                    {Number(project.price).toLocaleString('he-IL', { maximumFractionDigits: 0 })}
+                  </td>
                   <td className="p-4">{project.rooms}</td>
                   <button
                     onClick={() => deleteProjects(project.property_id)}

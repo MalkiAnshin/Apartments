@@ -130,7 +130,9 @@ const ShowLands: React.FC = () => {
                 <tr key={land.property_id} className={`border-b border-gold ${selectedProperty === land.property_id ? 'bg-gold/10' : ''}`}>
                   <td className="p-4">{land.property_id}</td>
                   <td className="p-4">{land.city}</td>
-                  <td className="p-4">{land.price}</td>
+                  <td className="p-4">
+                    {Number(land.price).toLocaleString('he-IL', { maximumFractionDigits: 0 })}
+                  </td>
                   <td className="p-4">{land.rooms}</td>
                   <button
                     onClick={() => deleteLands(land.property_id)}

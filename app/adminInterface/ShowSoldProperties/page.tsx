@@ -54,7 +54,9 @@ const ShowSoldProperties: React.FC = () => {
                   <td className="p-4">{property.sold_to}</td>
                   <td className="p-4">{property.seller_id}</td>
                   <td className="p-4">{property.sold_date}</td>
-                  <td className="p-4">{property.price}</td>
+                  <td className="p-4">
+                    {Number(property.price).toLocaleString('he-IL', { maximumFractionDigits: 0 })}
+                  </td>
                   <td className="p-4">{property.contact_seller}</td>
                 </tr>
               ))}

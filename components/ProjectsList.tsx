@@ -142,7 +142,9 @@ const ProjectsList: React.FC = () => {
                     className="bg-gray-800 p-4 rounded-lg border border-gold cursor-pointer rtl"
                   >
                     <p className="text-lg font-medium">שכונה/איזור: {project.neighborhood}</p>
-                    <p className="text-md text-gold">מחיר: {project.price} ש"ח</p>
+                    <p className="text-md text-gold">
+                      מחיר: {Number(project.price).toLocaleString('he-IL', { maximumFractionDigits: 0 })} ש"ח
+                    </p>
                     <p className="text-sm">חדרים: {project.rooms}</p>
                     <ProjectImages property_id={project.property_id} />
                     <button

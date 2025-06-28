@@ -129,7 +129,9 @@ const ShowBusiness: React.FC = () => {
                 <tr key={business.property_id} className={`border-b border-gold ${selectedProperty === business.property_id ? 'bg-gold/10' : ''}`}>
                   <td className="p-4">{business.property_id}</td>
                   <td className="p-4">{business.city}</td>
-                  <td className="p-4">{business.price}</td>
+                  <td className="p-4">
+                    {Number(business.price).toLocaleString('he-IL', { maximumFractionDigits: 0 })}
+                  </td>
                   <td className="p-4">{business.rooms}</td>
                   <button
                     onClick={() => deleteBusiness(business.property_id)}
