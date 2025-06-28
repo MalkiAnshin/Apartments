@@ -26,11 +26,7 @@ jobs:
         username: ${{ secrets.SERVER_USER }}
         password: ${{ secrets.SERVER_PASSWORD }}
         script: |
-          # משתנה עזר
           APP_DIR=~/project/Apartments
-
-          # גיבוי public
-          cp -a $APP_DIR/public /tmp/public_backup
 
           # מחיקת הגרסה הישנה
           rm -rf $APP_DIR
@@ -38,13 +34,10 @@ jobs:
           # משיכת קוד חדש
           git clone https://github.com/MalkiAnshin/Apartments.git $APP_DIR
 
-          # החזרת public
-          cp -a /tmp/public_backup/* $APP_DIR/public/
-
           cd $APP_DIR
 
           # יצירת קובץ .env עם משתנים מהסודות
-          echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+          echo "DB_USER=${{ secrets.DB_USER }}" > .env
           echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
           echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
@@ -54,6 +47,6 @@ jobs:
           npm install
           npm run build
 
-          # הפעלה מחדש של האפליקציה
-          pm2 delete all || true
-          pm2 start npm --name "apartments-app" -- run start
+          # הפעלה מחדש של האפליקציה עם pm2 בתיקיית העבודה הנכונה
+          pm2 delete apartments-app || true
+          pm2 start npm --name "apartments-app" -- start --cwd $APP_DIR
