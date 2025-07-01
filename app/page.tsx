@@ -50,7 +50,7 @@ const HomePage: React.FC = () => {
     <GlobalProvider>
       <div className="container mx-auto p-4">
         <h1 className="text-3xl font-bold mb-6 bg-black/10 text-gold text-center">
-          תמצא את הנכס או הקרקע המושלם המתאים לצרכים שלך
+          תמצא את הנכס או הקרקע המושלמים המתאים לצרכים שלך
         </h1>
         <PropertyTypeSelector onSelect={setSelectedType} />
         <div className="mt-6">
