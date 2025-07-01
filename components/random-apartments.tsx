@@ -92,8 +92,7 @@ const RandomApartmentsCarousel: React.FC = () => {
         <Slider {...sliderSettings} className="w-full max-w-5xl">
           {apartments.map(apartment => (
             <div key={apartment.property_id} className="p-4 relative">
-              <div className="bg-gray-800 p-4 rounded-lg border border-gold">
-                <p className="text-lg font-medium">עיר: {apartment.city}</p>
+              <div className="bg-gray-800/50 p-4 rounded-lg border border-gold">                <p className="text-lg font-medium">עיר: {apartment.city}</p>
                 <p className="text-lg font-medium">שכונה: {apartment.neighborhood}</p>
                 <p className="text-md text-gold">
                   מחיר: {Number(apartment.price).toLocaleString('he-IL', { maximumFractionDigits: 0 })} ש"ח
