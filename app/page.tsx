@@ -49,8 +49,8 @@ const HomePage: React.FC = () => {
   return (
     <GlobalProvider>
       <div className="container mx-auto p-4">
-        <h1 className="text-3xl font-bold mb-6 text-center">
-         תמצא את הנכס אוניסויייי הקרקע המושלם המתאים לצרכים שלך
+        <h1 className="text-3xl font-bold mb-6 bg-black/10 text-gold text-center">
+          תמצא את הנכס או הקרקע המושלם המתאים לצרכים שלך
         </h1>
         <PropertyTypeSelector onSelect={setSelectedType} />
         <div className="mt-6">
@@ -65,6 +65,16 @@ const HomePage: React.FC = () => {
       <div className="mt-12">
         <RandomApartmentsCarousel />
       </div>
+      <div className="mt-10 text-xs text-gray-400 text-center leading-relaxed max-w-2xl mx-auto">
+        <div className="font-bold mb-2">חיפשת דירה, קרקע או עסק?</div>
+        <span>
+          פרסום נכס דירה בחינם • חיפוש דירה בזול ללא מתווכים • דירה למכירה בטבריה, ירושלים, תל אביב, בני ברק, רמת גן<br />
+          דירה לקנייה בצפון עד 500 אלף שקל • דירה לקניה במרכז • המרכז לחיפוש דירות • אתר עולמי לחיפוש נכס<br />
+          דירות נופש • דירה חדשה מקבלן • פרויקטים בנייה • שטחים לבניה • בתים ובניינים • מגרשים למכירה • עסק למכירה<br />
+          schloss • שכלוס • אתר נדלן עולמי
+        </span>
+      </div>
+
     </GlobalProvider>
   );
 };
