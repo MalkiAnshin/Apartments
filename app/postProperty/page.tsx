@@ -1,44 +1,54 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useGlobalContext } from '../context/GlobalContext';
 import { useRouter } from 'next/navigation';
 import ApartmentForm from '../../components/FormsPostProperty/ApartmentForm';
 import ProjectForm from '../../components/FormsPostProperty/ProjectForm';
 import LandForm from '../../components/FormsPostProperty/LandForm';
 import BusinessForm from '../../components/FormsPostProperty/BusinessForm';
 
+const VIP_ID = 322385543;
+
 const AddPropertyForm: React.FC = () => {
   const [propertyType, setPropertyType] = useState<string>('Apartment');
-  const router = useRouter();
-  const { user } = useGlobalContext();
   const [canPost, setCanPost] = useState<boolean>(false);
+  const router = useRouter();
 
   useEffect(() => {
-    const checkUserStatus = () => {
+    const checkLocalUser = () => {
       const storedUser = localStorage.getItem('user');
-      const parsedUser = storedUser ? JSON.parse(storedUser) : null;
+      const user = storedUser ? JSON.parse(storedUser) : null;
 
-      if (!parsedUser || !parsedUser.userId) {
+      const userIdRaw = user?.userId || user?.identity_number;
+      const userId = Number(userIdRaw);
+
+      if (!user || !userId) {
         localStorage.setItem('redirectAfterLogin', window.location.pathname);
-        alert('משתמש לא מחובר, נא לבצע התחברות');
+        alert('משתמש לא מחובר, נא להתחבר');
         router.push('/login');
         return;
       }
 
-      // שימו לב לשינוי כאן - בדיקה מדויקת יותר של יתרת הפרסומים
-      const remainingListings = parsedUser.remainingListings || 0;
-      if (remainingListings <= 0) {
-        alert('אין יתרת פרסומים, מעביר לדף תשלום...');
+      if (userId === VIP_ID) {
+        setCanPost(true);
+        return;
+      }
+
+      const rawRemaining = user?.remainingListings ?? user?.remaining_listings;
+      const remaining = Number(rawRemaining);
+
+      if (isNaN(remaining) || remaining <= 0) {
+        alert('אין יתרת פרסומים. מעביר לתשלום...');
         router.push('/payment');
-        return; // הוספת return כאן למנוע המשך ביצוע
+        return;
       }
 
       setCanPost(true);
     };
 
-    checkUserStatus();
+    checkLocalUser();
   }, [router]);
+
   const handlePropertyTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setPropertyType(e.target.value);
   };
@@ -58,15 +68,16 @@ const AddPropertyForm: React.FC = () => {
     }
   };
 
-  if (!canPost) return null; // או Spinner אם תרצי
+  if (!canPost) return null;
 
   return (
     <div dir="rtl" className="bg-black bg-opacity-30 text-white p-8 rounded-lg shadow-xl max-w-lg mx-auto">
       <h2 className="text-3xl font-bold mb-6 text-center text-gold-300">פרסום נכס</h2>
 
-      {/* סוג נכס */}
       <div>
-        <label htmlFor="propertyType" className="block text-sm font-medium mb-2 text-gold-300">סוג נכס</label>
+        <label htmlFor="propertyType" className="block text-sm font-medium mb-2 text-gold-300">
+          סוג נכס
+        </label>
         <select
           id="propertyType"
           value={propertyType}
@@ -80,7 +91,6 @@ const AddPropertyForm: React.FC = () => {
         </select>
       </div>
 
-      {/* הצגת הטופס המתאים */}
       {renderForm()}
     </div>
   );
