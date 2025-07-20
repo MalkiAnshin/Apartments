@@ -65,16 +65,16 @@ const HomePage: React.FC = () => {
       <div className="mt-12">
         <RandomApartmentsCarousel />
       </div>
-      <div className="mt-10 text-xs text-gray-400 text-center leading-relaxed max-w-2xl mx-auto">
-        <div className="font-bold mb-2">חיפשת דירה, קרקע או עסק?</div>
+      <div className="mt-10 text-xs text-gray-400 text-center leading-relaxed max-w-2xl mx-auto opacity-0 select-none pointer-events-none">
         <span>
+          חיפשת דירה, קרקע או עסק?
           פרסום נכס דירה בחינם • חיפוש דירה בזול ללא מתווכים • דירה למכירה בטבריה, ירושלים, תל אביב, בני ברק, רמת גן<br />
           דירה לקנייה בצפון עד 500 אלף שקל • דירה לקניה במרכז • המרכז לחיפוש דירות • אתר עולמי לחיפוש נכס<br />
           דירות נופש • דירה חדשה מקבלן • פרויקטים בנייה • שטחים לבניה • בתים ובניינים • מגרשים למכירה • עסק למכירה<br />
-          schloss • שכלוס • אתר נדלן עולמי
+          יד 2 • מדלן • קומו • הומלס • דירות לקניה ולמכירה ולהשכרה • נכס מציאה • מתחת למחיר השוק<br />
+          shloss • schloss • שכלוס • schloss • אתר נדלן עולמי
         </span>
       </div>
-
     </GlobalProvider>
   );
 };

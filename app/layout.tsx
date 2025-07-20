@@ -34,6 +34,7 @@ const InnerLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   return (
     <html lang="he">
+      <meta name="google-site-verification" content="QDpNUkn5bmU90h37Y-slR929Jby6EsBWnKt30Wlm1_U" />
       <body className="flex flex-col min-h-screen relative">
         <div className="absolute inset-0 z-[-1] pointer-events-none">
           <StarsCanvas />

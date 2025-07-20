@@ -45,38 +45,37 @@ const Navbar: React.FC = () => {
   ];
 
   return (
-    <nav className="bg-luxury-gold text-white shadow-md">
-      <div className="container mx-auto flex justify-between items-center p-4">
-        {/* Logo and Greeting */}
-        <div className="flex items-center space-x-4">
-          <Link href="/" className="flex items-center space-x-2">
-            <Image 
-              src="/logo.png" 
-              alt="Logo"
-              width={120} 
-              height={50} 
-              priority
-            />
-          </Link>
-          <UserGreeting />
-        </div>
+    <nav className="bg-luxury-gold/50 backdrop-blur-md text-white shadow-md">      <div className="container mx-auto flex justify-between items-center p-4">
+      {/* Logo and Greeting */}
+      <div className="flex items-center space-x-4">
+        <Link href="/" className="flex items-center space-x-2">
+          <Image
+            src="/logo.png"
+            alt="Logo"
+            width={120}
+            height={50}
+            priority
+          />
+        </Link>
+        <UserGreeting />
+      </div>
 
-        {/* Hamburger Menu */}
-        <button 
-          className="block lg:hidden text-2xl focus:outline-none focus:ring-2 focus:ring-yellow-500"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          {isOpen ? '✖' : '☰'}
-        </button>
+      {/* Hamburger Menu */}
+      <button
+        className="block lg:hidden text-2xl focus:outline-none focus:ring-2 focus:ring-yellow-500"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        {isOpen ? '✖' : '☰'}
+      </button>
 
-        {/* Links */}
-        <div className={`lg:flex flex-col lg:flex-row lg:items-center space-y-2 lg:space-y-0 lg:space-x-4 ${isOpen ? 'flex' : 'hidden'} w-full lg:w-auto mt-4 lg:mt-0`}>
-          {/* Common links */}
-          {commonLinks.map((link, index) => (
-            <Link
-              key={index}
-              href={link.href}
-              className={`
+      {/* Links */}
+      <div className={`lg:flex flex-col lg:flex-row lg:items-center space-y-2 lg:space-y-0 lg:space-x-4 ${isOpen ? 'flex' : 'hidden'} w-full lg:w-auto mt-4 lg:mt-0`}>
+        {/* Common links */}
+        {commonLinks.map((link, index) => (
+          <Link
+            key={index}
+            href={link.href}
+            className={`
                 relative inline-block px-6 py-2 text-center 
                 rounded-lg 
                 bg-opacity-10 transition-all 
@@ -84,16 +83,16 @@ const Navbar: React.FC = () => {
                 border-2 border-yellow-200
                 w-max
               `}
-            >
-              {link.label}
-            </Link>
-          ))}
+          >
+            {link.label}
+          </Link>
+        ))}
 
-          {/* Special button for admin */}
-          {isSpecialUser && (
-            <button
-              onClick={() => setShowAdminLinks(!showAdminLinks)}
-              className={`
+        {/* Special button for admin */}
+        {isSpecialUser && (
+          <button
+            onClick={() => setShowAdminLinks(!showAdminLinks)}
+            className={`
                 relative inline-block px-6 py-2 text-center 
                 rounded-lg 
                 bg-opacity-10 transition-all 
@@ -101,12 +100,12 @@ const Navbar: React.FC = () => {
                 w-max
                 ${showAdminLinks ? 'bg-white text-black font-bold' : 'hover:bg-yellow-50 hover:text-yellow-500'}
               `}
-            >
-              ניהול כללי
-            </button>
-          )}
-        </div>
+          >
+            ניהול כללי
+          </button>
+        )}
       </div>
+    </div>
 
       {/* Render AdminLinksContent when "ניהול כללי" is clicked */}
       {isSpecialUser && showAdminLinks && <AdminLinksContent specialLinks={specialLinks} pathname={pathname} />}
